@@ -26,6 +26,10 @@ const ProfilePage = () => {
   return (
     <div className="min-h-screen bg-[#fcfdfd] font-sans selection:bg-emerald-100 selection:text-emerald-900">
       <NavbarPage />
+      <br />
+      <br /> 
+      <br />
+      <br />
       
       <main className="max-w-7xl mx-auto py-12 px-6">
         <div className="flex flex-col lg:flex-row gap-8">

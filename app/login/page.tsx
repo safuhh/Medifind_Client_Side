@@ -1,60 +1,4 @@
-// "use client";
 
-// import React from "react";
-// import { useGoogleLogin } from "@react-oauth/google";
-// import { googleAuth } from "../apis/googleapi";
-// import { useRouter } from "next/navigation";
-// import { useDispatch } from "react-redux";
-// import { setCredentials } from "../redux/authSlice";
-
-// const GoogleLogin = () => {
-//   const router = useRouter();
-//   const dispatch = useDispatch();
-
-//   const login = useGoogleLogin({
-//     flow: "implicit", // 🔥 IMPORTANT FIX
-//     scope: "openid email profile",
-//     onSuccess: async (tokenResponse) => {
-//       try {
-//         const accessToken =
-//           tokenResponse?.access_token ||
-//           (tokenResponse as any)?.accessToken ||
-//           (tokenResponse as any)?.token;
-
-//         if (!accessToken) {
-//           console.log("Login error: Google token missing", tokenResponse);
-//           return;
-//         }
-
-//         const res = await googleAuth({
-//           accessToken,
-//           access_token: accessToken,
-//           token: accessToken,
-//         });
-
-//         dispatch(
-//           setCredentials({
-//             user: res.data.user,
-//             accessToken: res.data.accessToken,
-//           })
-//         );
-
-//         router.push("/");
-//       } catch (err) {
-//         const error = err as any;
-//         console.log("Login error:", error?.response?.data || error);
-//       }
-//     },
-//   });
-
-//   return (
-//     <button onClick={() => login()}>
-//       Continue with Google
-//     </button>
-//   );
-// };
-
-// export default GoogleLogin;
 
 "use client";
 
@@ -84,7 +28,20 @@ const GoogleLogin = () => {
           user: res.data.user,
           accessToken: res.data.accessToken,
         }));
-        router.push("/");
+
+        if(res.data.user.role === "admin") {
+          router.push("/admin");
+        }
+        else if (res.data.user.role === "seller") {
+          router.push("/seller");
+        }
+        else if(res.data.user.role === "delivery_boy") {
+          router.push("/delivery/dashboard");
+        }
+        else {
+          router.push("/");
+        }
+
       } catch (err) {
         console.error("Login error:", err);
       }

@@ -65,7 +65,7 @@ const NavbarPage = () => {
   };
 
   return (
-    <div className="w-full font-sans sticky top-0 z-50">
+    <div className="w-full font-sans fixed top-0 z-50">
       {/* 1. SUB NAVBAR (Top Bar) */}
       <div className="w-full bg-[#0a4d33] py-2 px-6 hidden md:block">
         <div className="max-w-7xl mx-auto flex justify-between items-center text-[11px] font-bold text-emerald-100 uppercase tracking-[0.2em]">
@@ -84,8 +84,8 @@ const NavbarPage = () => {
             </span>
           </div>
           <div className="flex items-center gap-6">
-            <Link href="#" className="hover:text-white transition-colors">Pharmacy Login</Link>
-            <Link href="#" className="hover:text-white transition-colors">Order Tracking</Link>
+            <Link href="/terms" className="hover:text-white transition-colors">terms-conditions</Link>
+            <Link href="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</Link>
           </div>
         </div>
       </div>
@@ -114,6 +114,7 @@ const NavbarPage = () => {
             <Link href="/about" className="text-[14px] font-black text-slate-400 hover:text-[#0a4d33] transition-colors uppercase tracking-widest">About</Link>
             <Link href="/help" className="text-[14px] font-black text-slate-400 hover:text-[#0a4d33] transition-colors uppercase tracking-widest">Help</Link>
             <Link href="/partner" className="text-[14px] font-black text-slate-400 hover:text-[#0a4d33] transition-colors uppercase tracking-widest">Partners</Link>
+
           </div>
 
           {/* Right Side Actions - Desktop */}
@@ -151,6 +152,8 @@ const NavbarPage = () => {
                 <Link href="/help" className="text-xl font-bold text-slate-600">Help</Link>
                 <Link href="/partner" className="text-xl font-bold text-slate-600">Partners</Link>
                                 <Link href="/profile" className="text-xl font-bold text-slate-600">Profile</Link>
+                    <Link href="/terms" className="text-xl font-bold text-slate-600">Terms & Conditions</Link>
+                                <Link href="/privacy-policy" className="text-xl font-bold text-slate-600">Privacy Policy</Link>                
 
                 <div className="pt-6 border-t border-slate-100 flex flex-col gap-4">
                   <button className="w-full py-4 bg-[#eaf4f0] text-[#0a4d33] font-bold rounded-xl text-lg">Upload Rx</button>

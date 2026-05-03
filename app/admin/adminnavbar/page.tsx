@@ -12,7 +12,8 @@ import {
   Cog6ToothIcon,
   ArrowRightOnRectangleIcon,
   Bars3Icon,
-  XMarkIcon
+  XMarkIcon,
+  UserCircleIcon 
 } from "@heroicons/react/24/outline";
 import { HeartIcon } from "@heroicons/react/24/solid";
 import { useAdmin } from "../../hooks/useAdmin";
@@ -23,6 +24,10 @@ const navItems = [
   { name: "Seller Requests", href: "/admin", icon: ClipboardDocumentListIcon },
   { name: "Users", href: "/admin/users", icon: UserGroupIcon },
   { name: "Settings", href: "/admin/settings", icon: Cog6ToothIcon },
+    { name: "Delivery-Boy Requests", href: "/admin/delivery", icon: UserCircleIcon },
+        { name: "Seller Management", href: "/admin/blockseller", icon: UserCircleIcon },
+
+
 ];
 
 export default function AdminSidebar() {

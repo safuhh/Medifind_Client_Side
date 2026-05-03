@@ -1,5 +1,4 @@
 "use client";
-
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { Provider } from "react-redux";
 import { store, persistor } from "@/app/redux/store";
