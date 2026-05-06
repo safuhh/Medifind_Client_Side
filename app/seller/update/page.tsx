@@ -37,20 +37,26 @@ export default function SellerProfilePage() {
   useEffect(() => {
     const load = async () => {
       try {
+        setFetching(true);
         const res = await getsellerinfo();
-        const data = res.data?.seller ?? res.data;
+        console.log("SELLER_INFO_RESPONSE:", res.data);
+        
+        const data = res.data?.seller ?? res.data?.sellerinfo ?? res.data;
 
-        setForm({
-          shopName: data.shopName || "",
-          licenseNumber: data.licenseNumber || "",
-          address: data.address || "",
-          phone: data.phone || "",
-          lat: data.location?.lat ?? null,
-          lng: data.location?.lng ?? null,
-          locationName: data.location?.address || "",
-          fullAddress: data.location?.fullAddress || "",
-        });
-      } catch {
+        if (data) {
+          setForm({
+            shopName: data.shopName || "",
+            licenseNumber: data.licenseNumber || "",
+            address: data.address || "",
+            phone: data.phone || "",
+            lat: data.location?.lat ?? null,
+            lng: data.location?.lng ?? null,
+            locationName: data.location?.address || "",
+            fullAddress: data.location?.fullAddress || "",
+          });
+        }
+      } catch (err: any) {
+        console.error("LOAD_SELLER_ERROR:", err);
         toast.error("Failed to load seller info");
       } finally {
         setFetching(false);

@@ -186,7 +186,7 @@ const handleSubmit = async () => {
           </div>
           <div className="flex gap-4">
             <div className="w-6 h-6 rounded-full bg-slate-200 text-slate-500 flex items-center justify-center text-[10px] font-bold shrink-0">2</div>
-            <p className="text-sm text-slate-400 leading-tight">You'll receive an email invitation to set up your digital inventory.</p>
+            <p className="text-sm text-slate-400 leading-tight">You'll receive an email invitation to set up your digital medicine catalog.</p>
           </div>
         </div>
       </div>

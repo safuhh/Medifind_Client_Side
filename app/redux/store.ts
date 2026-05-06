@@ -23,12 +23,10 @@ const persistConfig = {
 // wrap reducer
 const persistedReducer = persistReducer(persistConfig, authReducer);
 
-// store
 export const store = configureStore({
   reducer: {
     auth: persistedReducer,
   },
-  // Added middleware to prevent Redux-Persist serializable check errors in console
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {

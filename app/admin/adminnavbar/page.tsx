@@ -25,9 +25,9 @@ const navItems = [
   { name: "Users", href: "/admin/users", icon: UserGroupIcon },
   { name: "Settings", href: "/admin/settings", icon: Cog6ToothIcon },
     { name: "Delivery-Boy Requests", href: "/admin/delivery", icon: UserCircleIcon },
-        { name: "Seller Management", href: "/admin/blockseller", icon: UserCircleIcon },
-
-
+    { name: "Doctor Verifications", href: "/admin/doctor-applications", icon: ClipboardDocumentListIcon },
+    { name: "Seller Management", href: "/admin/blockseller", icon: UserCircleIcon },
+    { name: "Delivery-Boy Management", href: "/admin/deliveryboy", icon: UserCircleIcon },
 ];
 
 export default function AdminSidebar() {

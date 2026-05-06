@@ -38,6 +38,9 @@ const GoogleLogin = () => {
         else if(res.data.user.role === "delivery_boy") {
           router.push("/delivery/dashboard");
         }
+        else if(res.data.user.role === "doctor") {
+          router.push("/doctor/dashboard");
+        }
         else {
           router.push("/");
         }
