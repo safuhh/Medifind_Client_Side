@@ -15,6 +15,7 @@ import {
   FiSearch,
   FiCheckCircle
 } from "react-icons/fi";
+import { getImageUrl } from "@/app/utils/imageUrl";
 
 export default function DoctorsListPage() {
   const searchParams = useSearchParams();
@@ -99,7 +100,7 @@ export default function DoctorsListPage() {
                   {/* Avatar */}
                   <div className="relative shrink-0">
                     <img 
-                      src={doc.profileImage?.startsWith('http') ? doc.profileImage : `http://localhost:5000${doc.profileImage}`} 
+                      src={getImageUrl(doc.profileImage)} 
                       alt={doc.fullName}
                       className="w-24 h-24 rounded-2xl object-cover bg-slate-50 shadow-sm group-hover:shadow-xl transition-all duration-500"
                     />

@@ -4,9 +4,10 @@ import { useEffect, useState, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { getAllMedicines } from "@/app/apis/medicineapi";
-import { MapPin, Search, Loader2, Activity, ArrowRight, ShieldCheck } from "lucide-react";
+import { MapPin, Search, Loader2, Activity, ArrowRight, ShieldCheck, Navigation } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import NavbarPage from "@/app/navbar/page";
+import { getImageUrl } from "@/app/utils/imageUrl";
 interface Medicine {
   _id: string;
   name: string;
@@ -41,6 +42,8 @@ function MedicinesList() {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [maxPrice, setMaxPrice] = useState<number>(10000);
   const [sliderMax, setSliderMax] = useState<number>(10000);
+  const [locating, setLocating] = useState(false);
+  const [locationName, setLocationName] = useState<string>("");
 
   const categoriesList = Array.from(new Set(medicines.map(m => m.category).filter(Boolean))).sort();
 
@@ -59,27 +62,53 @@ function MedicinesList() {
     );
   };
 
+  const reverseGeocode = async (lat: number, lng: number) => {
+    try {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+      const res = await fetch(`${apiUrl}/locations/reverse?lat=${lat}&lng=${lng}`);
+      const data = await res.json();
+      
+      if (data && data.shortName) {
+        setLocationName(data.shortName);
+      } else if (data && data.address) {
+        setLocationName(data.address.split(",").slice(0, 2).join(", "));
+      } else {
+        setLocationName(`${lat.toFixed(2)}, ${lng.toFixed(2)}`);
+      }
+    } catch (err) {
+      console.error("Reverse geocoding error:", err);
+      setLocationName(`${lat.toFixed(2)}, ${lng.toFixed(2)}`);
+    }
+  };
+
   const getLocation = () => {
+    setLocating(true);
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setCoords({
-            lat: position.coords.latitude,
-            lng: position.coords.longitude,
-          });
+        async (position) => {
+          const lat = position.coords.latitude;
+          const lng = position.coords.longitude;
+          setCoords({ lat, lng });
+          await reverseGeocode(lat, lng);
+          setLocating(false);
         },
-        (error) => {
+        async (error) => {
           console.error("Error getting location:", error);
           const urlLat = searchParams.get("lat");
           const urlLng = searchParams.get("lng");
           if (urlLat && urlLng) {
-            setCoords({ lat: Number(urlLat), lng: Number(urlLng) });
+            const lat = Number(urlLat);
+            const lng = Number(urlLng);
+            setCoords({ lat, lng });
+            await reverseGeocode(lat, lng);
           } else {
             fetchData(null);
           }
+          setLocating(false);
         }
       );
     } else {
+      setLocating(false);
       fetchData(null);
     }
   };
@@ -110,11 +139,7 @@ function MedicinesList() {
     getLocation();
   }, []);
 
-  const getImageUrl = (imagePath: string) => {
-    if (!imagePath) return "/no-image.png";
-    if (imagePath.startsWith("http")) return imagePath;
-    return `http://localhost:5000/uploads/${imagePath.replace(/^\/?uploads\//, "")}`;
-  };
+
 
   useEffect(() => {
     const s = searchParams.get("search") || "";
@@ -127,7 +152,7 @@ function MedicinesList() {
     fetchData();
   }, [coords, search, radius]);
 
-  const handleSearch = (e: React.FormEvent) => {
+  const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
     fetchData();
   };
@@ -180,24 +205,53 @@ return (
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.3 }}
             onSubmit={handleSearch} 
-            className="w-full max-w-2xl mb-8"
+            className="w-full max-w-5xl mb-12"
           >
-            <div className="flex flex-col sm:flex-row items-center bg-white border border-slate-300 p-1.5 rounded-xl shadow-sm focus-within:border-emerald-500 focus-within:ring-1 focus-within:ring-emerald-500 transition-all gap-2 sm:gap-0">
-              <div className="flex-grow flex items-center w-full px-4">
-                <Search className="w-5 h-5 text-slate-400 mr-3" />
-                <input
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  placeholder="Search by medicine name, brand..."
-                  className="w-full bg-transparent border-none text-slate-900 placeholder:text-slate-400 py-3 focus:ring-0 outline-none"
-                />
+            <div className="relative group">
+              <div className="absolute -inset-2 bg-gradient-to-r from-emerald-900/10 to-emerald-500/10 rounded-[32px] blur-xl opacity-0 group-hover:opacity-100 transition duration-1000" />
+              
+              <div className="relative flex flex-col md:flex-row items-center bg-white border border-slate-100 rounded-[28px] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] p-3">
+                
+                {/* Medicine Search Group */}
+                <div className="flex-1 flex items-center w-full px-6 py-2 border-b md:border-b-0 md:border-r border-slate-50">
+                  <Search className="w-6 h-6 text-slate-300 mr-4" />
+                  <input
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    placeholder="Search medicines, pharmacy or brands..."
+                    className="w-full h-12 text-lg font-bold text-slate-900 placeholder:text-slate-400 focus:outline-none bg-transparent"
+                  />
+                </div>
+
+                {/* Auto Location Display (Mimicking Hero style) */}
+                <button 
+                  type="button"
+                  onClick={getLocation}
+                  className="flex-1 flex items-center w-full px-6 py-2 hover:bg-slate-50/50 transition-colors group/loc"
+                >
+                  <MapPin className={`w-6 h-6 ${locating ? "text-emerald-400" : "text-emerald-600"} mr-4 shrink-0 group-hover/loc:scale-110 transition-transform`} />
+                  <div className="flex flex-col items-start overflow-hidden">
+                    <span className="text-[10px] font-black text-emerald-600 uppercase tracking-widest mb-0.5">
+                      {radius ? `Nearby (${radius}KM)` : "Detecting Range"}
+                    </span>
+                    <span className="text-lg font-bold text-slate-900 truncate w-full text-left">
+                      {locating ? (
+                        <span className="flex items-center gap-2 text-slate-400">
+                          <Loader2 className="w-4 h-4 animate-spin" /> Detecting...
+                        </span>
+                      ) : locationName || "Set Location"}
+                    </span>
+                  </div>
+                </button>
+
+                {/* Search Button */}
+                <button
+                  type="submit"
+                  className="w-full md:w-auto px-10 py-5 bg-[#0a4d33] hover:bg-[#083d28] text-white rounded-2xl font-black text-sm uppercase tracking-[0.2em] transition-all shadow-xl active:scale-95 flex items-center justify-center gap-2"
+                >
+                  Search
+                </button>
               </div>
-              <button
-                type="submit"
-                className="w-full sm:w-auto bg-emerald-800 text-white hover:bg-emerald-900 px-8 py-3 rounded-lg font-semibold transition-colors flex items-center justify-center shrink-0"
-              >
-                Search
-              </button>
             </div>
           </motion.form>
         </div>

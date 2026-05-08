@@ -17,6 +17,8 @@ import {
   FiChevronRight,
   FiActivity
 } from "react-icons/fi";
+import { getImageUrl } from "@/app/utils/imageUrl";
+import BookingSection from "../../../components/BookingSection";
 
 export default function DoctorProfilePage() {
   const { id } = useParams();
@@ -85,7 +87,7 @@ export default function DoctorProfilePage() {
                   className="relative"
                 >
                     <img 
-                    src={doctor.profileImage?.startsWith('http') ? doctor.profileImage : `http://localhost:5000${doctor.profileImage}`} 
+                    src={getImageUrl(doctor.profileImage)} 
                     alt={doctor.fullName}
                     className="w-full aspect-[4/5] object-cover rounded-[2rem] bg-slate-50 border border-slate-100 shadow-xl shadow-slate-200/50"
                     />
@@ -154,12 +156,15 @@ export default function DoctorProfilePage() {
                         </div>
                     </div>
                     <div className="space-y-4">
-                        <h4 className="text-[10px] font-black text-slate-900 uppercase tracking-widest">Availability</h4>
-                        <div className="flex items-center gap-3 text-slate-400 text-sm font-medium">
-                            <FiCalendar /> Monday — Friday
+                        <h4 className="text-[10px] font-black text-slate-900 uppercase tracking-widest">Consultation</h4>
+                        <div className="flex items-center gap-3 text-emerald-600 text-xl font-black">
+                            ₹{doctor.consultationFee || 0}
                         </div>
                     </div>
                 </section>
+                <div className="pt-10">
+                    <BookingSection doctorId={id as string} />
+                </div>
             </div>
 
         </div>

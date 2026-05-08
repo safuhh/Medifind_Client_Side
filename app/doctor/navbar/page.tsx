@@ -19,11 +19,13 @@ import {
 } from "@heroicons/react/24/outline";
 import { HeartIcon, UserCircleIcon } from "@heroicons/react/24/solid";
 import { useDoctor } from "../../hooks/usedoctor";
+import { getImageUrl } from "../../utils/imageUrl";
 
 // Navigation items - Fixed typos and updated paths for a Doctor
 const navItems = [
   { name: "Dashboard", href: "/doctor/dashboard", icon: HomeIcon },
   { name: "Appointments", href: "/doctor/appointments", icon: ClipboardDocumentListIcon },
+  { name: "Availability", href: "/doctor/availability", icon: ClipboardDocumentListIcon }, // Using the same icon for now
   { name: "Patients", href: "/doctor/patients", icon: UserGroupIcon },
   { name: "Update Profile", href: "/doctor/update-profile", icon: UserCircleIconOutline },
   { name: "Settings", href: "/doctor/settings", icon: Cog6ToothIcon },
@@ -146,11 +148,10 @@ export default function DoctorSidebar() {
         {/* Footer Area (Profile & Logout) */}
         <div className="p-4 mt-auto border-t border-slate-100 bg-slate-50/50">
           
-          {/* Optional User Snippet */}
           <div className="flex items-center gap-3 px-3 py-3 mb-2 rounded-xl bg-white border border-slate-100 shadow-sm">
             {doctorData?.profileImage ? (
                 <img 
-                    src={doctorData.profileImage.startsWith('http') ? doctorData.profileImage : `http://localhost:5000${doctorData.profileImage}`} 
+                    src={getImageUrl(doctorData.profileImage)} 
                     className="w-10 h-10 rounded-full object-cover shadow-sm border border-slate-100" 
                     alt="Doctor" 
                 />

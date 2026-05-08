@@ -5,6 +5,8 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAppSelector, useAppDispatch } from "../redux/hooks";
 import { logout } from "../redux/authSlice";
+import { io } from "socket.io-client";
+import { toast } from "react-toastify";
 
 const NavbarPage = () => {
   const [isMounted, setIsMounted] = useState(false);
@@ -16,6 +18,27 @@ const NavbarPage = () => {
   useEffect(() => {
     setIsMounted(true);
   }, []);
+
+  useEffect(() => {
+    if (isMounted && user && user._id) {
+      const socket = io(process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000");
+      
+      socket.emit("join_doctor_room", user._id);
+      
+      socket.on("consultation_started", (data) => {
+        console.log("Received consultation_started notification:", data);
+        toast.info(`Doctor ${data.doctorName || ""} is ready! Click here to join the room.`, {
+          onClick: () => window.location.href = `/consultation/${data.roomId}`,
+          autoClose: false,
+        });
+      });
+      
+      return () => {
+        socket.off("consultation_started");
+        socket.disconnect();
+      };
+    }
+  }, [isMounted, user]);
 
   useEffect(() => {
     if (isMobileMenuOpen) {
@@ -35,7 +58,7 @@ const NavbarPage = () => {
       return (
         <div className="flex items-center gap-4">
           {/* Notification Icon */}
-          <button className="relative p-2 text-gray-500 hover:text-[#0a4d33] hover:bg-gray-100 rounded-full transition-all focus:outline-none">
+          <Link href="/notifications" className="relative p-2 text-gray-500 hover:text-[#0a4d33] hover:bg-gray-100 rounded-full transition-all focus:outline-none">
             <svg
               className="w-5 h-5"
               fill="none"
@@ -50,7 +73,7 @@ const NavbarPage = () => {
               />
             </svg>
             <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 border-2 border-white rounded-full"></span>
-          </button>
+          </Link>
 
           <div className="w-px h-6 bg-gray-200 mx-1"></div>
 

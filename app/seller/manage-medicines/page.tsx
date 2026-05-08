@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { FiSearch, FiEdit2, FiTrash2, FiPlus, FiBox } from "react-icons/fi";
 import Link from "next/link";
 import SellerNavbar from "@/app/seller/SellerBar/page";
+import { getImageUrl } from "@/app/utils/imageUrl";
 
 export default function ManageMedicinesPage() {
   const [medicines, setMedicines] = useState<any[]>([]);
@@ -106,7 +107,7 @@ export default function ManageMedicinesPage() {
                     <div className="relative h-48 bg-gray-50 overflow-hidden">
                       {med.images?.[0] ? (
                         <img
-                          src={`http://localhost:5000/uploads/${med.images[0].replace(/^\/?uploads\//, "")}`}
+                          src={getImageUrl(med.images[0])}
                           className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500"
                           alt={med.name}
                         />

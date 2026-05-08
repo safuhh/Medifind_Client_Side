@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import NavbarPage from "@/app/navbar/page";
+import { getImageUrl } from "@/app/utils/imageUrl";
 
 interface Medicine {
   _id: string;
@@ -56,22 +57,49 @@ export default function SingleMedicinePage() {
     null,
   );
   const [quantity, setQuantity] = useState<number>(1);
+  const [locationName, setLocationName] = useState<string>("");
+  const [locating, setLocating] = useState<boolean>(false);
+
+  const reverseGeocode = async (lat: number, lng: number) => {
+    try {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+      const res = await fetch(`${apiUrl}/locations/reverse?lat=${lat}&lng=${lng}`, {
+        headers: {
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+          "Accept-Language": "en"
+        }
+      });
+      const data = await res.json();
+      if (data && data.shortName) {
+        setLocationName(data.shortName);
+      } else {
+        setLocationName(`${lat.toFixed(2)}, ${lng.toFixed(2)}`);
+      }
+    } catch (err) {
+      console.error("Reverse geocoding error:", err);
+      setLocationName(`${lat.toFixed(2)}, ${lng.toFixed(2)}`);
+    }
+  };
 
   const getLocation = () => {
+    setLocating(true);
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setCoords({
-            lat: position.coords.latitude,
-            lng: position.coords.longitude,
-          });
+        async (position) => {
+          const lat = position.coords.latitude;
+          const lng = position.coords.longitude;
+          setCoords({ lat, lng });
+          await reverseGeocode(lat, lng);
+          setLocating(false);
         },
         (error) => {
           console.error("Error getting location:", error);
+          setLocating(false);
           fetchMedicine(null);
         },
       );
     } else {
+      setLocating(false);
       fetchMedicine(null);
     }
   };
@@ -120,11 +148,7 @@ export default function SingleMedicinePage() {
     }
   }, [coords]);
 
-  const getImageUrl = (imagePath: string) => {
-    if (!imagePath) return "/no-image.png";
-    if (imagePath.startsWith("http")) return imagePath;
-    return `http://localhost:5000/uploads/${imagePath.replace(/^\/?uploads\//, "")}`;
-  };
+
 
   if (loading) {
     return (
@@ -175,6 +199,22 @@ export default function SingleMedicinePage() {
             <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" />
             Back to list
           </button>
+
+          {/* Location Banner */}
+          <div className="mb-8 flex items-center gap-3 px-4 py-3 bg-emerald-50 border border-emerald-100 rounded-xl">
+            <MapPin className={`w-4 h-4 ${locating ? "text-emerald-400" : "text-emerald-600"}`} />
+            <span className="text-xs font-medium text-emerald-800">
+              {locating ? "Updating location..." : `Showing results for ${locationName || "Current Location"}`}
+            </span>
+            {!locating && (
+              <button 
+                onClick={getLocation}
+                className="ml-auto text-[10px] font-bold uppercase tracking-wider text-emerald-700 hover:underline"
+              >
+                Refresh
+              </button>
+            )}
+          </div>
 
           <div className="flex flex-col md:flex-row gap-12 lg:gap-16 mb-16">
             {/* Image Section */}

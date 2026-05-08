@@ -5,6 +5,7 @@ import { getAllDoctorApplications, reviewDoctorApplication } from "@/app/apis/do
 import AdminNavbar from "../adminnavbar/page";
 import { motion, AnimatePresence } from "framer-motion";
 import { FiCheck, FiX, FiInfo, FiExternalLink, FiClock, FiSearch, FiFileText, FiMapPin } from "react-icons/fi";
+import { getImageUrl } from "@/app/utils/imageUrl";
 
 export default function AdminDoctorApplications() {
   const [applications, setApplications] = useState<any[]>([]);
@@ -102,11 +103,12 @@ export default function AdminDoctorApplications() {
                   >
                     <div className="flex items-center gap-5">
                       <div className="w-16 h-16 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center overflow-hidden">
-<img 
-  src={`http://localhost:5000${app.profileImage}`} 
-  alt={app.fullName} 
-  className="w-full h-full object-cover" 
-/>                      </div>
+                        <img 
+                          src={getImageUrl(app.profileImage)} 
+                          alt={app.fullName} 
+                          className="w-full h-full object-cover" 
+                        />
+                      </div>
                       <div>
                         <h3 className="font-bold text-slate-900 text-lg">{app.fullName}</h3>
                         <div className="flex items-center gap-3 mt-1">
@@ -137,7 +139,7 @@ export default function AdminDoctorApplications() {
                         </button>
                         <div className="flex items-center gap-2">
                           <a 
-                            href={`http://localhost:5000${app.qualification.certificateUrl}`} 
+                            href={getImageUrl(app.qualification.certificateUrl)} 
                             target="_blank" 
                             className="bg-emerald-50 text-emerald-600 p-3 rounded-xl hover:bg-emerald-600 hover:text-white transition-all"
                             title="View Certificate"
@@ -146,7 +148,7 @@ export default function AdminDoctorApplications() {
                           </a>
                           {app.selfieWithId && (
                             <a 
-                              href={`http://localhost:5000${app.selfieWithId}`} 
+                              href={getImageUrl(app.selfieWithId)} 
                               target="_blank" 
                               className="bg-amber-50 text-amber-600 p-3 rounded-xl hover:bg-amber-600 hover:text-white transition-all"
                               title="View Selfie ID"
@@ -255,7 +257,7 @@ export default function AdminDoctorApplications() {
             >
               <div className="p-8 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
                 <div className="flex items-center gap-4">
-                  <img src={`http://localhost:5000${selectedApp.profileImage}`} className="w-16 h-16 rounded-2xl object-cover border-2 border-white shadow-md" />
+                  <img src={getImageUrl(selectedApp.profileImage)} className="w-16 h-16 rounded-2xl object-cover border-2 border-white shadow-md" />
                   <div>
                     <h2 className="text-2xl font-black text-slate-900">{selectedApp.fullName}</h2>
                     <p className="text-emerald-600 font-bold text-sm uppercase tracking-wider">{selectedApp.specialization}</p>

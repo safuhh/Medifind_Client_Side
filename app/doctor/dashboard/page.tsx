@@ -5,6 +5,7 @@ import { useAppSelector } from "../../redux/hooks";
 import { useRouter } from "next/navigation";
 import DoctorSidebar from "@/app/doctor/navbar/page";
 import { getApplicationStatus } from "../../apis/doctor.api";
+import { getImageUrl } from "../../utils/imageUrl";
 
 export default function DoctorDashboard() {
   const { user } = useAppSelector((state) => state.auth);
@@ -50,11 +51,7 @@ export default function DoctorDashboard() {
             <div className="flex items-center gap-6">
               {doctorData?.profileImage && (
                 <img
-                  src={
-                    doctorData.profileImage.startsWith("http")
-                      ? doctorData.profileImage
-                      : `http://localhost:5000${doctorData.profileImage}`
-                  }
+                  src={getImageUrl(doctorData.profileImage)}
                   className="w-20 h-20 rounded-3xl object-cover shadow-xl shadow-emerald-900/10 border-4 border-white"
                   alt="Doctor"
                 />

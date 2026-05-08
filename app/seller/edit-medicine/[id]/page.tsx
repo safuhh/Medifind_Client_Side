@@ -6,6 +6,7 @@ import { getMedicine, updateMedicine } from "@/app/apis/medicineapi";
 import { motion, AnimatePresence } from "framer-motion";
 import { FiUploadCloud, FiTrash2, FiArrowLeft, FiCheck, FiX, FiPlus } from "react-icons/fi";
 import SellerNavbar from "@/app/seller/SellerBar/page";
+import { getImageUrl } from "@/app/utils/imageUrl";
 
 export default function EditMedicinePage() {
   const { id } = useParams();
@@ -188,7 +189,7 @@ export default function EditMedicinePage() {
                   {/* Existing Images */}
                   {medicine.images?.map((img: string, i: number) => (
                     <div key={i} className="relative group rounded-xl overflow-hidden border border-gray-100 h-28 w-28">
-                      <img src={`http://localhost:5000/uploads/${img.replace(/^\/?uploads\//, "")}`} className="h-full w-full object-cover" alt="existing" />
+                      <img src={getImageUrl(img)} className="h-full w-full object-cover" alt="existing" />
                       <button type="button" onClick={() => removeExistingImage(i)} className="absolute top-1 right-1 bg-white/90 text-red-600 p-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity shadow-sm">
                         <FiX size={14} />
                       </button>

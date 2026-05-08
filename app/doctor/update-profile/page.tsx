@@ -11,6 +11,7 @@ import {
 } from "react-icons/fi";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
+import { getImageUrl } from "@/app/utils/imageUrl";
 
 export default function DoctorUpdateProfilePage() {
   const router = useRouter();
@@ -93,8 +94,39 @@ export default function DoctorUpdateProfilePage() {
     }
   };
 
+  const getCurrentLocation = () => {
+    if ("geolocation" in navigator) {
+      toast.info("Fetching your current location...");
+      navigator.geolocation.getCurrentPosition(async (position) => {
+        const { latitude, longitude } = position.coords;
+        setFormData(prev => ({ ...prev, lat: latitude, lng: longitude }));
+        
+        try {
+          const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
+          const data = await response.json();
+          if (data && data.display_name) {
+            setFormData(prev => ({ ...prev, address: data.display_name }));
+            toast.success("Location updated successfully! ✨");
+          }
+        } catch (error) {
+          toast.info("Location coordinates saved. Could not fetch exact address name.");
+        }
+      }, (error) => {
+        toast.error("Failed to get location: " + error.message);
+      });
+    } else {
+      toast.error("Geolocation is not supported by your browser");
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (Number(formData.experienceYears) > 50) {
+      toast.error("Experience cannot exceed 50 years");
+      return;
+    }
+
     setSaving(true);
     try {
       const data = new FormData();
@@ -114,6 +146,8 @@ export default function DoctorUpdateProfilePage() {
       }
       
       data.append("qualification", JSON.stringify(formData.qualification));
+      data.append("registrationNumber", formData.registrationNumber);
+      data.append("medicalCouncil", formData.medicalCouncil);
 
       if (profileImageFile) {
         data.append("profileImageFile", profileImageFile);
@@ -178,7 +212,7 @@ export default function DoctorUpdateProfilePage() {
                     <div className="bg-white rounded-[2.5rem] p-8 md:p-12 shadow-2xl shadow-slate-200/60 border border-slate-100 flex flex-col md:flex-row gap-10 items-center md:items-start">
                         <div className="relative shrink-0">
                             <img 
-                                src={formData.profileImage?.startsWith('http') ? formData.profileImage : `http://localhost:5000${formData.profileImage}`} 
+                                src={getImageUrl(formData.profileImage)} 
                                 className="w-48 h-48 rounded-[3rem] object-cover border-8 border-slate-50 shadow-xl"
                                 alt="Profile"
                             />
@@ -260,7 +294,7 @@ export default function DoctorUpdateProfilePage() {
                         <div className="flex flex-col md:flex-row items-center gap-8 pb-10 border-b border-slate-100">
                             <div className="relative group">
                                 <img 
-                                    src={profileImageFile ? URL.createObjectURL(profileImageFile) : (formData.profileImage?.startsWith('http') ? formData.profileImage : `http://localhost:5000${formData.profileImage}`)} 
+                                    src={profileImageFile ? URL.createObjectURL(profileImageFile) : getImageUrl(formData.profileImage)} 
                                     className="w-32 h-32 rounded-[2.5rem] object-cover border-4 border-white shadow-xl group-hover:opacity-90 transition-all"
                                     alt="Profile"
                                 />
@@ -294,12 +328,12 @@ export default function DoctorUpdateProfilePage() {
                                 />
                             </div>
                             <div className="space-y-2">
-                                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Email Address</label>
+                                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Email Address (Read-only)</label>
                                 <input 
                                     name="email" 
                                     value={formData.email} 
-                                    onChange={handleChange}
-                                    className="w-full bg-slate-50/50 border border-slate-200 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-50 rounded-2xl px-6 py-4 outline-none transition-all text-black font-semibold"
+                                    readOnly
+                                    className="w-full bg-slate-100 border border-slate-200 cursor-not-allowed rounded-2xl px-6 py-4 outline-none text-slate-500 font-semibold"
                                 />
                             </div>
                             <div className="space-y-2">
@@ -333,12 +367,13 @@ export default function DoctorUpdateProfilePage() {
                                 </select>
                             </div>
                             <div className="space-y-2">
-                                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Experience (Years)</label>
+                                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Experience (Years) - Max 50</label>
                                 <input 
                                     type="number"
                                     name="experienceYears" 
                                     value={formData.experienceYears} 
                                     onChange={handleChange}
+                                    max="50"
                                     className="w-full bg-slate-50/50 border border-slate-200 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-50 rounded-2xl px-6 py-4 outline-none transition-all text-black font-semibold"
                                 />
                             </div>
@@ -352,15 +387,75 @@ export default function DoctorUpdateProfilePage() {
                                     className="w-full bg-slate-50/50 border border-slate-200 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-50 rounded-2xl px-6 py-4 outline-none transition-all text-black font-semibold"
                                 />
                             </div>
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Registration Number</label>
+                                <input 
+                                    name="registrationNumber" 
+                                    value={formData.registrationNumber} 
+                                    onChange={handleChange}
+                                    className="w-full bg-slate-50/50 border border-slate-200 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-50 rounded-2xl px-6 py-4 outline-none transition-all text-black font-semibold"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Medical Council</label>
+                                <input 
+                                    name="medicalCouncil" 
+                                    value={formData.medicalCouncil} 
+                                    onChange={handleChange}
+                                    className="w-full bg-slate-50/50 border border-slate-200 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-50 rounded-2xl px-6 py-4 outline-none transition-all text-black font-semibold"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Degree</label>
+                                <input 
+                                    name="qualification.degree" 
+                                    value={formData.qualification.degree} 
+                                    onChange={handleChange}
+                                    className="w-full bg-slate-50/50 border border-slate-200 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-50 rounded-2xl px-6 py-4 outline-none transition-all text-black font-semibold"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">College/Hospital Name</label>
+                                <input 
+                                    name="qualification.collegeName" 
+                                    value={formData.qualification.collegeName} 
+                                    onChange={handleChange}
+                                    className="w-full bg-slate-50/50 border border-slate-200 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-50 rounded-2xl px-6 py-4 outline-none transition-all text-black font-semibold"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">University</label>
+                                <input 
+                                    name="qualification.university" 
+                                    value={formData.qualification.university} 
+                                    onChange={handleChange}
+                                    className="w-full bg-slate-50/50 border border-slate-200 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-50 rounded-2xl px-6 py-4 outline-none transition-all text-black font-semibold"
+                                />
+                            </div>
                             <div className="space-y-2 md:col-span-2">
-                                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Clinical Address</label>
+                                <div className="flex items-center justify-between ml-1">
+                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Clinical Address</label>
+                                    <button 
+                                        type="button"
+                                        onClick={getCurrentLocation}
+                                        className="text-[10px] font-bold text-emerald-600 flex items-center gap-1.5 hover:text-emerald-700 transition-colors bg-emerald-50 px-3 py-1 rounded-full"
+                                    >
+                                        <FiMapPin size={12} /> Use My Current Location
+                                    </button>
+                                </div>
                                 <textarea 
                                     name="address" 
                                     value={formData.address} 
-                                    onChange={handleChange}
+                                    readOnly
+                                    placeholder="Click 'Use My Current Location' to populate this field"
                                     rows={3}
-                                    className="w-full bg-slate-50/50 border border-slate-200 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-50 rounded-2xl px-6 py-4 outline-none transition-all text-black font-semibold resize-none"
+                                    className="w-full bg-slate-100 border border-slate-200 cursor-not-allowed rounded-2xl px-6 py-4 outline-none text-slate-500 font-semibold resize-none"
                                 />
+                                {formData.lat && formData.lng && (
+                                    <p className="text-[10px] font-medium text-slate-400 ml-1 italic">
+                                        📍 Coordinates saved: {formData.lat.toFixed(4)}, {formData.lng.toFixed(4)}
+                                    </p>
+                                )}
                             </div>
                         </div>
 

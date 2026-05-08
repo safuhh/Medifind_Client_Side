@@ -45,23 +45,24 @@ export default function ConsultationPage() {
   );
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] text-slate-900 font-sans">
+    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans">
       <NavbarPage />
 
-      <main className="max-w-5xl mx-auto px-6 pt-20 pb-32">
+      <main className="max-w-6xl mx-auto px-6 pt-24 pb-32">
         
         {/* Header Section */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-8 mb-20">
-          <div className="max-w-md">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 mb-16">
+          <div className="max-w-xl">
             <button 
                 onClick={() => router.push('/')}
-                className="flex items-center gap-2 text-emerald-600 font-black text-[10px] uppercase tracking-widest mb-6"
+                className="flex items-center gap-2 text-emerald-600 font-bold text-xs uppercase tracking-widest mb-4 hover:text-emerald-700 transition-colors"
             >
                 <FiArrowLeft /> Back to Home
             </button>
-            <h1 className="text-5xl font-black text-slate-900 leading-tight">
-              Medical <br /> <span className="text-emerald-600">Specialists.</span>
+            <h1 className="text-4xl md:text-5xl font-black text-slate-900 leading-tight tracking-tighter">
+              Find the Right <br /> <span className="text-emerald-600 bg-clip-text text-transparent bg-gradient-to-r from-emerald-600 to-teal-500">Medical Specialist</span>
             </h1>
+            <p className="text-slate-500 mt-2 font-medium">Select a specialty to find verified doctors available for consultation.</p>
           </div>
 
           <div className="w-full md:w-96 relative">
@@ -70,54 +71,59 @@ export default function ConsultationPage() {
                type="text"
                value={searchQuery}
                onChange={(e) => setSearchQuery(e.target.value)}
-               placeholder="Filter specialty..."
-               className="w-full pl-14 pr-6 py-4 bg-white border-none rounded-3xl shadow-xl shadow-slate-200/50 outline-none text-sm font-bold text-slate-700 placeholder:text-slate-300 transition-all focus:ring-2 ring-emerald-100"
+               placeholder="Search specialties..."
+               className="w-full pl-14 pr-6 py-4 bg-white border border-slate-100 rounded-2xl shadow-sm outline-none text-sm font-semibold text-slate-700 placeholder:text-slate-300 transition-all focus:ring-2 focus:ring-emerald-100 focus:border-emerald-200"
              />
           </div>
         </div>
 
         {/* Small Elegant Grid */}
-        <section className="mb-32">
+        <section className="mb-24">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             <AnimatePresence>
               {filteredSpecialties.map((specialty, idx) => (
-                <motion.button
+                <motion.div
                   key={specialty.name}
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: idx * 0.03 }}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: idx * 0.05 }}
+                  className="group cursor-pointer"
                   onClick={() => handleSelectSpecialty(specialty.name)}
-                  className="group flex items-center justify-between p-4 bg-white rounded-2xl shadow-sm hover:shadow-xl hover:shadow-emerald-900/5 transition-all duration-500 border border-transparent hover:border-emerald-50"
                 >
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-emerald-600 group-hover:text-white transition-all duration-500">
-                        {React.cloneElement(specialty.icon as React.ReactElement, { size: 20 })}
+                  <div className="flex items-center justify-between p-5 bg-white rounded-2xl border border-slate-100 hover:border-emerald-100 hover:shadow-lg hover:shadow-emerald-900/5 transition-all duration-300">
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 rounded-xl bg-slate-50 flex items-center justify-center text-slate-500 group-hover:bg-emerald-50 group-hover:text-emerald-600 transition-colors duration-300">
+                          {React.cloneElement(specialty.icon as React.ReactElement, { size: 20 })}
+                      </div>
+                      <div>
+                        <h3 className="font-bold text-sm text-slate-800 group-hover:text-emerald-600 transition-colors">{specialty.name}</h3>
+                        <p className="text-xs text-slate-400 font-medium">Consult online or in-person</p>
+                      </div>
                     </div>
-                    <span className="font-black text-sm text-slate-800 tracking-tight">{specialty.name}</span>
+                    <div className="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-emerald-600 group-hover:text-white transition-all duration-300">
+                      <FiChevronRight size={16} />
+                    </div>
                   </div>
-                  <div className="w-8 h-8 rounded-full border border-slate-50 flex items-center justify-center text-slate-200 group-hover:bg-emerald-50 group-hover:text-emerald-600 group-hover:border-transparent transition-all duration-500">
-                    <FiChevronRight />
-                  </div>
-                </motion.button>
+                </motion.div>
               ))}
             </AnimatePresence>
           </div>
         </section>
 
         {/* Professional Trust Footer */}
-        <section className="grid grid-cols-1 md:grid-cols-3 gap-12 py-12 px-12 bg-white rounded-[3rem] shadow-sm border border-slate-50">
+        <section className="grid grid-cols-1 md:grid-cols-3 gap-8 py-8 px-8 bg-white rounded-3xl border border-slate-100 shadow-sm">
             {[
-                { title: "HIPAA Compliant", icon: <FiShield />, desc: "Regulatory privacy" },
-                { title: "End-to-End Secure", icon: <FiLock />, desc: "Encrypted data" },
-                { title: "Verified Experts", icon: <FiUserCheck />, desc: "Manual checks" }
+                { title: "HIPAA Compliant", icon: <FiShield />, desc: "Highest privacy standards" },
+                { title: "End-to-End Secure", icon: <FiLock />, desc: "Fully encrypted consultations" },
+                { title: "Verified Experts", icon: <FiUserCheck />, desc: "Every doctor is verified" }
             ].map((item, i) => (
-                <div key={i} className="flex flex-col items-center text-center gap-3">
-                    <div className="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center text-xl">
+                <div key={i} className="flex items-center gap-4">
+                    <div className="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center text-xl flex-shrink-0">
                         {item.icon}
                     </div>
-                    <div className="space-y-1">
-                        <h4 className="font-black text-xs text-slate-900 uppercase tracking-widest">{item.title}</h4>
-                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">{item.desc}</p>
+                    <div>
+                        <h4 className="font-bold text-sm text-slate-900">{item.title}</h4>
+                        <p className="text-xs text-slate-500 font-medium">{item.desc}</p>
                     </div>
                 </div>
             ))}
