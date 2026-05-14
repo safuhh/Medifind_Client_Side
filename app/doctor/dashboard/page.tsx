@@ -33,12 +33,8 @@ export default function DoctorDashboard() {
     }
   }, [user, router]);
 
-  if (loading || !user) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-emerald-600 border-r-2 border-emerald-600/30"></div>
-      </div>
-    );
+  if (!user) {
+    return null;
   }
 
   return (
@@ -56,13 +52,39 @@ export default function DoctorDashboard() {
                   alt="Doctor"
                 />
               )}
-              <div className="space-y-1">
-                <h1 className="text-2xl sm:text-3xl md:text-4xl font-black text-slate-900 tracking-tight">
+              <div className="space-y-2">
+                <h1 className="text-2xl sm:text-3xl font-semibold text-slate-800 tracking-tight">
                   Welcome back,{" "}
-                  <span className="text-emerald-600">Dr. {user?.name}</span>
+                  <span className="text-emerald-600">
+                    Dr. {doctorData?.fullName}
+                  </span>
                 </h1>
-                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">
-                  {doctorData?.specialization} — {doctorData?.medicalCouncil}
+
+                {/* Consolidated Metadata Row */}
+                <div className="flex flex-wrap items-center text-sm text-slate-500 gap-2 sm:gap-3">
+                  <span className="font-medium text-slate-700">
+                    {doctorData?.specialization}
+                  </span>
+                  <span className="text-slate-300" aria-hidden="true">
+                    •
+                  </span>
+
+                  <span>{doctorData?.qualification?.degree}</span>
+                  <span className="text-slate-300" aria-hidden="true">
+                    •
+                  </span>
+
+                  <span>{doctorData?.experienceYears} Yrs Exp.</span>
+                  <span className="text-slate-300" aria-hidden="true">
+                    •
+                  </span>
+
+                  <span>{doctorData?.location?.shortName}</span>
+                </div>
+
+                {/* Subtle Subtext for Council */}
+                <p className="text-xs text-slate-400">
+                  Reg: {doctorData?.medicalCouncil}
                 </p>
               </div>
             </div>

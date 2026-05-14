@@ -40,8 +40,13 @@ export default function EditDeliveryProfile() {
           vehicleType: data.vehicleType || "bike",
           vehicleNumber: data.vehicleNumber || "",
         });
-      } catch {
-        toast.error("Failed to load profile");
+      } catch (err: any) {
+        if (err?.response?.status === 404) {
+          toast.info("Please complete your application first");
+          router.push("/delivery/apply");
+        } else {
+          toast.error("Failed to load profile");
+        }
       } finally {
         setLoading(false);
       }

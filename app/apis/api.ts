@@ -42,7 +42,7 @@ api.interceptors.response.use(
 
         store.dispatch(
           setCredentials({
-            user: store.getState().auth.user!,
+            user: res.data.user,
             accessToken: res.data.accessToken,
           })
         );

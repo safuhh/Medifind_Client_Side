@@ -13,7 +13,7 @@ import {
   ArrowRightOnRectangleIcon,
   Bars3Icon,
   XMarkIcon,
-  UserCircleIcon 
+  UserCircleIcon,
 } from "@heroicons/react/24/outline";
 import { HeartIcon } from "@heroicons/react/24/solid";
 import { useAdmin } from "../../hooks/useAdmin";
@@ -22,13 +22,38 @@ import { useAdmin } from "../../hooks/useAdmin";
 const navItems = [
   { name: "Dashboard", href: "/admindashboard", icon: HomeIcon },
   { name: "Seller Requests", href: "/admin", icon: ClipboardDocumentListIcon },
-  { name: "Users", href: "/admin/users", icon: UserGroupIcon },
-  { name: "Settings", href: "/admin/settings", icon: Cog6ToothIcon },
-    { name: "Delivery-Boy Requests", href: "/admin/delivery", icon: UserCircleIcon },
-    { name: "Doctor Verifications", href: "/admin/doctor-applications", icon: ClipboardDocumentListIcon },
-    { name: "Seller Management", href: "/admin/blockseller", icon: UserCircleIcon },
-    { name: "Delivery-Boy Management", href: "/admin/deliveryboy", icon: UserCircleIcon },
+  {
+    name: "Delivery-Boy Requests",
+    href: "/admin/delivery",
+    icon: UserCircleIcon,
+  },
+  {
+    name: "Doctor Verifications",
+    href: "/admin/doctor-applications",
+    icon: ClipboardDocumentListIcon,
+  },
+  {
+    name: "Seller Management",
+    href: "/admin/blockseller",
+    icon: UserCircleIcon,
+  },
+  {
+    name: "Delivery-Boy Management",
+    href: "/admin/deliveryboy",
+    icon: UserCircleIcon,
+  },
+  {
+    name: "Doctor Management",
+    href: "/admin/blockdoctor",
+    icon: UserCircleIcon,
+  },
+  {
+    name: "Commission Management",
+    href: "/admin/commissions",
+    icon: UserCircleIcon,
+  },
 ];
+
 
 export default function AdminSidebar() {
   useAdmin();
@@ -51,7 +76,6 @@ export default function AdminSidebar() {
     <>
       {/* Mobile Top Bar (Visible only on small screens) */}
       <div className="md:hidden fixed top-0 left-0 right-0 h-16 bg-white border-b border-gray-200/60 flex items-center justify-between px-4 z-40">
-        
         {/* Mobile Logo */}
         <div className="flex items-center gap-2">
           <div className="bg-[#105e3f] text-white p-1.5 rounded-full flex items-center justify-center">
@@ -84,7 +108,6 @@ export default function AdminSidebar() {
       >
         {/* Logo & Mobile Close Button */}
         <div className="h-24 flex items-center justify-between px-8 border-b border-gray-100">
-          
           {/* Desktop Logo */}
           <div className="flex items-center gap-2.5">
             <div className="bg-[#105e3f] text-white p-2 rounded-full flex items-center justify-center">
@@ -119,8 +142,8 @@ export default function AdminSidebar() {
                     : "text-slate-700 hover:text-[#105e3f] hover:bg-emerald-50/50"
                 }`}
               >
-                <item.icon 
-                  className={`w-6 h-6 ${isActive ? "text-white" : "text-slate-800"}`} 
+                <item.icon
+                  className={`w-6 h-6 ${isActive ? "text-white" : "text-slate-800"}`}
                   strokeWidth={isActive ? 2 : 1.5}
                 />
                 {item.name}

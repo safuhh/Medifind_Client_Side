@@ -67,106 +67,147 @@ export default function DoctorProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-white text-slate-900 font-sans">
+    <div className="min-h-screen bg-[#f8fafc] text-slate-900 font-sans">
       <NavbarPage />
 
-      <main className="max-w-5xl mx-auto px-6 pt-16 pb-32">
+      <main className="max-w-7xl mx-auto px-6 pt-32 pb-20">
         
         <button 
           onClick={() => router.back()}
-          className="flex items-center gap-2 text-slate-400 hover:text-slate-900 font-bold text-[10px] uppercase tracking-[0.2em] transition-all mb-16 group"
+          className="flex items-center gap-2 text-slate-500 hover:text-emerald-600 font-semibold text-sm transition-all mb-8 group"
         >
-          <FiArrowLeft className="group-hover:-translate-x-1 transition-transform" /> Back
+          <FiArrowLeft className="group-hover:-translate-x-1 transition-transform" /> Back to List
         </button>
 
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-16 items-start mb-24">
-            <div className="md:col-span-4 lg:col-span-3">
-                <motion.div 
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="relative"
-                >
-                    <img 
-                    src={getImageUrl(doctor.profileImage)} 
-                    alt={doctor.fullName}
-                    className="w-full aspect-[4/5] object-cover rounded-[2rem] bg-slate-50 border border-slate-100 shadow-xl shadow-slate-200/50"
-                    />
-                    <div className="absolute -bottom-4 -right-4 bg-emerald-600 text-white p-3 rounded-2xl shadow-xl border-4 border-white">
-                        <FiCheckCircle size={20} />
-                    </div>
-                </motion.div>
-            </div>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            {/* Left Column - Profile Info */}
+            <div className="lg:col-span-8 space-y-6">
+                {/* Hero Card */}
+                <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 md:p-8">
+                    <div className="flex flex-col md:flex-row gap-6 items-start">
+                        <motion.div 
+                          initial={{ opacity: 0, scale: 0.95 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          className="relative shrink-0 mx-auto md:mx-0"
+                        >
+                            <img 
+                            src={doctor.profileImage ? getImageUrl(doctor.profileImage) : null} 
+                            alt={doctor.fullName}
+                            className="w-32 h-32 md:w-40 md:h-40 object-cover rounded-2xl bg-slate-50"
+                            />
+                            <div className="absolute -bottom-2 -right-2 bg-emerald-600 text-white p-2 rounded-full shadow-lg border-2 border-white">
+                                <FiCheckCircle size={18} />
+                            </div>
+                        </motion.div>
 
-            <div className="md:col-span-8 lg:col-span-9 space-y-8">
-                <div>
-                    <span className="inline-block text-[10px] font-black uppercase tracking-[0.2em] text-emerald-600 mb-4 bg-emerald-50 px-3 py-1 rounded-full">
-                        {doctor.specialization}
-                    </span>
-                    <h1 className="text-5xl md:text-6xl font-black text-slate-900 tracking-tighter mb-4 leading-none">
-                        {doctor.fullName}.
-                    </h1>
-                    <div className="flex items-center gap-6 text-slate-400 font-bold text-[10px] uppercase tracking-widest pt-2">
-                        <div className="flex items-center gap-2">
-                            <FiMapPin className="text-emerald-600" /> {doctor.address?.split(',')[0]}
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <FiAward className="text-emerald-600" /> {doctor.experienceYears} Years Experience
+                        <div className="flex-1 text-center md:text-left">
+                            <span className="inline-block text-xs font-semibold text-emerald-600 mb-2 bg-emerald-50 px-3 py-1 rounded-full">
+                                {doctor.specialization}
+                            </span>
+                            <h1 className="text-3xl font-bold text-slate-900 mb-2">
+                                Dr. {doctor.fullName}
+                            </h1>
+                            
+                            <div className="flex flex-wrap justify-center md:justify-start gap-4 text-slate-500 text-sm font-medium mb-4">
+                                <div className="flex items-center gap-1.5">
+                                    <FiMapPin className="text-slate-400" /> {doctor.address?.split(',')[0]}
+                                </div>
+                                <div className="flex items-center gap-1.5">
+                                    <FiAward className="text-slate-400" /> {doctor.experienceYears} Years Experience
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4 max-w-sm mx-auto md:mx-0">
+                                <div className="bg-slate-50 p-3 rounded-xl border border-slate-100">
+                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Registration</p>
+                                    <p className="font-semibold text-slate-700 text-xs">{doctor.registrationNumber}</p>
+                                </div>
+                                <div className="bg-slate-50 p-3 rounded-xl border border-slate-100">
+                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Medical Council</p>
+                                    <p className="font-semibold text-slate-700 text-xs">{doctor.medicalCouncil}</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="p-6 border border-slate-50 rounded-2xl bg-slate-50/30">
-                        <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Registration</p>
-                        <p className="font-bold text-slate-900">{doctor.registrationNumber}</p>
+                {/* About & Summary */}
+                <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 md:p-8">
+                    <section className="space-y-4">
+                        <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+                            <FiActivity className="text-emerald-600" /> Professional Summary
+                        </h3>
+                        <p className="text-slate-600 text-sm md:text-base leading-relaxed">
+                            Dr. {doctor.fullName} is a highly accomplished {doctor.specialization} with a deep commitment to patient care. 
+                            Holding a {doctor.qualification?.degree} from {doctor.qualification?.collegeName}, 
+                            they have spent over {doctor.experienceYears} years refining their medical expertise.
+                        </p>
+                    </section>
+                </div>
+
+                {/* Services & Expertise */}
+                <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 md:p-8">
+                    <section className="space-y-4">
+                        <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+                            <FiActivity className="text-emerald-600" /> Services & Expertise
+                        </h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <div className="flex items-center gap-2 text-sm text-slate-600">
+                                <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span>
+                                General Consultation
+                            </div>
+                            <div className="flex items-center gap-2 text-sm text-slate-600">
+                                <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span>
+                                Diagnostic Reviews
+                            </div>
+                            <div className="flex items-center gap-2 text-sm text-slate-600">
+                                <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span>
+                                Treatment Planning
+                            </div>
+                            <div className="flex items-center gap-2 text-sm text-slate-600">
+                                <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span>
+                                Follow-up Care
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+            
+            </div>
+
+            {/* Right Column - Booking & Contact */}
+            <div className="lg:col-span-4 space-y-6">
+                {/* Consultation Fee & Contact */}
+                <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6">
+                    <div className="mb-6">
+                        <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Consultation Fee</p>
+                        <p className="text-3xl font-bold text-slate-900">₹{doctor.consultationFee || 0}</p>
                     </div>
-                    <div className="p-6 border border-slate-50 rounded-2xl bg-slate-50/30">
-                        <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Medical Council</p>
-                        <p className="font-bold text-slate-900">{doctor.medicalCouncil}</p>
+
+                    <div className="space-y-4 border-t border-slate-50 pt-4">
+                        <div className="flex items-center gap-3 text-slate-600 text-sm">
+                            <div className="w-8 h-8 bg-slate-50 rounded-lg flex items-center justify-center text-slate-400">
+                                <FiPhone size={14} />
+                            </div>
+                            <span className="font-medium">{doctor.phone}</span>
+                        </div>
+                        <div className="flex items-center gap-3 text-slate-600 text-sm">
+                            <div className="w-8 h-8 bg-slate-50 rounded-lg flex items-center justify-center text-slate-400">
+                                <FiMail size={14} />
+                            </div>
+                            <span className="font-medium">{doctor.email}</span>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
 
-        {/* Details & Actions */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 border-t border-slate-50 pt-24">
-            {/* Left: About */}
-            <div className="lg:col-span-7 space-y-12">
-                <section className="space-y-6">
-                    <h3 className="text-xl font-black text-slate-900 flex items-center gap-3">
-                        <FiActivity className="text-emerald-600" /> Professional Summary
+                {/* Booking Section */}
+                <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6">
+                    <h3 className="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
+                        <FiCalendar className="text-emerald-600" /> Book Appointment
                     </h3>
-                    <p className="text-slate-500 text-lg leading-relaxed font-medium">
-                        Dr. {doctor.fullName} is a highly accomplished {doctor.specialization} with a deep commitment to patient care. 
-                        Holding a {doctor.qualification?.degree} from {doctor.qualification?.collegeName}, 
-                        they have spent over {doctor.experienceYears} years refining their medical expertise.
-                    </p>
-                </section>
-
-                <section className="grid grid-cols-2 gap-12">
-                    <div className="space-y-4">
-                        <h4 className="text-[10px] font-black text-slate-900 uppercase tracking-widest">Connect</h4>
-                        <div className="space-y-3">
-                            <div className="flex items-center gap-3 text-slate-400 text-sm font-medium hover:text-emerald-600 transition-colors">
-                                <FiPhone /> {doctor.phone}
-                            </div>
-                            <div className="flex items-center gap-3 text-slate-400 text-sm font-medium hover:text-emerald-600 transition-colors">
-                                <FiMail /> {doctor.email}
-                            </div>
-                        </div>
-                    </div>
-                    <div className="space-y-4">
-                        <h4 className="text-[10px] font-black text-slate-900 uppercase tracking-widest">Consultation</h4>
-                        <div className="flex items-center gap-3 text-emerald-600 text-xl font-black">
-                            ₹{doctor.consultationFee || 0}
-                        </div>
-                    </div>
-                </section>
-                <div className="pt-10">
                     <BookingSection doctorId={id as string} />
                 </div>
             </div>
-
         </div>
       </main>
 

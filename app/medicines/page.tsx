@@ -16,6 +16,7 @@ interface Medicine {
     sellingPrice: number;
     mrp: number;
     offer?: string;
+    gst?: number;
   };
   images?: string[];
   description?: string;
@@ -392,12 +393,15 @@ return (
                           </span>
                         </div>
                         
-                        <div className="flex items-baseline gap-2 mb-4">
+                        <div className="flex items-baseline gap-2 mb-1">
                           <span className="text-lg font-bold text-slate-900">₹{med.pricing.sellingPrice}</span>
                           {med.pricing.mrp > med.pricing.sellingPrice && (
                             <span className="text-sm text-slate-400 line-through">₹{med.pricing.mrp}</span>
                           )}
                         </div>
+                        <p className="text-[10px] text-slate-500 mb-4 font-medium">
+                          + {med.pricing.gst || 0}% GST (₹{((med.pricing.sellingPrice * (med.pricing.gst || 0)) / 100).toFixed(2)})
+                        </p>
 
                         {/* Pharmacy Info */}
                         <div className="mt-auto pt-4 border-t border-slate-100">

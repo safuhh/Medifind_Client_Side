@@ -47,91 +47,100 @@ export default function DoctorsListPage() {
   );
 
   return (
-    <div className="min-h-screen bg-white text-slate-900 font-sans">
+    <div className="min-h-screen bg-[#f8fafc] text-slate-900 font-sans">
       <NavbarPage />
 
-      <main className="max-w-5xl mx-auto px-6 pt-16 pb-32">
+      <main className="max-w-7xl mx-auto px-6 pt-32 pb-20">
         
         {/* Navigation & Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-12 mb-24 pb-12 border-b border-slate-50">
-          <div className="flex-1">
-            <button 
-                onClick={() => router.push('/consultation')}
-                className="flex items-center gap-2 text-slate-400 hover:text-slate-900 font-bold text-[10px] uppercase tracking-[0.2em] transition-all mb-8"
-            >
-                <FiArrowLeft /> Back
-            </button>
-            <h1 className="text-5xl font-black text-slate-900 tracking-tighter">
-              {specialization}s.
-            </h1>
-            <p className="text-slate-400 font-medium mt-2">
-              Showing {filteredDoctors.length} verified professionals available for consultation.
-            </p>
-          </div>
+        <div className="mb-10">
+          <button 
+              onClick={() => router.push('/consultation')}
+              className="flex items-center gap-2 text-slate-500 hover:text-emerald-600 font-semibold text-sm transition-all mb-4"
+          >
+              <FiArrowLeft /> Back to Specialties
+          </button>
+          
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div>
+              <h1 className="text-3xl font-bold text-slate-900 mb-1">
+                {specialization}s
+              </h1>
+              <p className="text-slate-500 text-sm">
+                Showing {filteredDoctors.length} verified professionals available for consultation.
+              </p>
+            </div>
 
-          <div className="relative w-full md:w-64">
-            <FiSearch className="absolute left-0 top-1/2 -translate-y-1/2 text-slate-300" size={16} />
-            <input 
-              type="text"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Filter by name..."
-              className="w-full pl-6 py-2 bg-transparent border-b border-slate-100 focus:border-emerald-600 outline-none transition-all text-xs font-bold uppercase tracking-widest placeholder:text-slate-200"
-            />
+            <div className="relative w-full md:w-80">
+              <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+              <input 
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Search by doctor name..."
+                className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none transition-all text-sm placeholder:text-slate-400 shadow-sm"
+              />
+            </div>
           </div>
         </div>
 
         {/* Specialists List */}
         {loading ? (
           <div className="flex items-center justify-center py-40">
-            <div className="w-6 h-6 border-2 border-slate-100 border-t-emerald-600 rounded-full animate-spin"></div>
+            <div className="w-8 h-8 border-2 border-slate-200 border-t-emerald-600 rounded-full animate-spin"></div>
           </div>
         ) : filteredDoctors.length > 0 ? (
-          <div className="space-y-16">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <AnimatePresence>
               {filteredDoctors.map((doc, idx) => (
                 <motion.div
                   key={doc._id}
-                  initial={{ opacity: 0, y: 10 }}
+                  initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: idx * 0.05 }}
-                  className="group flex flex-col md:flex-row items-start md:items-center gap-8 md:gap-12 pb-16 border-b border-slate-50 last:border-0"
+                  className="bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-all p-6 flex flex-col justify-between group"
                 >
-                  {/* Avatar */}
-                  <div className="relative shrink-0">
-                    <img 
-                      src={getImageUrl(doc.profileImage)} 
-                      alt={doc.fullName}
-                      className="w-24 h-24 rounded-2xl object-cover bg-slate-50 shadow-sm group-hover:shadow-xl transition-all duration-500"
-                    />
-                  </div>
-
-                  {/* Info */}
-                  <div className="flex-1 space-y-4">
-                    <div className="flex items-center gap-3">
-                        <h3 className="text-2xl font-black text-slate-900 group-hover:text-emerald-600 transition-colors">
-                            {doc.fullName}
+                  <div>
+                    <div className="flex items-start gap-4 mb-5">
+                      <div className="relative shrink-0">
+                        <img 
+                          src={doc.profileImage ? getImageUrl(doc.profileImage) : null} 
+                          alt={doc.fullName}
+                          className="w-16 h-16 rounded-xl object-cover bg-slate-50"
+                        />
+                        <div className="absolute -bottom-1 -right-1 bg-white p-0.5 rounded-full">
+                          <FiCheckCircle className="text-emerald-500 fill-white" size={16} />
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <h3 className="text-lg font-bold text-slate-900 group-hover:text-emerald-600 transition-colors">
+                          Dr. {doc.fullName}
                         </h3>
-                        <FiCheckCircle className="text-emerald-500" />
+                        <p className="text-emerald-600 text-sm font-medium">{specialization}</p>
+                        
+                        <div className="flex items-center gap-1 mt-1 text-sm text-slate-500">
+                          <FiMapPin size={14} className="text-slate-400" />
+                          <span className="truncate max-w-[150px]">{doc.address?.split(',')[0]}</span>
+                        </div>
+                      </div>
                     </div>
-                    
-                    <div className="flex flex-wrap gap-x-10 gap-y-3">
-                        <div className="flex items-center gap-2 text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                            <FiClock className="text-emerald-500" /> {doc.experienceYears} Years Experience
-                        </div>
-                        <div className="flex items-center gap-2 text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                            <FiMapPin className="text-emerald-500" /> {doc.address?.split(',')[0]}
-                        </div>
-                        <div className="flex items-center gap-2 text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                            <FiStar className="text-amber-400" /> 4.9 Verified Rating
-                        </div>
+
+                    <div className="grid grid-cols-2 gap-4 border-t border-slate-50 pt-4 mb-5">
+                      <div>
+                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Experience</p>
+                        <p className="font-semibold text-slate-700 text-sm">{doc.experienceYears} Years</p>
+                      </div>
+                      <div>
+                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Consultation Fee</p>
+                        <p className="font-bold text-slate-900 text-sm">₹{doc.consultationFee || 500}</p>
+                      </div>
                     </div>
                   </div>
 
-                  {/* Action */}
                   <button 
                     onClick={() => router.push(`/consultation/doctor/${doc._id}`)}
-                    className="flex items-center gap-3 text-[10px] font-black text-slate-900 uppercase tracking-[0.2em] group-hover:text-emerald-600 transition-all"
+                    className="w-full bg-slate-50 group-hover:bg-emerald-600 group-hover:text-white text-slate-700 py-3 rounded-xl font-semibold text-sm transition-all flex items-center justify-center gap-2"
                   >
                     View Profile <FiChevronRight className="group-hover:translate-x-1 transition-transform" />
                   </button>
@@ -140,14 +149,17 @@ export default function DoctorsListPage() {
             </AnimatePresence>
           </div>
         ) : (
-          <div className="text-center py-40 border-t border-slate-50">
-            <h3 className="text-2xl font-black text-slate-900 mb-2">No Results.</h3>
-            <p className="text-slate-400 font-medium mb-12">No specialists found matching your search criteria.</p>
+          <div className="text-center py-20 bg-white rounded-2xl border border-slate-100 shadow-sm">
+            <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4">
+              <FiSearch className="text-slate-400" size={24} />
+            </div>
+            <h3 className="text-xl font-bold text-slate-900 mb-1">No Doctors Found</h3>
+            <p className="text-slate-500 text-sm mb-6">We couldn't find any specialists matching your search.</p>
             <button 
                 onClick={() => router.push('/consultation')}
-                className="text-[10px] font-black text-slate-900 uppercase tracking-[0.2em] border-b-2 border-slate-900 pb-1"
+                className="bg-emerald-600 text-white px-6 py-2.5 rounded-xl font-semibold text-sm hover:bg-emerald-700 transition-all shadow-sm"
             >
-                Back to Specialties
+                View All Specialties
             </button>
           </div>
         )}

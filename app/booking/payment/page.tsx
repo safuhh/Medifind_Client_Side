@@ -31,7 +31,7 @@ const MockCheckoutForm = ({ clientSecret, amount }: { clientSecret: string; amou
         setTimeout(async () => {
             const paymentIntentId = clientSecret.replace("mock_secret_", "mock_intent_");
             try {
-                await api.post("/api/v1/booking/confirm-payment", {
+                await api.post("/booking/confirm-payment", {
                     paymentIntentId: paymentIntentId,
                 });
                 toast.success("Payment successful! ");

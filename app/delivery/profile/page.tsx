@@ -20,9 +20,14 @@ export default function DeliveryProfilePage() {
         const res = await getCurrentDeliveryBoyInfo();
         setData(res.data.deliveryBoy);
       } catch (err: any) {
-        toast.error(
-          err?.response?.data?.message || "Failed to load profile"
-        );
+        if (err?.response?.status === 404) {
+          toast.info("Please complete your application first");
+          router.push("/delivery/apply");
+        } else {
+          toast.error(
+            err?.response?.data?.message || "Failed to load profile"
+          );
+        }
       } finally {
         setLoading(false);
       }

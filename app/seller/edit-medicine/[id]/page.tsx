@@ -75,6 +75,7 @@ export default function EditMedicinePage() {
       formData.append("description", medicine.description || "");
       formData.append("unitWeight", medicine.unitWeight || "");
       formData.append("barcode", medicine.barcode || "");
+      formData.append("visibility", medicine.visibility || "public");
 
       formData.append(
         "pricing",
@@ -82,6 +83,7 @@ export default function EditMedicinePage() {
           mrp: Number(medicine.pricing?.mrp),
           sellingPrice: Number(medicine.pricing?.sellingPrice),
           offer: medicine.pricing?.offer,
+          gst: Number(medicine.pricing?.gst) || 0,
         })
       );
 
@@ -140,6 +142,13 @@ export default function EditMedicinePage() {
                   <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">Barcode / EAN</label>
                   <input name="barcode" value={medicine.barcode || ""} onChange={handleChange} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 outline-none focus:bg-white focus:ring-2 focus:ring-emerald-500 transition-all text-gray-900" placeholder="Product barcode" />
                 </div>
+                <div className="space-y-1.5 md:col-span-2">
+                  <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">Visibility</label>
+                  <select name="visibility" value={medicine.visibility || "public"} onChange={handleChange} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 outline-none focus:bg-white focus:ring-2 focus:ring-emerald-500 transition-all text-gray-900">
+                    <option value="public">Public (Visible to all users)</option>
+                    <option value="restricted">Restricted (Visible only to doctors)</option>
+                  </select>
+                </div>
                 <div className="space-y-1.5">
                   <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">Medicine Name</label>
                   <input name="name" required value={medicine.name} onChange={handleChange} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 outline-none focus:bg-white focus:ring-2 focus:ring-emerald-500 transition-all text-gray-900" />
@@ -167,6 +176,10 @@ export default function EditMedicinePage() {
                 <div className="space-y-1.5">
                   <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">Selling Price (₹)</label>
                   <input name="pricing.sellingPrice" type="number" value={medicine.pricing?.sellingPrice} onChange={handleChange} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 outline-none focus:bg-white focus:ring-2 focus:ring-emerald-500 transition-all text-gray-900" />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">GST (%)</label>
+                  <input name="pricing.gst" type="number" value={medicine.pricing?.gst || ""} onChange={handleChange} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 outline-none focus:bg-white focus:ring-2 focus:ring-emerald-500 transition-all text-gray-900" placeholder="e.g. 12" />
                 </div>
                 <div className="space-y-1.5">
                   <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">Stock</label>

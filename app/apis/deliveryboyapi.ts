@@ -34,3 +34,28 @@ export const updateDeliveryBoyInfo = (data: {
 export const getCurrentDeliveryBoyInfo = () => {
   return api.get("/delivery/current");
 };
+
+// 📦 available orders
+export const getAvailableOrders = () => {
+  return api.get("/delivery/available-orders");
+};
+
+// ✅ accept order
+export const acceptOrder = (data: { orderId: string }) => {
+  return api.post("/delivery/accept-order", data);
+};
+
+// 📦 pickup order
+export const pickupOrder = (data: { orderId: string }) => {
+  return api.post("/delivery/pickup-order", data);
+};
+
+// 🏁 deliver order
+export const deliverOrder = (data: { orderId: string }) => {
+  return api.post("/delivery/deliver-order", data);
+};
+
+// 💳 connect stripe
+export const connectStripe = () => {
+  return api.post("/stripe/connect");
+};

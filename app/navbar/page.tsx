@@ -58,27 +58,18 @@ const NavbarPage = () => {
       return (
         <div className="flex items-center gap-4">
           {/* Notification Icon */}
-          <Link href="/notifications" className="relative p-2 text-gray-500 hover:text-[#0a4d33] hover:bg-gray-100 rounded-full transition-all focus:outline-none">
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
-              />
-            </svg>
-            <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 border-2 border-white rounded-full"></span>
+          <Link href="/notifications" className="text-sm font-medium text-gray-600 hover:text-[#0a4d33] transition-colors relative">
+            Notifications
+            <span className="absolute -top-1 -right-2 w-1.5 h-1.5 bg-red-500 rounded-full"></span>
           </Link>
 
           <div className="w-px h-6 bg-gray-200 mx-1"></div>
 
           {/* User Profile Info */}
           <div className="flex items-center gap-3 group cursor-pointer">
+            <Link href="/orders" className="text-sm font-medium text-gray-600 hover:text-[#0a4d33] transition-colors mr-2">
+              Orders
+            </Link>
             <Link href="/profile" className="flex items-center gap-3">
               <div className="w-9 h-9 bg-[#eaf4f0] rounded-full flex items-center justify-center text-[#0a4d33] font-semibold border border-[#dcede5] group-hover:border-[#0a4d33] transition-all">
                 {user.name.charAt(0).toUpperCase()}
@@ -152,6 +143,7 @@ const NavbarPage = () => {
             <Link href="/privacy-policy" className="hover:text-white transition-colors">Privacy</Link>
             <Link href="/help" className="hover:text-white transition-colors">Help</Link>
             <Link href="/about" className="hover:text-white transition-colors">About Us</Link>
+
           </div>
         </div>
       </div>
@@ -185,6 +177,9 @@ const NavbarPage = () => {
             <Link href="/consultation" className="text-sm font-medium text-gray-600 hover:text-[#0a4d33] transition-colors">
               Consultation
             </Link>
+             <Link href="/cart" className="text-sm font-medium text-gray-600 hover:text-[#0a4d33] transition-colors">
+              cart
+            </Link>
             <Link 
               href={user?.role === "doctor" ? "/doctor/dashboard" : "/doctor/apply"}
               className="text-sm font-semibold text-emerald-600 hover:text-emerald-700 transition-colors"
@@ -198,9 +193,7 @@ const NavbarPage = () => {
 
           {/* Right Side Actions - Desktop */}
           <div className="hidden lg:flex items-center gap-5">
-            <button className="px-4 py-2 bg-emerald-50 text-emerald-700 font-semibold text-sm rounded-lg hover:bg-emerald-100 transition-all border border-emerald-100">
-              Upload Rx
-            </button>
+           
             {renderAuthUI()}
           </div>
 
@@ -259,10 +252,14 @@ const NavbarPage = () => {
                 <Link onClick={() => setIsMobileMenuOpen(false)} href="/about" className="text-base font-semibold text-gray-600 hover:text-[#0a4d33]">About Us</Link>
                 <Link onClick={() => setIsMobileMenuOpen(false)} href="/help" className="text-base font-semibold text-gray-600 hover:text-[#0a4d33]">Help & Support</Link>
                 <Link onClick={() => setIsMobileMenuOpen(false)} href="/partner" className="text-base font-semibold text-gray-600 hover:text-[#0a4d33]">Partners</Link>
+                <Link onClick={() => setIsMobileMenuOpen(false)} href="/notifications" className="text-base font-semibold text-gray-600 hover:text-[#0a4d33]">Notifications</Link>
+                <Link onClick={() => setIsMobileMenuOpen(false)} href="/cart" className="text-base font-semibold text-gray-600 hover:text-[#0a4d33]">cart</Link>
+
 
                 <div className="w-full h-px bg-gray-100 my-2"></div>
 
                 <Link onClick={() => setIsMobileMenuOpen(false)} href="/profile" className="text-base font-medium text-gray-500 hover:text-[#0a4d33]">My Profile</Link>
+                <Link onClick={() => setIsMobileMenuOpen(false)} href="/orders" className="text-base font-medium text-gray-500 hover:text-[#0a4d33]">My Orders</Link>
                 <Link onClick={() => setIsMobileMenuOpen(false)} href="/terms" className="text-base font-medium text-gray-500 hover:text-[#0a4d33]">Terms & Conditions</Link>
                 <Link onClick={() => setIsMobileMenuOpen(false)} href="/privacy-policy" className="text-base font-medium text-gray-500 hover:text-[#0a4d33]">Privacy Policy</Link>
               </div>

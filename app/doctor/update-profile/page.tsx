@@ -212,7 +212,7 @@ export default function DoctorUpdateProfilePage() {
                     <div className="bg-white rounded-[2.5rem] p-8 md:p-12 shadow-2xl shadow-slate-200/60 border border-slate-100 flex flex-col md:flex-row gap-10 items-center md:items-start">
                         <div className="relative shrink-0">
                             <img 
-                                src={getImageUrl(formData.profileImage)} 
+                                src={formData.profileImage ? getImageUrl(formData.profileImage) : null} 
                                 className="w-48 h-48 rounded-[3rem] object-cover border-8 border-slate-50 shadow-xl"
                                 alt="Profile"
                             />
@@ -294,7 +294,7 @@ export default function DoctorUpdateProfilePage() {
                         <div className="flex flex-col md:flex-row items-center gap-8 pb-10 border-b border-slate-100">
                             <div className="relative group">
                                 <img 
-                                    src={profileImageFile ? URL.createObjectURL(profileImageFile) : getImageUrl(formData.profileImage)} 
+                                    src={profileImageFile ? URL.createObjectURL(profileImageFile) : (formData.profileImage ? getImageUrl(formData.profileImage) : null)} 
                                     className="w-32 h-32 rounded-[2.5rem] object-cover border-4 border-white shadow-xl group-hover:opacity-90 transition-all"
                                     alt="Profile"
                                 />

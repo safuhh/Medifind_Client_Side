@@ -21,7 +21,7 @@ export default function ConsultationRoom() {
   useEffect(() => {
     const fetchConsultation = async () => {
       try {
-        const res = await api.get(`/api/v1/consultation/${roomId}`);
+        const res = await api.get(`/consultation/${roomId}`);
         if (res.data.success) {
           const cons = res.data.consultation;
           setConsultation(cons);
@@ -66,8 +66,7 @@ export default function ConsultationRoom() {
 
     const interval = setInterval(async () => {
       try {
-        // Poll status to see if completed
-        const res = await api.get(`/api/v1/consultation/${roomId}`);
+        const res = await api.get(`/consultation/${roomId}`);
         if (res.data.success) {
           const cons = res.data.consultation;
           if (cons.status === "completed") {

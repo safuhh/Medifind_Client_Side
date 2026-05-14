@@ -26,7 +26,7 @@ export default function BookingSection({ doctorId }: BookingSectionProps) {
         try {
             const res = await getAvailableSlots(doctorId, selectedDate);
             if (res.data.success) {
-                setSlots(res.data.slots);
+                setSlots(Array.from(new Set(res.data.slots as string[])));
             }
         } catch (err) {
             console.error("Error fetching slots:", err);
@@ -87,37 +87,36 @@ export default function BookingSection({ doctorId }: BookingSectionProps) {
     };
 
     return (
-        <div className="space-y-8 bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-2xl shadow-slate-200/50">
-            <div className="flex items-center justify-between">
-                <h3 className="text-xl font-black text-slate-900 flex items-center gap-3">
-                    <FiCalendar className="text-emerald-600" /> Book a Slot
-                </h3>
+        <div className="space-y-6">
+            <div className="flex items-center justify-between mb-4">
+                <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Select Date</p>
                 <input 
                     type="date" 
                     min={dayjs().format("YYYY-MM-DD")}
                     value={selectedDate}
                     onChange={(e) => setSelectedDate(e.target.value)}
-                    className="bg-slate-50 border-none rounded-xl px-4 py-2 text-sm font-bold outline-none focus:ring-2 focus:ring-emerald-500/20"
+                    className="bg-slate-50 border border-slate-100 rounded-lg px-3 py-1.5 text-sm font-medium outline-none focus:ring-1 focus:ring-emerald-500 focus:bg-white transition-all"
                 />
             </div>
 
-            <div className="space-y-4">
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Available Times</p>
+            <div className="space-y-3">
+                <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Available Slots</p>
                 
                 {loading ? (
-                    <div className="flex justify-center py-8">
-                        <div className="w-6 h-6 border-2 border-slate-100 border-t-emerald-600 rounded-full animate-spin"></div>
+                    <div className="flex justify-center py-6">
+                        <div className="w-6 h-6 border-2 border-slate-200 border-t-emerald-600 rounded-full animate-spin"></div>
                     </div>
                 ) : slots.length > 0 ? (
-                    <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
+                    <div className="grid grid-cols-3 gap-2">
                         {slots.map((slot) => (
                             <button
                                 key={slot}
+                                type="button"
                                 onClick={() => setSelectedSlot(slot)}
-                                className={`py-3 rounded-2xl text-xs font-black transition-all border-2 ${
+                                className={`py-2 px-3 text-xs font-semibold rounded-lg border transition-all ${
                                     selectedSlot === slot 
-                                    ? "bg-emerald-600 border-emerald-600 text-white shadow-lg shadow-emerald-600/20" 
-                                    : "bg-slate-50 border-transparent text-slate-600 hover:border-emerald-600/30"
+                                    ? "bg-emerald-50 border-emerald-200 text-emerald-700 shadow-sm" 
+                                    : "bg-slate-50 border-slate-100 text-slate-600 hover:bg-slate-100"
                                 }`}
                             >
                                 {slot}
@@ -125,9 +124,9 @@ export default function BookingSection({ doctorId }: BookingSectionProps) {
                         ))}
                     </div>
                 ) : (
-                    <div className="bg-slate-50 rounded-2xl p-8 text-center space-y-2">
-                        <FiAlertCircle className="mx-auto text-slate-300" size={24} />
-                        <p className="text-xs font-bold text-slate-400">No slots available for this date.</p>
+                    <div className="bg-slate-50 rounded-lg p-6 text-center space-y-2 border border-slate-100">
+                        <FiAlertCircle className="mx-auto text-slate-400" size={20} />
+                        <p className="text-xs font-medium text-slate-500">No slots available for this date.</p>
                     </div>
                 )}
             </div>
@@ -138,17 +137,20 @@ export default function BookingSection({ doctorId }: BookingSectionProps) {
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 10 }}
-                        className="pt-4"
+                        className="pt-2"
                     >
                         <button 
                             disabled={isBooking}
                             onClick={handleBooking}
-                            className="w-full bg-slate-900 text-white py-5 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-emerald-600 transition-all shadow-xl disabled:opacity-50 flex items-center justify-center gap-3"
+                            className="w-full bg-emerald-600 text-white py-3.5 rounded-xl font-semibold text-sm hover:bg-emerald-700 transition-all shadow-sm flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             {isBooking ? (
-                                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                                <>
+                                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                                    Processing...
+                                </>
                             ) : (
-                                <><FiCheckCircle /> Confirm Booking for {selectedSlot}</>
+                                <><FiCheckCircle /> Book for {selectedSlot}</>
                             )}
                         </button>
                     </motion.div>

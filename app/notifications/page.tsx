@@ -7,153 +7,235 @@ import api from "../apis/api";
 import dayjs from "dayjs";
 import { toast } from "react-toastify";
 import { motion, AnimatePresence } from "framer-motion";
-import { FiCalendar, FiClock, FiUser, FiBell, FiVideo, FiArrowRight } from "react-icons/fi";
+import { FiCalendar, FiVideo, FiArrowRight } from "react-icons/fi";
 import { useRouter } from "next/navigation";
+import { getImageUrl } from "@/app/utils/imageUrl";
 
 export default function NotificationsPage() {
-    const router = useRouter();
-    const [appointments, setAppointments] = useState<any[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [currentTime, setCurrentTime] = useState(dayjs());
+  const router = useRouter();
+  const [appointments, setAppointments] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [currentTime, setCurrentTime] = useState(dayjs());
 
-    useEffect(() => {
-        const fetchAppointments = async () => {
-            try {
-                const res = await api.get("/api/v1/booking/patient-appointments");
-                if (res.data.success) {
-                    setAppointments(res.data.bookings);
-                }
-            } catch (err) {
-                console.error("Error fetching appointments:", err);
-                toast.error("Failed to fetch notifications");
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchAppointments();
-
-        const interval = setInterval(() => {
-            setCurrentTime(dayjs());
-        }, 10000); // Update every 10 seconds
-
-        return () => clearInterval(interval);
-    }, []);
-
-    const isJoinable = (scheduledAt: string) => {
-        if (!scheduledAt) return false;
-        const scheduledTime = dayjs(scheduledAt);
-        const startTime = scheduledTime.subtract(10, "minute");
-        const endTime = scheduledTime.add(30, "minute");
-        return currentTime.isAfter(startTime) && currentTime.isBefore(endTime);
+  useEffect(() => {
+    const fetchAppointments = async () => {
+      try {
+        const res = await api.get("/booking/patient-appointments");
+        if (res.data.success) {
+          setAppointments(res.data.bookings);
+        }
+      } catch (err) {
+        console.error("Error fetching appointments:", err);
+        toast.error("Failed to fetch notifications");
+      } finally {
+        setLoading(false);
+      }
     };
 
-    if (loading) {
-        return (
-            <div className="min-h-screen flex items-center justify-center bg-slate-50">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-emerald-600 border-r-2 border-emerald-600/30"></div>
-            </div>
-        );
-    }
+    fetchAppointments();
 
+    const interval = setInterval(() => {
+      setCurrentTime(dayjs());
+    }, 10000); // Update every 10 seconds
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const isJoinable = (scheduledAt: string) => {
+    if (!scheduledAt) return false;
+    const scheduledTime = dayjs(scheduledAt);
+    const startTime = scheduledTime.subtract(10, "minute");
+    const endTime = scheduledTime.add(30, "minute");
+    return currentTime.isAfter(startTime) && currentTime.isBefore(endTime);
+  };
+
+  if (loading) {
     return (
-        <div className="min-h-screen bg-[#fcfdfd] font-sans selection:bg-emerald-100 selection:text-emerald-900">
-            <NavbarPage />
-            <br /><br /><br /><br />
-            
-            <main className="max-w-6xl mx-auto py-12 px-6">
-                <div className="mb-12 flex justify-between items-end">
-                    <div>
-                        <h1 className="text-4xl font-black text-slate-900 leading-[1.1] mb-2">
-                            My <span className="text-emerald-600">Consultations</span>
-                        </h1>
-                        <p className="text-slate-500">View and join your scheduled video calls.</p>
-                    </div>
-                    <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-3">
-                        <div className="w-3 h-3 bg-emerald-500 rounded-full animate-pulse"></div>
-                        <span className="text-xs font-bold text-slate-600 uppercase tracking-widest">Live Updates</span>
-                    </div>
-                </div>
-
-                {appointments.length > 0 ? (
-                    <div className="grid grid-cols-1 gap-4">
-                        <AnimatePresence>
-                            {appointments.map((app, index) => {
-                                const joinable = isJoinable(app.scheduledAt);
-                                return (
-                                    <motion.div 
-                                        key={app._id}
-                                        initial={{ opacity: 0, y: 20 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        transition={{ delay: index * 0.05 }}
-                                        className="bg-white rounded-[2rem] p-6 shadow-xl shadow-slate-200/40 border border-slate-100 flex flex-col md:flex-row items-center gap-6"
-                                    >
-                                        <div className="bg-emerald-50 text-emerald-600 p-5 rounded-[1.5rem]">
-                                            <FiVideo size={24} />
-                                        </div>
-                                        
-                                        <div className="flex-1 space-y-1 text-center md:text-left">
-                                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Doctor</p>
-                                            <p className="font-bold text-lg text-slate-900">{app.doctorId?.name || "Doctor"}</p>
-                                        </div>
-
-                                        <div className="flex-1 space-y-1 text-center md:text-left">
-                                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Date & Time</p>
-                                            <p className="font-bold text-slate-900">
-                                                {dayjs(app.date).format("DD MMM YYYY")}, {app.timeSlot}
-                                            </p>
-                                        </div>
-
-                                        <div className="flex-1 space-y-1 text-center md:text-left">
-                                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Status</p>
-                                            <span className={`inline-block px-3 py-1 rounded-full text-[10px] font-black uppercase ${
-                                                app.paymentStatus === 'paid' ? "bg-emerald-50 text-emerald-600" : "bg-orange-50 text-orange-600"
-                                            }`}>
-                                                {app.paymentStatus === 'paid' ? 'Confirmed' : 'Pending Payment'}
-                                            </span>
-                                        </div>
-
-                                        <div>
-                                            {app.consultationStatus === "completed" ? (
-                                                <button 
-                                                    disabled
-                                                    className="bg-slate-100 text-slate-400 px-6 py-3 rounded-xl font-bold text-xs cursor-not-allowed"
-                                                >
-                                                    Call Completed
-                                                </button>
-                                            ) : app.roomId && joinable ? (
-                                                <button 
-                                                    onClick={() => router.push(`/consultation/${app.roomId}`)}
-                                                    className="bg-emerald-600 text-white px-6 py-3 rounded-xl font-bold text-xs hover:bg-emerald-700 transition-all flex items-center gap-2"
-                                                >
-                                                    Join Call <FiArrowRight />
-                                                </button>
-                                            ) : app.roomId ? (
-                                                <button 
-                                                    disabled
-                                                    className="bg-slate-100 text-slate-400 px-6 py-3 rounded-xl font-bold text-xs cursor-not-allowed"
-                                                    title={dayjs(currentTime).isAfter(dayjs(app.scheduledAt).add(30, "minute")) ? "Video call time expired. You cannot join." : "You can join 10 minutes before the scheduled time."}
-                                                >
-                                                    {dayjs(currentTime).isAfter(dayjs(app.scheduledAt).add(30, "minute")) ? "Video call time expired. You cannot join." : "Not Time Yet"}
-                                                </button>
-                                            ) : (
-                                                <span className="text-slate-400 text-xs font-bold">No Room Assigned</span>
-                                            )}
-                                        </div>
-                                    </motion.div>
-                                );
-                            })}
-                        </AnimatePresence>
-                    </div>
-                ) : (
-                    <div className="bg-white rounded-[3rem] p-20 text-center shadow-xl shadow-slate-200/40 border border-slate-100">
-                        <FiBell className="mx-auto text-slate-100 mb-6" size={80} />
-                        <h3 className="text-2xl font-black text-slate-900 mb-2">No Consultations Scheduled</h3>
-                        <p className="text-slate-400 max-w-sm mx-auto font-medium">When you book an appointment with a doctor, it will appear here.</p>
-                    </div>
-                )}
-            </main>
-            <Footer />
-        </div>
+      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+        <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-emerald-600 border-r-2 border-emerald-600/30"></div>
+      </div>
     );
+  }
+
+  return (
+    <div className="flex flex-col min-h-screen bg-slate-50 font-sans selection:bg-emerald-100 selection:text-emerald-900">
+      <NavbarPage />
+
+      {/* Added pt-28 to account for fixed navbars and removed <br/> tags */}
+      <main className="flex-1 w-full max-w-5xl mx-auto px-4 py-28 sm:px-6 lg:px-8">
+        {/* Header Section */}
+        <div className="mb-10 flex flex-col sm:flex-row sm:justify-between sm:items-end gap-6">
+          <div>
+            <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight mb-2">
+              My <span className="text-emerald-600">Consultations</span>
+            </h1>
+            <p className="text-sm md:text-base text-slate-500 font-medium">
+              View and join your scheduled video calls.
+            </p>
+          </div>
+         
+        </div>
+
+        {/* Appointments List */}
+        {appointments.length > 0 ? (
+          <div className="flex flex-col gap-4">
+            <AnimatePresence>
+              {appointments.map((app, index) => {
+                const joinable = isJoinable(app.scheduledAt);
+                const isExpired = dayjs(currentTime).isAfter(
+                  dayjs(app.scheduledAt).add(30, "minute"),
+                );
+
+                return (
+                  <motion.div
+                    key={app._id}
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.05 }}
+                    className="bg-white rounded-2xl p-5 md:p-6 shadow-sm hover:shadow-md transition-shadow border border-slate-200 flex flex-col md:flex-row gap-5 md:items-center"
+                  >
+                    {/* Doctor Info */}
+                    <div className="flex items-center gap-4 md:w-1/3">
+                      <div className="relative shrink-0">
+                        <img
+                          src={
+                            app.doctorId?.profileImage
+                              ? getImageUrl(app.doctorId.profileImage)
+                              : null
+                          }
+                          alt={app.doctorId?.fullName || "Doctor"}
+                          className="w-12 h-12 rounded-xl object-cover bg-slate-50"
+                        />
+                      </div>
+                      <div>
+                        <p className="font-bold text-slate-900 text-sm md:text-base line-clamp-1">
+                          Dr. {app.doctorId?.fullName || "Doctor"}
+                        </p>
+                        <p className="text-emerald-600 text-xs font-medium">
+                          {app.doctorId?.specialization || "Specialist"}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Grid for Date & Status on Mobile, Flex on Desktop */}
+                    <div className="grid grid-cols-2 gap-4 md:flex md:flex-1 md:justify-between w-full">
+                      <div>
+                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">
+                          Date & Time
+                        </p>
+                        <p className="font-semibold text-slate-800 text-sm">
+                          {dayjs(app.date).format("DD MMM YYYY")},{" "}
+                          {app.timeSlot}
+                        </p>
+                      </div>
+
+                      <div>
+                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">
+                          Fee
+                        </p>
+                        <p className="font-bold text-slate-900 text-sm">
+                          ₹{app.amount || 0}
+                        </p>
+                      </div>
+
+                      <div>
+                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">
+                          Payment
+                        </p>
+                        <span
+                          className={`inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wide ${
+                            app.paymentStatus === "paid"
+                              ? "bg-emerald-50 text-emerald-700"
+                              : "bg-orange-50 text-orange-700"
+                          }`}
+                        >
+                          {app.paymentStatus === "paid" ? "Paid" : "Pending"}
+                        </span>
+                      </div>
+
+                      <div>
+                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">
+                          Status
+                        </p>
+                        <span
+                          className={`inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wide ${
+                            app.consultationStatus === "completed"
+                              ? "bg-blue-50 text-blue-700 ring-1 ring-inset ring-blue-600/20"
+                              : app.status === "confirmed"
+                                ? "bg-emerald-50 text-emerald-700 ring-1 ring-inset ring-emerald-600/20"
+                                : app.status === "cancelled"
+                                  ? "bg-red-50 text-red-700 ring-1 ring-inset ring-red-600/20"
+                                  : "bg-orange-50 text-orange-700 ring-1 ring-inset ring-orange-600/20"
+                          }`}
+                        >
+                          {app.consultationStatus === "completed"
+                            ? "Completed"
+                            : app.status
+                              ? app.status.charAt(0).toUpperCase() +
+                                app.status.slice(1)
+                              : "Pending"}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Call to Action Container */}
+                    <div className="w-full md:w-auto pt-4 md:pt-0 border-t border-slate-100 md:border-none mt-2 md:mt-0 flex justify-end">
+                      {app.consultationStatus === "completed" ? (
+                        <button
+                          onClick={() => router.push(`/health-report/${app._id}`)}
+                          className="w-full md:w-auto bg-emerald-600 text-white px-6 py-2.5 rounded-xl font-bold text-sm hover:bg-emerald-700 transition-colors flex items-center justify-center gap-2 shadow-sm shadow-emerald-600/20"
+                        >
+                          View Report <FiArrowRight className="text-emerald-100" />
+                        </button>
+                      ) : app.roomId ? (
+                        isExpired ? (
+                          <div className="w-full md:w-auto bg-slate-50 border border-slate-200 text-slate-400 px-5 py-2.5 rounded-xl font-bold text-sm text-center">
+                            Video Call Time Expired
+                          </div>
+                        ) : (
+                          <button
+                            onClick={() =>
+                              router.push(`/consultation/${app.roomId}`)
+                            }
+                            className="w-full md:w-auto bg-emerald-600 text-white px-6 py-2.5 rounded-xl font-bold text-sm hover:bg-emerald-700 transition-colors flex items-center justify-center gap-2 shadow-sm shadow-emerald-600/20"
+                          >
+                            Join Call{" "}
+                            <FiArrowRight className="text-emerald-100" />
+                          </button>
+                        )
+                      ) : (
+                        <div className="w-full md:w-auto bg-slate-50 border border-slate-200 text-slate-400 px-5 py-2.5 rounded-xl font-bold text-sm text-center">
+                          No Room Assigned
+                        </div>
+                      )}
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </AnimatePresence>
+          </div>
+        ) : (
+          /* Refined Empty State */
+          <motion.div
+            initial={{ opacity: 0, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-white rounded-3xl p-10 md:p-16 flex flex-col items-center justify-center text-center shadow-sm border border-slate-200"
+          >
+            <div className="bg-slate-50 h-24 w-24 rounded-full flex items-center justify-center mb-6">
+              <FiCalendar className="text-slate-300" size={40} />
+            </div>
+            <h3 className="text-xl md:text-2xl font-black text-slate-900 mb-2">
+              No Consultations Scheduled
+            </h3>
+            <p className="text-slate-500 max-w-sm mx-auto text-sm md:text-base">
+              When you book an appointment with a doctor, your video call
+              details will appear here.
+            </p>
+          </motion.div>
+        )}
+      </main>
+
+      <Footer />
+    </div>
+  );
 }

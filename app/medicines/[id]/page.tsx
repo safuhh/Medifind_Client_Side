@@ -1,8 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { getMedicine } from "@/app/apis/medicineapi";
+import { addToCart, getCart } from "@/app/apis/cart.api";
+import { toast } from "react-toastify";
 import {
   MapPin,
   ShoppingBag,
@@ -27,6 +29,7 @@ interface Medicine {
     sellingPrice: number;
     mrp: number;
     offer?: string;
+    gst?: number;
   };
   images?: string[];
   description?: string;
@@ -50,6 +53,9 @@ interface Medicine {
 export default function SingleMedicinePage() {
   const { id } = useParams();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const prescribedQty = searchParams.get("prescribedQty");
+  
   const [medicine, setMedicine] = useState<Medicine | null>(null);
   const [activeImageIndex, setActiveImageIndex] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
@@ -57,6 +63,11 @@ export default function SingleMedicinePage() {
     null,
   );
   const [quantity, setQuantity] = useState<number>(1);
+  const [cartQty, setCartQty] = useState<number>(0);
+
+  const maxQty = prescribedQty 
+    ? Math.max(0, Math.min(medicine?.stock || 0, Number(prescribedQty) - cartQty)) 
+    : (medicine?.stock || 0);
   const [locationName, setLocationName] = useState<string>("");
   const [locating, setLocating] = useState<boolean>(false);
 
@@ -125,10 +136,21 @@ export default function SingleMedicinePage() {
     }
   };
 
-  const handleAddToCart = () => {
+  const handleAddToCart = async () => {
     if (!medicine) return;
-    console.log(`Adding to cart: ${medicine.name}, Quantity: ${quantity}`);
-    alert(`${quantity} units of ${medicine.name} added to cart!`);
+    try {
+      console.log("Adding to cart:", { medicineId: medicine._id, quantity, prescribedQty });
+      const res = await addToCart({ medicineId: medicine._id, quantity, prescribedQty: prescribedQty ? Number(prescribedQty) : undefined });
+      console.log("Add to cart response:", res.data);
+      if (res.data.success) {
+        toast.success(`${quantity} units of ${medicine.name} added to cart!`);
+      } else {
+        toast.error(res.data.message || "Failed to add to cart");
+      }
+    } catch (err: any) {
+      console.error("Error adding to cart:", err);
+      toast.error(err.response?.data?.message || "Failed to add to cart");
+    }
   };
 
   const handleBuyNow = () => {
@@ -147,6 +169,26 @@ export default function SingleMedicinePage() {
       fetchMedicine(coords);
     }
   }, [coords]);
+
+  useEffect(() => {
+    const fetchCartData = async () => {
+      try {
+        const res = await getCart();
+        if (res.data.success) {
+          const item = res.data.cart.items.find((item: any) => {
+            const medId = item.medicineId?._id || item.medicineId;
+            return medId === id;
+          });
+          if (item) {
+            setCartQty(item.quantity);
+          }
+        }
+      } catch (err) {
+        console.error("Error fetching cart:", err);
+      }
+    };
+    fetchCartData();
+  }, [id]);
 
 
 
@@ -285,15 +327,23 @@ export default function SingleMedicinePage() {
                 By {medicine.brand}
               </p>
 
-              <div className="flex items-baseline gap-3 mb-8 pb-8 border-b border-slate-100">
-                <p className="text-3xl font-bold text-slate-900">
-                  ₹{medicine.pricing.sellingPrice}
-                </p>
-                {medicine.pricing.mrp > medicine.pricing.sellingPrice && (
-                  <p className="text-base text-slate-400 line-through">
-                    MRP ₹{medicine.pricing.mrp}
+              <div className="flex flex-col gap-1 mb-8 pb-8 border-b border-slate-100">
+                <div className="flex items-baseline gap-3">
+                  <p className="text-3xl font-bold text-slate-900">
+                    ₹{medicine.pricing.sellingPrice}
                   </p>
-                )}
+                  {medicine.pricing.mrp > medicine.pricing.sellingPrice && (
+                    <p className="text-base text-slate-400 line-through">
+                      MRP ₹{medicine.pricing.mrp}
+                    </p>
+                  )}
+                </div>
+                <p className="text-sm font-medium text-slate-500">
+                  + {medicine.pricing.gst || 0}% GST (₹{((medicine.pricing.sellingPrice * (medicine.pricing.gst || 0)) / 100).toFixed(2)})
+                </p>
+                <p className="text-sm font-bold text-emerald-700 mt-1">
+                  Final Price: ₹{(medicine.pricing.sellingPrice + (medicine.pricing.sellingPrice * (medicine.pricing.gst || 0)) / 100).toFixed(2)}
+                </p>
               </div>
 
               <div className="mb-8">
@@ -373,8 +423,8 @@ export default function SingleMedicinePage() {
                       {quantity}
                     </div>
                     <button
-                      disabled={quantity >= medicine.stock}
-                      onClick={() => setQuantity(prev => Math.min(medicine.stock, prev + 1))}
+                      disabled={quantity >= maxQty}
+                      onClick={() => setQuantity(prev => Math.min(maxQty, prev + 1))}
                       className="p-2.5 hover:bg-slate-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                     >
                       <Plus className="w-4 h-4 text-slate-600" />
@@ -384,6 +434,16 @@ export default function SingleMedicinePage() {
                     <p className="text-xs font-bold text-red-500 uppercase">
                       Only {medicine.stock} left!
                     </p>
+                  )}
+                  {/* this is for the medicine quantity that is given by the doctor */}
+                  {prescribedQty && (
+                    <div className="text-xs font-bold text-emerald-600 uppercase">
+                      <p>Prescribed Max: {prescribedQty}</p>
+                      {cartQty > 0 && <p className="text-amber-600">Already in Cart: {cartQty}</p>}
+                      {cartQty >= Number(prescribedQty) && (
+                        <p className="text-red-500 mt-1 lowercase first-letter:uppercase">You have already added the doctor's prescribed quantity.</p>
+                      )}
+                    </div>
                   )}
                 </div>
               ) : (
@@ -398,10 +458,10 @@ export default function SingleMedicinePage() {
               <div className="flex flex-col sm:flex-row gap-4">
                 <button
                   onClick={handleAddToCart}
-                  disabled={medicine.stock <= 0}
-                  className="flex-1 bg-white hover:bg-slate-50 border-2 border-emerald-800 text-emerald-800 py-3.5 rounded-lg font-bold text-base transition-all flex items-center justify-center shadow-sm"
+                  disabled={medicine.stock <= 0 || (!!prescribedQty && cartQty >= Number(prescribedQty))}
+                  className="flex-1 bg-white hover:bg-slate-50 border-2 border-emerald-800 text-emerald-800 py-3.5 rounded-lg font-bold text-base transition-all flex items-center justify-center shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Add to Cart
+                  {!!prescribedQty && cartQty >= Number(prescribedQty) ? "Limit Reached" : "Add to Cart"}
                 </button>
                 <button
                   onClick={handleBuyNow}

@@ -53,9 +53,8 @@ export default function BecomeSellerPage() {
         }));
 
         try {
-          const res = await fetch(
-            `/locations/reverse?lat=${lat}&lng=${lng}`
-          );
+          const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+          const res = await fetch(`${apiUrl}/locations/reverse?lat=${lat}&lng=${lng}`);
           const data = await res.json();
 
           console.log("ADDRESS PREVIEW:", data.address);
@@ -330,7 +329,9 @@ const handleSubmit = async () => {
                   </div>
                   <div className="text-left">
                     <p className="text-[11px] font-bold text-slate-900 uppercase tracking-tight">Geo-Tag</p>
-                    <p className="text-[10px] text-slate-500">Enable GPS</p>
+                    <p className="text-xs text-slate-500 mt-0.5">
+                      {locationName || "Enable GPS"}
+                    </p>
                   </div>
                 </div>
                 {form.lat && <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-md">SET</span>}

@@ -22,7 +22,7 @@ export default function BookingSuccessPage() {
         const confirmWithBackend = async () => {
             if (paymentIntent) {
                 try {
-                    const res = await api.post("/api/v1/booking/confirm-payment", {
+                    const res = await api.post("/booking/confirm-payment", {
                         paymentIntentId: paymentIntent
                     });
                     if (res.data.success && res.data.roomId) {
@@ -81,7 +81,7 @@ export default function BookingSuccessPage() {
                                 </button>
                             )}
                             <button 
-                                onClick={() => router.push("/patient/appointments")} // Updated path
+                                onClick={() => router.push("/notifications")} // Updated path
                                 className="w-full bg-slate-900 text-white py-5 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-emerald-600 transition-all shadow-xl flex items-center justify-center gap-3"
                             >
                                 <FiCalendar /> View My Appointments <FiArrowRight />

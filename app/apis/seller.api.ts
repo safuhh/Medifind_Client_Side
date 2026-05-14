@@ -32,3 +32,11 @@ export const updateSellerInfo = (data: {
 export const getsellerinfo = () => {
   return api.get("/seller/current");
 };
+export const getSellerEarnings = () => {
+  return api.get("/seller-earnings/earnings");
+};
+
+// 💳 connect stripe
+export const connectStripe = () => {
+  return api.post("/stripe/connect");
+};

@@ -80,12 +80,22 @@ export default function DoctorApplyPage() {
 
         try {
           const res = await fetch(`http://localhost:5000/locations/reverse?lat=${lat}&lng=${lng}`);
+          if (!res.ok) throw new Error("Backend failed");
           const data = await res.json();
           setLocationName(data.address);
           setFormData(prev => ({ ...prev, address: data.address }));
         } catch (err) {
-          console.log("ADDRESS FETCH ERROR:", err);
-          toast.warning("Coordinates captured, but address lookup failed.");
+          console.log("Backend address fetch failed, trying fallback...", err);
+          try {
+            const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
+            const data = await res.json();
+            const address = data.display_name || `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+            setLocationName(address);
+            setFormData(prev => ({ ...prev, address: address }));
+          } catch (fallbackErr) {
+            console.log("Fallback fetch error:", fallbackErr);
+            toast.warning("Coordinates captured, but address lookup failed.");
+          }
         }
         setLocating(false);
         toast.success("Location added 📍");

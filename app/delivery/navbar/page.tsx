@@ -20,7 +20,7 @@ import { HeartIcon } from "@heroicons/react/24/solid";
 const navItems = [
   { name: "Dashboard", path: "/delivery/dashboard", icon: LayoutDashboard },
   { name: "Inform", path: "/delivery", icon: Package },
-  { name: "Earnings", path: "/delivery/earnings", icon: Wallet },
+  { name: "Earnings", path: "/delivery/Earnings", icon: Wallet },
   { name: "Profile", path: "/delivery/profile", icon: User },
 ];
 
