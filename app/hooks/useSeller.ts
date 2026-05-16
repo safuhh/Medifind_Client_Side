@@ -15,7 +15,6 @@ export const useSeller = () => {
     }
   if (!user) return;
 
-    // 🔥 FIX: wait for user load + safer check
     if (user && user.role !== "seller") {
       router.push("/");
     }

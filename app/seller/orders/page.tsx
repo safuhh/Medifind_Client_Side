@@ -15,6 +15,7 @@ import {
 import SellerBar from "../SellerBar/page";
 import api from "../../apis/api";
 import dayjs from "dayjs";
+import { getImageUrl } from "@/app/utils/imageUrl";
 
 export default function SellerOrdersPage() {
   const [orders, setOrders] = useState<any[]>([]);
@@ -125,78 +126,79 @@ export default function SellerOrdersPage() {
                 {filteredOrders.map((order: any) => (
                   <div
                     key={order._id}
-                    className="bg-white p-6 rounded-xl border border-slate-200 hover:shadow-md transition-shadow"
+                    className="bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden"
                   >
-                    <div className="flex flex-col lg:flex-row gap-6">
-                      {/* Order Identity & Details */}
-                      <div className="flex-1 space-y-4">
-                        <div className="flex flex-wrap items-center gap-3">
-                          <span className="text-sm font-bold text-slate-900 bg-white px-3 py-1 rounded-lg border border-slate-200">
-                            #{order._id.substring(order._id.length - 8).toUpperCase()}
-                          </span>
-                          <span
-                            className={`text-xs font-semibold px-3 py-1 rounded-full border uppercase tracking-wider ${getStatusColor(order.orderStatus)}`}
-                          >
-                            {order.orderStatus.replace("_", " ")}
-                          </span>
-                          <span className="text-sm text-slate-500 flex items-center gap-1.5">
-                            <Calendar className="w-4 h-4 text-slate-400" />
-                            {dayjs(order.createdAt).format("MMM D, YYYY h:mm A")}
-                          </span>
-                        </div>
+                    {/* Card Header */}
+                    <div className="bg-slate-50/80 px-6 py-4 border-b border-slate-100 flex flex-wrap items-center justify-between gap-4">
+                      <div className="flex items-center gap-3">
+                        <span className="text-sm font-bold text-slate-700 bg-white px-3 py-1.5 rounded-lg border border-slate-200 shadow-sm">
+                          #{order._id.substring(order._id.length - 8).toUpperCase()}
+                        </span>
+                        <span
+                          className={`text-xs font-bold px-3 py-1.5 rounded-full border uppercase tracking-wider ${getStatusColor(order.orderStatus)}`}
+                        >
+                          {order.orderStatus.replace("_", " ")}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2 text-sm text-slate-500">
+                        <Calendar className="w-4 h-4 text-slate-400" />
+                        {dayjs(order.createdAt).format("MMM D, YYYY h:mm A")}
+                      </div>
+                    </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          {/* Customer Info */}
-                          <div className="space-y-2">
-                            <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400">
-                              Customer Details
-                            </h4>
-                            <div className="space-y-1">
-                              <div className="flex items-center gap-2 text-sm text-slate-700">
-                                <User className="w-4 h-4 text-slate-400" />
-                                <span className="font-medium">
-                                  {order.deliveryDetails?.name || order.user?.name}
-                                </span>
-                              </div>
-                              <div className="flex items-center gap-2 text-sm text-slate-700">
-                                <Phone className="w-4 h-4 text-slate-400" />
-                                <span>{order.deliveryDetails?.phone}</span>
-                              </div>
-                            </div>
-                          </div>
-
-                          {/* Delivery Info */}
-                          <div className="space-y-2">
-                            <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400">
-                              Delivery Address
-                            </h4>
-                            <div className="flex items-start gap-2 text-sm text-slate-700">
-                              <MapPin className="w-4 h-4 text-slate-400 mt-0.5 shrink-0" />
-                              <span className="leading-relaxed">
-                                {order.deliveryDetails?.address}, {order.deliveryDetails?.city}, {order.deliveryDetails?.state} - {order.deliveryDetails?.zip}
+                    <div className="flex flex-col lg:flex-row gap-6 p-6">
+                      {/* Left Column: Customer & Delivery */}
+                      <div className="flex-1 space-y-6">
+                        {/* Customer Info */}
+                        <div className="space-y-3">
+                          <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+                            <User className="w-4 h-4" />
+                            Customer Details
+                          </h4>
+                          <div className="bg-slate-50 p-4 rounded-xl space-y-2">
+                            <div className="flex items-center gap-2 text-sm text-slate-700">
+                              <span className="font-semibold text-slate-900">
+                                {order.deliveryDetails?.name || order.user?.name}
                               </span>
                             </div>
+                            <div className="flex items-center gap-2 text-sm text-slate-600">
+                              <Phone className="w-4 h-4 text-slate-400" />
+                              <span>{order.deliveryDetails?.phone}</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Delivery Info */}
+                        <div className="space-y-3">
+                          <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+                            <MapPin className="w-4 h-4" />
+                            Delivery Address
+                          </h4>
+                          <div className="bg-slate-50 p-4 rounded-xl">
+                            <p className="text-sm text-slate-600 leading-relaxed">
+                              {order.deliveryDetails?.address}, {order.deliveryDetails?.city}, {order.deliveryDetails?.state} - {order.deliveryDetails?.zip}
+                            </p>
                           </div>
                         </div>
                       </div>
 
-                      {/* Order Items & Total */}
-                      <div className="w-full lg:w-96 flex flex-col justify-between border-t lg:border-t-0 lg:border-l border-slate-100 pt-4 lg:pt-0 lg:pl-6">
-                        <div className="space-y-3">
+                      {/* Right Column: Products & Earnings */}
+                      <div className="w-full lg:w-[400px] flex flex-col justify-between border-t lg:border-t-0 lg:border-l border-slate-100 pt-6 lg:pt-0 lg:pl-6">
+                        <div className="space-y-4">
                           <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
                             <ShoppingBag className="w-4 h-4" />
                             Products Ordered
                           </h4>
-                          <div className="space-y-3 max-h-40 overflow-y-auto pr-2 custom-scrollbar">
+                          <div className="space-y-3 max-h-[180px] overflow-y-auto pr-2 custom-scrollbar">
                             {order.items.map((item: any, idx: number) => (
                               <div
                                 key={idx}
-                                className="flex items-center gap-3 bg-white p-2.5 rounded-lg border border-slate-100"
+                                className="flex items-center gap-3 bg-white p-3 rounded-xl border border-slate-100 hover:border-emerald-100 transition-colors"
                               >
-                                <div className="w-12 h-12 rounded-md border border-slate-100 flex items-center justify-center shrink-0 overflow-hidden bg-slate-50">
+                                <div className="w-12 h-12 rounded-lg border border-slate-100 flex items-center justify-center shrink-0 overflow-hidden bg-slate-50">
                                   {item.medicineId?.images?.[0] ? (
                                     <img
-                                      src={item.medicineId.images[0].startsWith('http') ? item.medicineId.images[0] : `http://localhost:5000/${item.medicineId.images[0].replace(/\\/g, '/').replace(/^\//, '')}`}
+                                      src={getImageUrl(item.medicineId.images[0])}
                                       alt={item.medicineId.name}
                                       className="w-full h-full object-cover"
                                     />
@@ -205,14 +207,14 @@ export default function SellerOrdersPage() {
                                   )}
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                  <p className="text-sm font-medium text-slate-800 truncate">
+                                  <p className="text-sm font-semibold text-slate-800 truncate">
                                     {item.medicineId?.name || "Unknown Product"}
                                   </p>
                                   <p className="text-xs text-slate-500 mt-0.5">
                                     Qty: {item.quantity} × {formatCurrency(item.price)}
                                   </p>
                                 </div>
-                                <div className="text-sm font-semibold text-emerald-600">
+                                <div className="text-sm font-bold text-emerald-600">
                                   {formatCurrency(item.price * item.quantity)}
                                 </div>
                               </div>
@@ -220,11 +222,11 @@ export default function SellerOrdersPage() {
                           </div>
                         </div>
 
-                        <div className="mt-4 pt-4 border-t border-slate-100 flex items-center justify-between">
-                          <span className="text-sm font-medium text-slate-500 uppercase tracking-wider">
+                        <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between">
+                          <span className="text-sm font-bold text-slate-500 uppercase tracking-wider">
                             Your Earnings
                           </span>
-                          <span className="text-2xl font-bold text-slate-900">
+                          <span className="text-3xl  text-transparent bg-clip-text bg-black">
                             {formatCurrency(order.sellerTotal)}
                           </span>
                         </div>

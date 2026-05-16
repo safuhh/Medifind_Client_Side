@@ -2,12 +2,14 @@
 
 import { useEffect, useState, Suspense } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { getAllMedicines } from "@/app/apis/medicineapi";
 import { MapPin, Search, Loader2, Activity, ArrowRight, ShieldCheck, Navigation } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import NavbarPage from "@/app/navbar/page";
 import { getImageUrl } from "@/app/utils/imageUrl";
+import { useSelector } from "react-redux";
 interface Medicine {
   _id: string;
   name: string;
@@ -23,6 +25,7 @@ interface Medicine {
   category: string;
   unitWeight?: string;
   stock: number;
+  visibility?: string;
   shop?: {
     name: string;
     address: string;
@@ -32,6 +35,8 @@ interface Medicine {
 
 function MedicinesList() {
   const searchParams = useSearchParams();
+  const user = useSelector((state: any) => state.auth.user);
+  const isDoctor = user?.role === "doctor";
   const [medicines, setMedicines] = useState<Medicine[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [search, setSearch] = useState<string>(searchParams.get("search") || "");
@@ -124,13 +129,14 @@ function MedicinesList() {
         currentCoords?.lat || (searchParams.get("lat") ? Number(searchParams.get("lat")) : undefined),
         currentCoords?.lng || (searchParams.get("lng") ? Number(searchParams.get("lng")) : undefined),
         search,
-        radius
+        radius,
+        100
       );
       setMedicines(res.data.medicines || []);
     } catch (err: any) {
       console.error("Error fetching medicines:", err);
       const msg = err.response?.data?.error || err.response?.data?.message || err.message;
-      setErrorMsg(msg);
+      setErrorMsg(msg + " (URL: " + err.config?.url + ")");
     } finally {
       setLoading(false);
     }
@@ -161,13 +167,14 @@ function MedicinesList() {
   const filteredMedicines = medicines.filter(med => {
     const matchesCategory = selectedCategories.length === 0 || selectedCategories.some(c => med.category?.toLowerCase() === c.toLowerCase());
     const matchesPrice = (med.pricing?.sellingPrice || 0) <= maxPrice;
-    return matchesCategory && matchesPrice;
+    const matchesVisibility = isDoctor || med.visibility !== "restricted";
+    return matchesCategory && matchesPrice && matchesVisibility;
   });
 return (
     <div className="min-h-screen bg-white font-sans text-slate-900 selection:bg-emerald-100 selection:text-emerald-900 pb-20">
       <NavbarPage />
-      {/* Minimal Hero Section */}
-      <div className="pt-20 pb-16 border-b border-slate-100">
+      {/* Increased padding-top to avoid overlap with fixed navbar */}
+      <div className="pt-28 md:pt-36 pb-16 border-b border-slate-100">
         <div className="max-w-7xl mx-auto px-6 flex flex-col items-center text-center">
           
           <motion.div 
@@ -355,13 +362,12 @@ return (
                     <div className="bg-white rounded-xl overflow-hidden border border-slate-200 hover:border-emerald-300 hover:shadow-md transition-all duration-300 h-full flex flex-col">
                       
                       {/* Image Container */}
-                      <div className="relative aspect-[4/3] w-full overflow-hidden bg-slate-50 p-4 flex items-center justify-center border-b border-slate-100">
+                          <div className="relative aspect-[4/3] w-full overflow-hidden bg-slate-50 p-4 flex items-center justify-center border-b border-slate-100">
                         <img
                           src={med.images && med.images[0] ? getImageUrl(med.images[0]) : "/no-image.png"}
                           alt={med.name}
                           className="w-full h-full object-contain mix-blend-multiply group-hover:scale-105 transition-transform duration-500"
                         />
-                        
                         {/* Tags */}
                         <div className="absolute top-3 left-3 flex flex-col gap-1">
                           <span className="bg-white/90 backdrop-blur text-emerald-800 text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded shadow-sm border border-emerald-100/50">
@@ -403,21 +409,22 @@ return (
                           + {med.pricing.gst || 0}% GST (₹{((med.pricing.sellingPrice * (med.pricing.gst || 0)) / 100).toFixed(2)})
                         </p>
 
-                        {/* Pharmacy Info */}
                         <div className="mt-auto pt-4 border-t border-slate-100">
-                          <div className="flex items-center justify-between">
-                            <div className="flex-1 pr-3 min-w-0">
-                              <p className="text-[11px] font-medium text-slate-700 truncate mb-0.5">
+                          <div className="flex items-start justify-between gap-2">
+                            <div className="flex-1 min-w-0">
+                              <p className="text-[11px] font-bold text-slate-900 truncate mb-1">
                                 {med.shop?.name || "Premium Pharmacy"}
                               </p>
-                              <div className="flex items-center text-slate-500">
-                                <MapPin className="w-3 h-3 mr-1 shrink-0" />
-                                <span className="text-[10px] truncate">{med.shop?.address || "Available Locally"}</span>
+                              <div className="flex items-start text-slate-500 gap-1">
+                                <MapPin className="w-3 h-3 shrink-0 mt-0.5 text-emerald-600" />
+                                <span className="text-[10px] line-clamp-2 leading-relaxed">
+                                  {med.shop?.address || "Available Locally"}
+                                </span>
                               </div>
                             </div>
                             
                             {med.shop?.distance !== null && (
-                              <div className="shrink-0 bg-slate-50 text-slate-600 text-[10px] font-semibold px-2 py-1 rounded border border-slate-200">
+                              <div className="shrink-0 bg-emerald-50 text-emerald-700 text-[10px] font-bold px-2 py-1 rounded-lg border border-emerald-100 whitespace-nowrap">
                                 {med.shop?.distance} km
                               </div>
                             )}

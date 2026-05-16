@@ -1,10 +1,30 @@
 "use client";
 
-import { getSellerEarnings, connectStripe } from "../../apis/seller.api";
+import { getSellerEarnings } from "../../apis/seller.api";
 import { useEffect, useState } from "react";
 import SellerBar from "../SellerBar/page";
 import { toast } from "react-toastify";
-import { Wallet, Calendar, TrendingUp, Package, ArrowUpRight } from "lucide-react";
+import {
+  Wallet,
+  Calendar,
+  TrendingUp,
+  Package,
+  ArrowUpRight,
+  BarChart3,
+  LineChart,
+} from "lucide-react";
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+} from "recharts";
+import dayjs from "dayjs";
 
 export default function SellerEarnings() {
   const [todayEarnings, setTodayEarnings] = useState(0);
@@ -13,6 +33,8 @@ export default function SellerEarnings() {
   const [thisMonthOrders, setThisMonthOrders] = useState(0);
   const [thisYearEarnings, setThisYearEarnings] = useState(0);
   const [thisYearOrders, setThisYearOrders] = useState(0);
+  const [dailyHistory, setDailyHistory] = useState<any[]>([]);
+  const [monthlyHistory, setMonthlyHistory] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -25,6 +47,20 @@ export default function SellerEarnings() {
         setThisMonthOrders(res.data.thisMonth.count);
         setThisYearEarnings(res.data.thisYear.earnings);
         setThisYearOrders(res.data.thisYear.count);
+        
+        // Format daily history for chart
+        const formattedDaily = res.data.dailyHistory?.map((item: any) => ({
+          name: dayjs(item._id).format("MMM DD"),
+          value: item.earnings
+        })) || [];
+        setDailyHistory(formattedDaily);
+
+        // Format monthly history for chart
+        const formattedMonthly = res.data.monthlyHistory?.map((item: any) => ({
+          name: dayjs(item._id).format("MMM YY"),
+          value: item.earnings
+        })) || [];
+        setMonthlyHistory(formattedMonthly);
       })
       .catch((err) => {
         console.error("Failed to fetch earnings:", err);
@@ -49,7 +85,7 @@ export default function SellerEarnings() {
       count: todayOrders,
       icon: <TrendingUp className="w-5 h-5 text-emerald-500" />,
       accent: "border-emerald-200 bg-emerald-50/50",
-      textColor: "text-emerald-700"
+      textColor: "text-emerald-700",
     },
     {
       title: "This Month",
@@ -57,7 +93,7 @@ export default function SellerEarnings() {
       count: thisMonthOrders,
       icon: <Calendar className="w-5 h-5 text-sky-500" />,
       accent: "border-sky-200 bg-sky-50/50",
-      textColor: "text-sky-700"
+      textColor: "text-sky-700",
     },
     {
       title: "This Year",
@@ -65,7 +101,7 @@ export default function SellerEarnings() {
       count: thisYearOrders,
       icon: <Wallet className="w-5 h-5 text-purple-500" />,
       accent: "border-purple-200 bg-purple-50/50",
-      textColor: "text-purple-700"
+      textColor: "text-purple-700",
     },
   ];
 
@@ -74,40 +110,29 @@ export default function SellerEarnings() {
       <SellerBar />
 
       <main className="flex-1 overflow-y-auto md:ml-72 transition-all duration-300">
-        <div className="p-8 max-w-5xl mx-auto space-y-8">
-          
+        <div className="p-8 max-w-6xl mx-auto space-y-12">
           {/* Header Section */}
-          <div className="flex justify-between items-center">
+          <div className="flex justify-between items-end border-b border-slate-100 pb-8">
             <div>
-              <h1 className="text-3xl font-bold text-slate-900">Earnings Overview</h1>
-              <p className="text-slate-500 mt-1">Track your store's performance and payouts</p>
+              <div className="flex items-center gap-2 mb-2">
+                <div className="w-8 h-8 rounded-lg bg-emerald-600 flex items-center justify-center text-white shadow-lg">
+                  <TrendingUp className="w-4 h-4" />
+                </div>
+                <span className="text-[10px] font-black text-emerald-600 uppercase tracking-[0.3em]">Financial Center</span>
+              </div>
+              <h1 className="text-4xl font-black text-slate-900 tracking-tight">
+                Earnings <span className="text-emerald-600">Analytics</span>
+              </h1>
+              <p className="text-slate-500 mt-1 text-sm font-medium">
+                Comprehensive breakdown of your store's fiscal performance.
+              </p>
             </div>
-            <div className="flex items-center gap-3">
-              {/* Stripe Connect Button */}
-              <button
-                onClick={async () => {
-                  try {
-                    toast.info("Redirecting to Stripe...");
-                    const res = await connectStripe();
-                    if (res.data.success && res.data.url) {
-                      window.location.href = res.data.url;
-                    } else {
-                      toast.error("Failed to get onboarding link");
-                    }
-                  } catch (err: any) {
-                    console.error(err);
-                    toast.error(err.response?.data?.message || "Failed to start Stripe onboarding");
-                  }
-                }}
-                className="flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded-lg text-sm font-bold transition-all duration-200 shadow-sm"
-              >
-                <TrendingUp className="w-4 h-4 text-emerald-400" />
-                Connect Stripe
-              </button>
-
-              <div className="bg-white px-4 py-2 rounded-lg border border-slate-200 flex items-center gap-2 shadow-sm">
-                <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
-                <span className="text-sm font-semibold text-slate-700">Live Updates</span>
+            <div className="hidden sm:flex items-center gap-3">
+              <div className="bg-white px-4 py-2.5 rounded-xl border border-slate-200 flex items-center gap-3 shadow-sm">
+                <span className="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-pulse ring-4 ring-emerald-500/20"></span>
+                <span className="text-[11px] font-bold text-slate-600 uppercase tracking-widest">
+                  Live Terminal Active
+                </span>
               </div>
             </div>
           </div>
@@ -115,50 +140,150 @@ export default function SellerEarnings() {
           {loading ? (
             <div className="flex items-center justify-center h-64">
               <div className="flex flex-col items-center gap-3 text-slate-500">
-                <span className="w-8 h-8 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></span>
-                <p className="text-sm font-medium">Calculating earnings...</p>
+                <span className="w-10 h-10 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></span>
+                <p className="text-sm font-black uppercase tracking-widest text-slate-400">Syncing Data...</p>
               </div>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {data.map((item, index) => (
-                <div 
-                  key={index} 
-                  className="bg-white p-6 rounded-xl border border-slate-200 hover:shadow-md transition-shadow group"
-                >
-                  <div className="flex justify-between items-center mb-6">
-                    <p className={`text-xs font-bold uppercase tracking-wider ${item.textColor}`}>{item.title}</p>
-                    <div className={`w-10 h-10 border rounded-lg flex items-center justify-center transition-colors ${item.accent}`}>
-                      {item.icon}
+            <>
+              {/* Stats Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                {data.map((item, index) => (
+                  <div
+                    key={index}
+                    className="bg-white p-8 rounded-[2rem] border border-slate-100 hover:border-emerald-200 hover:shadow-2xl hover:shadow-slate-200/50 transition-all group"
+                  >
+                    <div className="flex justify-between items-center mb-8">
+                      <p className={`text-[10px] font-black uppercase tracking-[0.2em] ${item.textColor}`}>
+                        {item.title}
+                      </p>
+                      <div className={`w-12 h-12 border rounded-2xl flex items-center justify-center transition-all group-hover:scale-110 ${item.accent}`}>
+                        {item.icon}
+                      </div>
+                    </div>
+
+                    <h2 className="text-4xl font-black text-slate-900 tracking-tight mb-2">
+                      {formatCurrency(item.value)}
+                    </h2>
+
+                    <div className="flex items-center justify-between mt-6 pt-6 border-t border-slate-50">
+                      <div className="flex items-center gap-2 text-xs font-bold text-slate-400">
+                        <Package className="w-4 h-4" />
+                        <span>{item.count} Transactions</span>
+                      </div>
+                      <span className="text-[10px] font-black text-emerald-600 uppercase tracking-tighter flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all">
+                        Ledger <ArrowUpRight className="w-3 h-3" />
+                      </span>
                     </div>
                   </div>
-                  
-                  <h2 className="text-4xl font-bold text-slate-900 tracking-tight">
-                    {formatCurrency(item.value)}
-                  </h2>
-                  
-                  <div className="flex items-center justify-between mt-4 pt-4 border-t border-slate-100">
-                    <div className="flex items-center gap-1.5 text-sm text-slate-500">
-                      <Package className="w-4 h-4 text-slate-400" />
-                      <span>{item.count} orders</span>
+                ))}
+              </div>
+
+              {/* Charts Section */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                {/* Monthly Revenue Chart */}
+                <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
+                  <div className="flex items-center justify-between mb-8">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-sky-50 flex items-center justify-center text-sky-600">
+                        <BarChart3 className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-black text-slate-900 tracking-tight">Revenue Performance</h3>
+                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Monthly Growth Trend</p>
+                      </div>
                     </div>
-                    <span className="text-xs font-medium text-slate-400 group-hover:text-slate-600 flex items-center gap-0.5 transition-colors">
-                      View details <ArrowUpRight className="w-3 h-3" />
-                    </span>
+                  </div>
+                  <div className="h-[300px] w-full">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <AreaChart data={monthlyHistory}>
+                        <defs>
+                          <linearGradient id="colorRev" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="#0ea5e9" stopOpacity={0.1}/>
+                            <stop offset="95%" stopColor="#0ea5e9" stopOpacity={0}/>
+                          </linearGradient>
+                        </defs>
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                        <XAxis 
+                          dataKey="name" 
+                          axisLine={false} 
+                          tickLine={false} 
+                          tick={{fill: '#94a3b8', fontSize: 10, fontWeight: 700}}
+                          dy={10}
+                        />
+                        <YAxis 
+                          axisLine={false} 
+                          tickLine={false} 
+                          tick={{fill: '#94a3b8', fontSize: 10, fontWeight: 700}}
+                          tickFormatter={(value) => `₹${value}`}
+                        />
+                        <Tooltip 
+                          contentStyle={{borderRadius: '16px', border: 'none', boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1)'}}
+                          formatter={(value: any) => [formatCurrency(value), 'Revenue']}
+                        />
+                        <Area 
+                          type="monotone" 
+                          dataKey="value" 
+                          stroke="#0ea5e9" 
+                          strokeWidth={3}
+                          fillOpacity={1} 
+                          fill="url(#colorRev)" 
+                        />
+                      </AreaChart>
+                    </ResponsiveContainer>
                   </div>
                 </div>
-              ))}
-            </div>
+
+                {/* Daily Sales Chart */}
+                <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
+                  <div className="flex items-center justify-between mb-8">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600">
+                        <TrendingUp className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-black text-slate-900 tracking-tight">Daily Volume</h3>
+                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">7-Day Sales Activity</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="h-[300px] w-full">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart data={dailyHistory}>
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                        <XAxis 
+                          dataKey="name" 
+                          axisLine={false} 
+                          tickLine={false} 
+                          tick={{fill: '#94a3b8', fontSize: 10, fontWeight: 700}}
+                          dy={10}
+                        />
+                        <YAxis 
+                          axisLine={false} 
+                          tickLine={false} 
+                          tick={{fill: '#94a3b8', fontSize: 10, fontWeight: 700}}
+                          tickFormatter={(value) => `₹${value}`}
+                        />
+                        <Tooltip 
+                          contentStyle={{borderRadius: '16px', border: 'none', boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1)'}}
+                          cursor={{fill: '#f8fafc'}}
+                          formatter={(value: any) => [formatCurrency(value), 'Sales']}
+                        />
+                        <Bar 
+                          dataKey="value" 
+                          fill="#10b981" 
+                          radius={[6, 6, 0, 0]}
+                          barSize={30}
+                        />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+              </div>
+
+             
+            </>
           )}
-
-          {/* Additional Info / Help Card */}
-          <div className="bg-slate-50 p-6 rounded-xl border border-slate-100 mt-8">
-            <h3 className="text-sm font-bold text-slate-800 mb-1">About Your Payouts</h3>
-            <p className="text-sm text-slate-600 leading-relaxed">
-              Earnings are calculated after deducting the platform fee (10%) from the base product price. The full GST amount collected on your products is passed directly to you. Delivery charges are handled separately.
-            </p>
-          </div>
-
         </div>
       </main>
     </div>

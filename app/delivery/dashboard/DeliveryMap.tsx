@@ -130,7 +130,7 @@ export default function DeliveryMap({ currentLocation, pickupLocations, dropoffL
           </Marker>
         ))}
 
-        {orderStatus === "picked_up" && dropoffLocation && (
+        {orderStatus === "picked_up" && dropoffLocation && !isNaN(dropoffLocation.lat) && !isNaN(dropoffLocation.lng) && (
           <Marker position={[dropoffLocation.lat, dropoffLocation.lng]} icon={homeIcon}>
             <Popup>Dropoff Location (Customer)</Popup>
           </Marker>

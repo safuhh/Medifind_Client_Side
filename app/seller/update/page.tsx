@@ -41,7 +41,7 @@ export default function SellerProfilePage() {
         const res = await getsellerinfo();
         console.log("SELLER_INFO_RESPONSE:", res.data);
         
-        const data = res.data?.seller ?? res.data?.sellerinfo ?? res.data;
+        const data = res.data?.seller;
 
         if (data) {
           setForm({

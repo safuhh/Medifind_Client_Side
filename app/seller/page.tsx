@@ -1,8 +1,8 @@
 "use client";
-
+import LowStock from "./lowstock/page";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { setUser } from "@/app/redux/authSlice";
+import { setUser } from "@/app/redux/authSlice"
 
 import { useSeller } from "../hooks/useSeller";
 import { getSellerDashboard } from "../apis/seller.api";
@@ -80,12 +80,11 @@ export default function SellerDashboard() {
               </div>
             </header>
 
-            {/* Dashboard Content Removed as per User Request */}
-            <div className="flex flex-col items-center justify-center py-20 text-slate-400">
-               <div className="bg-slate-50 p-6 rounded-full mb-4">
-                  <FiList size={40} className="text-slate-200" />
-               </div>
-               <p className="font-medium">Dashboard summary is currently hidden</p>
+         
+
+            {/* Render LowStock component */}
+            <div className="mt-6">
+              <LowStock />
             </div>
           </div>
         </div>

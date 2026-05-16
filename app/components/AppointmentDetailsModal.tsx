@@ -159,14 +159,28 @@ export default function AppointmentDetailsModal({ isOpen, onClose, app, onComple
                                     )}
 
                                     {app.consultationStatus !== "completed" && (
-                                        <button
-                                            onClick={() =>
-                                                handleCompleteConsultation(app.roomId)
-                                            }
-                                            className="w-full bg-slate-900 text-white py-5 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-emerald-600 transition-all shadow-xl mb-3 flex items-center justify-center gap-2"
-                                        >
-                                            Mark as Completed
-                                        </button>
+                                        <>
+                                            {dayjs().isBefore(dayjs(app.scheduledAt)) ? (
+                                                <div className="w-full bg-amber-50 border border-amber-100 p-4 rounded-2xl flex flex-col items-center gap-2 mb-3">
+                                                    <p className="text-[10px] font-black text-amber-600 uppercase tracking-widest text-center">
+                                                        Too Early to Complete
+                                                    </p>
+                                                    <p className="text-[9px] text-amber-500 font-bold text-center">
+                                                        This appointment is scheduled for {dayjs(app.scheduledAt).format("hh:mm A")}. 
+                                                        You can only mark it as completed once the session time has arrived.
+                                                    </p>
+                                                </div>
+                                            ) : (
+                                                <button
+                                                    onClick={() =>
+                                                        handleCompleteConsultation(app.roomId)
+                                                    }
+                                                    className="w-full bg-slate-900 text-white py-5 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-emerald-600 transition-all shadow-xl mb-3 flex items-center justify-center gap-2"
+                                                >
+                                                    Mark as Completed
+                                                </button>
+                                            )}
+                                        </>
                                     )}
                                 </>
                             )}

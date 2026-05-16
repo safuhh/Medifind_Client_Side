@@ -51,8 +51,9 @@ export default function CartPage() {
             if (res.data.success) {
                 setCart(res.data.cart);
             }
-        } catch (err) {
-            toast.error("Failed to increase quantity");
+        } catch (err: any) {
+            const errorMsg = err.response?.data?.message || "Failed to increase quantity";
+            toast.error(errorMsg);
             fetchCart();
         }
     };

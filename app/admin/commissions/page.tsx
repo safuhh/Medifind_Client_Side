@@ -2,6 +2,7 @@
 import { getCommissions } from "@/app/apis/doctor.api";
 import { useEffect, useState } from "react";
 import { Wallet, Calendar, TrendingUp, Package, Truck, ShoppingBag } from "lucide-react";
+import AdminSidebar from "../adminnavbar/page";
 
 export default function AdminCommissionsPage() {
   const [loading, setloading] = useState<boolean>(true);
@@ -46,7 +47,8 @@ export default function AdminCommissionsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white p-8">
+    <div className="min-h-screen bg-white md:ml-72 p-8 pt-20 md:pt-8">
+      <AdminSidebar />
       <div className="max-w-5xl mx-auto">
         <div className="flex justify-between items-center mb-8">
           <div>

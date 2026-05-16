@@ -256,12 +256,18 @@ export default function DoctorAppointmentsPage() {
                         </button>
                         {app.consultationStatus !== "completed" ? (
                           <button
+                            disabled={dayjs().isBefore(dayjs(app.scheduledAt))}
                             onClick={() =>
                               handleCompleteConsultation(app.roomId)
                             }
-                            className="bg-red-500 text-white px-4 py-2 rounded-lg font-semibold text-xs hover:bg-red-600 transition-all shadow-sm"
+                            className={`px-4 py-2 rounded-lg font-semibold text-xs transition-all shadow-sm ${
+                              dayjs().isBefore(dayjs(app.scheduledAt))
+                                ? "bg-slate-100 text-slate-400 cursor-not-allowed"
+                                : "bg-red-500 text-white hover:bg-red-600"
+                            }`}
+                            title={dayjs().isBefore(dayjs(app.scheduledAt)) ? "You cannot end a call before it starts" : ""}
                           >
-                            End Call
+                            {dayjs().isBefore(dayjs(app.scheduledAt)) ? "Scheduled" : "End Call"}
                           </button>
                         ) : (
                           <button

@@ -1,5 +1,5 @@
 "use client";
-import { deliveryBoyEarnings } from "@/app/apis/doctor.api";
+import { deliveryBoyEarnings } from "@/app/apis/deliveryboyapi";
 import { useEffect, useState } from "react";
 import DeliverySidebar from "../navbar/page";
 import { Wallet, Calendar, TrendingUp, Package } from "lucide-react";

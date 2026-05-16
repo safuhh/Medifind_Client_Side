@@ -28,7 +28,7 @@ const navItems = [
   { name: "Availability", href: "/doctor/availability", icon: ClipboardDocumentListIcon }, // Using the same icon for now
   { name: "Patients", href: "/doctor/patients", icon: UserGroupIcon },
   { name: "Update Profile", href: "/doctor/update-profile", icon: UserCircleIconOutline },
-  { name: "Settings", href: "/doctor/settings", icon: Cog6ToothIcon },
+  
 ];
 
 export default function DoctorSidebar() {

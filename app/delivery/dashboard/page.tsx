@@ -176,28 +176,6 @@ export default function DeliveryDashboardPage() {
 
     {/* STATUS BADGE & STRIPE CONNECT */}
     <div className="flex-shrink-0 flex items-center gap-3">
-      {/* Stripe Connect Button */}
-      <button
-        onClick={async () => {
-          try {
-            toast.info("Redirecting to Stripe...");
-            const res = await connectStripe();
-            if (res.data.success && res.data.url) {
-              window.location.href = res.data.url;
-            } else {
-              toast.error("Failed to get onboarding link");
-            }
-          } catch (err: any) {
-            console.error(err);
-            toast.error(err.response?.data?.message || "Failed to start Stripe onboarding");
-          }
-        }}
-        className="flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white px-3 py-1.5 md:px-4 md:py-2 rounded-full text-xs font-bold transition-all duration-200 shadow-sm"
-      >
-        <TrendingUp className="w-3.5 h-3.5 text-emerald-400" />
-        {data?.stripeAccountId ? "Account Linked" : "Connect Stripe"}
-      </button>
-
       <div className="flex items-center gap-2 bg-emerald-50 px-3 py-1 md:px-4 md:py-2 rounded-full border border-emerald-100">
         <span className="relative flex h-2 w-2">
           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
@@ -323,10 +301,10 @@ export default function DeliveryDashboardPage() {
               dropoffLocation={data.currentOrderId.userId?.location?.coordinates ? {
                 lat: data.currentOrderId.userId.location.coordinates[1],
                 lng: data.currentOrderId.userId.location.coordinates[0]
-              } : { 
-                lat: (data.currentOrderId.items?.[0]?.sellerShop?.location?.lat ) + 0.01, 
-                lng: (data.currentOrderId.items?.[0]?.sellerShop?.location?.lng) + 0.01 
-              }}
+              } : (data.currentOrderId.items?.[0]?.sellerShop?.location?.lat != null ? { 
+                lat: data.currentOrderId.items[0].sellerShop.location.lat + 0.01, 
+                lng: data.currentOrderId.items[0].sellerShop.location.lng + 0.01 
+              } : null)}
               orderStatus={data.currentOrderId.orderStatus}
             />
           </div>
