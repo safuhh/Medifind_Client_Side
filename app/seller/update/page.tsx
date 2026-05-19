@@ -33,36 +33,36 @@ export default function SellerProfilePage() {
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
 
+  const load = async (showLoading = true) => {
+    try {
+      if (showLoading) setFetching(true);
+      const res = await getsellerinfo();
+      console.log("SELLER_INFO_RESPONSE:", res.data);
+      
+      const data = res.data?.seller;
+
+      if (data) {
+        setForm({
+          shopName: data.shopName || "",
+          licenseNumber: data.licenseNumber || "",
+          address: data.address || "",
+          phone: data.phone || "",
+          lat: data.location?.lat ?? null,
+          lng: data.location?.lng ?? null,
+          locationName: data.location?.address || "",
+          fullAddress: data.location?.fullAddress || "",
+        });
+      }
+    } catch (err: any) {
+      console.error("LOAD_SELLER_ERROR:", err);
+      toast.error("Failed to load seller info");
+    } finally {
+      if (showLoading) setFetching(false);
+    }
+  };
+
   // Load seller
   useEffect(() => {
-    const load = async () => {
-      try {
-        setFetching(true);
-        const res = await getsellerinfo();
-        console.log("SELLER_INFO_RESPONSE:", res.data);
-        
-        const data = res.data?.seller;
-
-        if (data) {
-          setForm({
-            shopName: data.shopName || "",
-            licenseNumber: data.licenseNumber || "",
-            address: data.address || "",
-            phone: data.phone || "",
-            lat: data.location?.lat ?? null,
-            lng: data.location?.lng ?? null,
-            locationName: data.location?.address || "",
-            fullAddress: data.location?.fullAddress || "",
-          });
-        }
-      } catch (err: any) {
-        console.error("LOAD_SELLER_ERROR:", err);
-        toast.error("Failed to load seller info");
-      } finally {
-        setFetching(false);
-      }
-    };
-
     load();
   }, []);
 
@@ -125,8 +125,10 @@ const handleSubmit = async (e: React.FormEvent) => {
     await updateSellerInfo(form);
     toast.success("Profile updated ");
     setEditing(false);
-  } catch {
-    toast.error("Update failed");
+    await load(false);
+  } catch (err: any) {
+    console.error("Seller Profile Update Error:", err);
+    toast.error(err.response?.data?.message || "Update failed");
   } finally {
     setLoading(false);
   }
@@ -336,12 +338,12 @@ const handleSubmit = async (e: React.FormEvent) => {
                     type="submit"
                     disabled={
                       loading ||
-                      !form.shopName ||
-                      !form.licenseNumber ||
-                      !form.address ||
-                      !form.phone ||
-                      !form.lat ||
-                      !form.lng
+                      !form.shopName.trim() ||
+                      !form.licenseNumber.trim() ||
+                      !form.address.trim() ||
+                      !form.phone.trim() ||
+                      form.lat === null ||
+                      form.lng === null
                     }
                     className="w-full sm:w-auto px-6 py-2.5 bg-emerald-600 text-white rounded-lg disabled:opacity-50"
                   >

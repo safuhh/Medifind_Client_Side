@@ -91,7 +91,7 @@ export default function DoctorProfilePage() {
                           className="relative shrink-0 mx-auto md:mx-0"
                         >
                             <img 
-                            src={doctor.profileImage ? getImageUrl(doctor.profileImage) : null} 
+                            src={doctor.profileImage ? getImageUrl(doctor.profileImage) : undefined} 
                             alt={doctor.fullName}
                             className="w-32 h-32 md:w-40 md:h-40 object-cover rounded-2xl bg-slate-50"
                             />

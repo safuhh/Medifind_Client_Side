@@ -418,7 +418,7 @@ return (
                               <div className="flex items-start text-slate-500 gap-1">
                                 <MapPin className="w-3 h-3 shrink-0 mt-0.5 text-emerald-600" />
                                 <span className="text-[10px] line-clamp-2 leading-relaxed">
-                                  {med.shop?.address || "Available Locally"}
+                                  {med.shop?.location?.fullAddress || med.shop?.address || "Address details not available"}
                                 </span>
                               </div>
                             </div>

@@ -27,3 +27,23 @@ export const getDoctorsBySpecialization = (specialization?: string) => {
 export const getSingleDoctor = (id: string) => {
     return api.get(`${BASE_URL}/doctor/profile/${id}`);
 };
+
+export const applyDoctor = (data: FormData) => {
+    return api.post(`${BASE_URL}/doctor/apply`, data, {
+        headers: {
+            "Content-Type": "multipart/form-data",
+        },
+    });
+};
+
+export const getAllDoctorApplications = () => {
+    return api.get(`${BASE_URL}/doctor/admin/applications`);
+};
+
+export const reviewDoctorApplication = (id: string, status: string, rejectionReason?: string) => {
+    return api.put(`${BASE_URL}/doctor/admin/review/${id}`, { status, rejectionReason });
+};
+
+export const getCommissions = () => {
+    return api.get(`${BASE_URL}/commissions`);
+};

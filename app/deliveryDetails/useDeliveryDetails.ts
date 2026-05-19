@@ -2,11 +2,14 @@ import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../redux/store";
 import { deliveryDetailsApi } from "../apis/delivery.details.api";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export const useDeliveryDetails = () => {
     const user = useSelector((state: RootState) => state.auth.user);
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const buyNowMedicineId = searchParams ? searchParams.get("buyNowMedicineId") : null;
+    const buyNowQuantity = searchParams ? searchParams.get("buyNowQuantity") : null;
     
     const [deliveryDetails, setDeliveryDetails] = useState({
         name: "",
@@ -197,7 +200,11 @@ export const useDeliveryDetails = () => {
             setLoading(true);
             const { default: api } = await import("../apis/api");
             
-            const res = await api.post("/orders/checkout", { deliveryDetailsId: addressId });
+            const res = await api.post("/orders/checkout", { 
+                deliveryDetailsId: addressId,
+                buyNowMedicineId,
+                buyNowQuantity
+            });
             
             if (res.data.success && res.data.url) {
                 window.location.href = res.data.url;

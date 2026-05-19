@@ -108,7 +108,7 @@ export default function OrderSuccessPage() {
                                 </button>
                                 
                                 <button 
-                                    onClick={() => router.push("/notifications")}
+                                    onClick={() => router.push("/orders")}
                                     className="w-full py-4 bg-white border border-slate-200 text-slate-600 rounded-2xl font-bold text-sm tracking-wide hover:bg-slate-50 hover:text-emerald-600 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
                                 >
                                     Track Order Status

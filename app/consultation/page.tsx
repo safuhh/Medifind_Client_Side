@@ -226,7 +226,7 @@ export default function ConsultationPage() {
                     <div className="flex items-center justify-between p-5 bg-white rounded-2xl border border-slate-100 hover:border-emerald-100 hover:shadow-lg hover:shadow-emerald-900/5 transition-all duration-300">
                       <div className="flex items-center gap-4">
                         <div className="w-12 h-12 rounded-xl bg-slate-50 flex items-center justify-center text-slate-500 group-hover:bg-emerald-50 group-hover:text-emerald-600 transition-colors duration-300">
-                            {React.cloneElement(specialty.icon as React.ReactElement, { size: 20 })}
+                            {React.cloneElement(specialty.icon as any, { size: 20 })}
                         </div>
                         <div>
                           <h3 className="font-bold text-sm text-slate-800 group-hover:text-emerald-600 transition-colors">{specialty.name}</h3>

@@ -24,9 +24,11 @@ export default function HealthReportPage() {
                 if (res.data.success) {
                     setReport(res.data.report);
                 }
-            } catch (err) {
-                console.error("Error fetching report:", err);
-                toast.error("Failed to load health report");
+            } catch (err: any) {
+                if (err.response?.status !== 404) {
+                    console.error("Error fetching report:", err);
+                    toast.error("Failed to load health report");
+                }
             } finally {
                 setLoading(false);
             }

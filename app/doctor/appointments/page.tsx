@@ -20,6 +20,27 @@ import AppointmentDetailsModal from "@/app/components/AppointmentDetailsModal";
 
 const socket = io(process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000");
 
+const parseLocalSlot = (bookingDate: string | Date, timeSlot: string) => {
+  let hours = 0;
+  let minutes = 0;
+
+  if (timeSlot) {
+    const parts = timeSlot.split(" ");
+    const timeParts = parts[0].split(":");
+    hours = parseInt(timeParts[0]);
+    minutes = parseInt(timeParts[1]);
+    const modifier = parts[1];
+
+    if (modifier === "PM" && hours < 12) hours += 12;
+    if (modifier === "AM" && hours === 12) hours = 0;
+  }
+
+  return dayjs(bookingDate)
+    .startOf("day")
+    .add(hours, "hour")
+    .add(minutes, "minute");
+};
+
 export default function DoctorAppointmentsPage() {
   const router = useRouter();
   const [appointments, setAppointments] = useState<any[]>([]);
@@ -105,7 +126,7 @@ export default function DoctorAppointmentsPage() {
             : app,
         ),
       );
-      toast.success("Payment received for an appointment! 💰");
+      toast.success("Payment received for an appointment! ");
     });
 
     return () => {
@@ -236,52 +257,68 @@ export default function DoctorAppointmentsPage() {
                       Details
                     </button>
 
-                    {app.roomId && (
-                      <>
-                        <button
-                          onClick={() =>
-                            router.push(`/consultation/${app.roomId}`)
-                          }
-                          className="bg-emerald-600 text-white px-4 py-2 rounded-lg font-semibold text-xs hover:bg-emerald-700 transition-all shadow-sm"
-                        >
-                          Join
-                        </button>
-                        <button
-                          onClick={() =>
-                            handleNotifyPatient(app.userId?._id, app.roomId)
-                          }
-                          className="bg-white border border-slate-200 text-slate-600 px-4 py-2 rounded-lg font-semibold text-xs hover:bg-slate-50 transition-all"
-                        >
-                          Notify
-                        </button>
-                        {app.consultationStatus !== "completed" ? (
-                          <button
-                            disabled={dayjs().isBefore(dayjs(app.scheduledAt))}
-                            onClick={() =>
-                              handleCompleteConsultation(app.roomId)
-                            }
-                            className={`px-4 py-2 rounded-lg font-semibold text-xs transition-all shadow-sm ${
-                              dayjs().isBefore(dayjs(app.scheduledAt))
-                                ? "bg-slate-100 text-slate-400 cursor-not-allowed"
-                                : "bg-red-500 text-white hover:bg-red-600"
-                            }`}
-                            title={dayjs().isBefore(dayjs(app.scheduledAt)) ? "You cannot end a call before it starts" : ""}
-                          >
-                            {dayjs().isBefore(dayjs(app.scheduledAt)) ? "Scheduled" : "End Call"}
-                          </button>
-                        ) : (
-                          <button
-                            onClick={() => {
-                              setSelectedBookingForReport(app);
-                              setReportModalOpen(true);
-                            }}
-                            className="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold text-xs hover:bg-blue-700 transition-all shadow-sm"
-                          >
-                            Write Report
-                          </button>
-                        )}
-                      </>
-                    )}
+                    {app.roomId && (() => {
+                      const scheduledTime = app.scheduledAt
+                        ? dayjs(app.scheduledAt)
+                        : app.date && app.timeSlot
+                          ? parseLocalSlot(app.date, app.timeSlot)
+                          : dayjs(app.createdAt);
+                      const now = dayjs();
+                      const startTime = scheduledTime;
+                      const endTime = scheduledTime.add(30, "minute");
+                      const isTime = now.isAfter(startTime) && now.isBefore(endTime);
+
+                      return (
+                        <>
+                          {app.consultationStatus !== "completed" ? (
+                            <>
+                              {isTime && (
+                                <button
+                                  onClick={() =>
+                                    router.push(`/consultation/${app.roomId}`)
+                                  }
+                                  className="bg-emerald-600 text-white px-4 py-2 rounded-lg font-semibold text-xs hover:bg-emerald-700 transition-all shadow-sm"
+                                >
+                                  Join
+                                </button>
+                              )}
+                              <button
+                                onClick={() =>
+                                  handleNotifyPatient(app.userId?._id, app.roomId)
+                                }
+                                className="bg-white border border-slate-200 text-slate-600 px-4 py-2 rounded-lg font-semibold text-xs hover:bg-slate-50 transition-all"
+                              >
+                                Notify
+                              </button>
+                              <button
+                                disabled={now.isBefore(scheduledTime)}
+                                onClick={() =>
+                                  handleCompleteConsultation(app.roomId)
+                                }
+                                className={`px-4 py-2 rounded-lg font-semibold text-xs transition-all shadow-sm ${
+                                  now.isBefore(scheduledTime)
+                                    ? "bg-slate-100 text-slate-400 cursor-not-allowed"
+                                    : "bg-red-500 text-white hover:bg-red-600"
+                                }`}
+                                title={now.isBefore(scheduledTime) ? "You cannot end a call before it starts" : ""}
+                              >
+                                {now.isBefore(scheduledTime) ? "Scheduled" : "End Call"}
+                              </button>
+                            </>
+                          ) : (
+                            <button
+                              onClick={() => {
+                                setSelectedBookingForReport(app);
+                                setReportModalOpen(true);
+                              }}
+                              className="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold text-xs hover:bg-blue-700 transition-all shadow-sm"
+                            >
+                              Write Report
+                            </button>
+                          )}
+                        </>
+                      );
+                    })()}
                   </div>
                 </motion.div>
               ))}

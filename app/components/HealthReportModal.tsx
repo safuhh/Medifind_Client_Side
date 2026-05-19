@@ -170,7 +170,7 @@ export default function HealthReportModal({ isOpen, onClose, booking, onSaveSucc
                                                 >
                                                     <div className="flex items-center gap-3">
                                                         <img 
-                                                            src={med.images?.[0] ? getImageUrl(med.images[0]) : null} 
+                                                            src={med.images?.[0] ? getImageUrl(med.images[0]) : undefined} 
                                                             alt={med.name}
                                                             className="w-8 h-8 rounded object-cover bg-slate-50"
                                                         />

@@ -164,7 +164,12 @@ export default function MedicineDetailClient({ initialData }: { initialData?: Me
 
   const handleBuyNow = () => {
     if (!medicine) return;
-    alert(`Proceeding to buy ${quantity} units of ${medicine.name}`);
+    if (!user) {
+      toast.info("Please login to purchase medicines.");
+      router.push(`/login?redirect=/medicines/${medicine._id}`);
+      return;
+    }
+    router.push(`/deliveryDetails?buyNowMedicineId=${medicine._id}&buyNowQuantity=${quantity}`);
   };
 
   useEffect(() => {
@@ -391,10 +396,10 @@ export default function MedicineDetailClient({ initialData }: { initialData?: Me
                 </button>
                 <button
                   onClick={handleBuyNow}
-                  disabled={medicine.stock <= 0}
+                  disabled={user ? (selectableMax <= 0 || user.id === medicine.sellerId) : medicine.stock <= 0}
                   className="flex-[1.5] bg-emerald-800 hover:bg-emerald-900 text-white py-3.5 rounded-lg font-bold text-base transition-all shadow-lg shadow-emerald-800/20 disabled:bg-slate-100 disabled:text-slate-400"
                 >
-                  Buy Now
+                  {user?.id === medicine.sellerId ? "Your Product" : (user && selectableMax <= 0) ? "Limit Reached" : "Buy Now"}
                 </button>
               </div>
             </div>

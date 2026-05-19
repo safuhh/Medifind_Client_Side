@@ -3,8 +3,14 @@
 import React, { useEffect, useRef } from "react";
 import { motion, useInView, useMotionValue, useTransform, animate } from "framer-motion";
 
+interface CounterProps {
+  value: number;
+  suffix?: string;
+  decimals?: number;
+}
+
 // Upgraded Helper component for a buttery-smooth counting animation
-function Counter({ value, suffix = "", decimals = 0 }) {
+function Counter({ value, suffix = "", decimals = 0 }: CounterProps) {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-50px" });
   const motionValue = useMotionValue(0);

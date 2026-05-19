@@ -17,7 +17,9 @@ const DeliveryDetailsPage = () => {
                     <p className="text-slate-500">Please provide your shipping information for future orders.</p>
                 </div>
 
-                <DeliveryDetailsForm />
+                <React.Suspense fallback={<div className="text-center py-10"><p className="text-slate-500">Loading delivery form...</p></div>}>
+                    <DeliveryDetailsForm />
+                </React.Suspense>
             </div>
         </div>
     );

@@ -8,6 +8,27 @@ import dayjs from "dayjs";
 import { toast } from "react-toastify";
 import { FiClock, FiAlertCircle, FiArrowLeft } from "react-icons/fi";
 
+const parseLocalSlot = (bookingDate: string | Date, timeSlot: string) => {
+  let hours = 0;
+  let minutes = 0;
+
+  if (timeSlot) {
+    const parts = timeSlot.split(" ");
+    const timeParts = parts[0].split(":");
+    hours = parseInt(timeParts[0]);
+    minutes = parseInt(timeParts[1]);
+    const modifier = parts[1];
+
+    if (modifier === "PM" && hours < 12) hours += 12;
+    if (modifier === "AM" && hours === 12) hours = 0;
+  }
+
+  return dayjs(bookingDate)
+    .startOf("day")
+    .add(hours, "hour")
+    .add(minutes, "minute");
+};
+
 export default function ConsultationRoom() {
   const params = useParams();
   const router = useRouter();
@@ -33,16 +54,20 @@ export default function ConsultationRoom() {
             return;
           }
           
-          const scheduledTime = dayjs(cons.scheduledAt);
+          const scheduledTime = cons.scheduledAt
+            ? dayjs(cons.scheduledAt)
+            : cons.bookingId?.date && cons.bookingId?.timeSlot
+              ? parseLocalSlot(cons.bookingId.date, cons.bookingId.timeSlot)
+              : dayjs(cons.createdAt);
           const now = dayjs();
           
-          // Allow joining 10 minutes before and up to 2 hours after
-          const startTime = scheduledTime.subtract(10, "minute");
-          const endTime = scheduledTime.add(15, "minute");
+          // Allow joining strictly from slot start time up to 30 minutes after slot start
+          const startTime = scheduledTime;
+          const endTime = scheduledTime.add(30, "minute");
           
           if (now.isBefore(startTime)) {
             setIsAllowed(false);
-            setTimeMessage(`This consultation is scheduled for ${scheduledTime.format("DD MMM YYYY, hh:mm A")}. You can join 10 minutes before the time.`);
+            setTimeMessage(`This consultation is scheduled for ${scheduledTime.format("DD MMM YYYY, hh:mm A")}. You can only join once the scheduled time arrives.`);
           } else if (now.isAfter(endTime)) {
             setIsAllowed(false);
             setTimeMessage("This consultation session has expired.");
@@ -80,7 +105,9 @@ export default function ConsultationRoom() {
         console.error("Error checking consultation status:", err);
       }
 
-      const scheduledTime = dayjs(consultation.scheduledAt);
+      const scheduledTime = consultation.bookingId?.date && consultation.bookingId?.timeSlot
+        ? parseLocalSlot(consultation.bookingId.date, consultation.bookingId.timeSlot)
+        : dayjs(consultation.scheduledAt);
       const endTime = scheduledTime.add(30, "minute");
       const now = dayjs();
       

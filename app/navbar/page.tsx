@@ -266,9 +266,7 @@ const NavbarPage = () => {
 
               {/* Sticky Bottom Actions */}
               <div className="p-6 border-t border-gray-100 bg-gray-50 flex flex-col gap-4">
-                <button className="w-full py-3 bg-emerald-50 text-emerald-700 font-semibold rounded-lg text-sm border border-emerald-100 hover:bg-emerald-100 transition-colors">
-                  Upload Prescription (Rx)
-                </button>
+              
 
                 {isMounted && user && user._id ? (
                   <div className="flex flex-col gap-3">

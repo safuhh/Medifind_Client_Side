@@ -17,6 +17,39 @@ interface AppointmentDetailsModalProps {
 export default function AppointmentDetailsModal({ isOpen, onClose, app, onCompleteSuccess }: AppointmentDetailsModalProps) {
     const router = useRouter();
 
+    const parseLocalSlot = (bookingDate: string | Date, timeSlot: string) => {
+        let hours = 0;
+        let minutes = 0;
+
+        if (timeSlot) {
+            const parts = timeSlot.split(" ");
+            const timeParts = parts[0].split(":");
+            hours = parseInt(timeParts[0]);
+            minutes = parseInt(timeParts[1]);
+            const modifier = parts[1];
+
+            if (modifier === "PM" && hours < 12) hours += 12;
+            if (modifier === "AM" && hours === 12) hours = 0;
+        }
+
+        return dayjs(bookingDate)
+            .startOf("day")
+            .add(hours, "hour")
+            .add(minutes, "minute");
+    };
+
+    const scheduledTime = app && app.scheduledAt
+        ? dayjs(app.scheduledAt)
+        : app && app.date && app.timeSlot
+            ? parseLocalSlot(app.date, app.timeSlot)
+            : app ? dayjs(app.createdAt) : null;
+    const now = dayjs();
+    const startTime = scheduledTime;
+    const endTime = scheduledTime ? scheduledTime.add(30, "minute") : null;
+    const isTime = scheduledTime && endTime
+        ? now.isAfter(startTime) && now.isBefore(endTime)
+        : false;
+
     const handleCompleteConsultation = async (roomId: string) => {
         try {
             const res = await api.post(`/consultation/${roomId}/complete`);
@@ -94,7 +127,7 @@ export default function AppointmentDetailsModal({ isOpen, onClose, app, onComple
                                 </div>
                             </div>
 
-                            {app.roomId && (
+                            {app.roomId && isTime && (
                                 <div className="p-6 bg-slate-50 rounded-3xl space-y-1">
                                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
                                         Consultation Room ID
@@ -129,61 +162,66 @@ export default function AppointmentDetailsModal({ isOpen, onClose, app, onComple
                                 </p>
                             </div>
 
-                            {app.roomId && (
-                                <>
-                                    {app.consultationStatus === "completed" ? (
-                                        <button
-                                            disabled
-                                            className="w-full bg-slate-100 text-slate-400 py-5 rounded-2xl font-black text-xs uppercase tracking-widest cursor-not-allowed mb-3 flex items-center justify-center gap-2"
-                                        >
-                                            Call Completed
-                                        </button>
-                                    ) : dayjs().isAfter(
-                                        dayjs(app.scheduledAt).add(15, "minute"),
-                                    ) ? (
-                                        <button
-                                            disabled
-                                            className="w-full bg-slate-100 text-slate-400 py-5 rounded-2xl font-black text-xs uppercase tracking-widest cursor-not-allowed mb-3 flex items-center justify-center gap-2"
-                                        >
-                                            Video call time expired. You cannot join.
-                                        </button>
-                                    ) : (
-                                        <button
-                                            onClick={() =>
-                                                router.push(`/consultation/${app.roomId}`)
-                                            }
-                                            className="w-full bg-emerald-600 text-white py-5 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-emerald-700 transition-all shadow-xl mb-3 flex items-center justify-center gap-2"
-                                        >
-                                            Join Consultation Room
-                                        </button>
-                                    )}
+                            {app.roomId && (() => {
+                                return (
+                                    <>
+                                        {app.consultationStatus === "completed" ? (
+                                            <button
+                                                disabled
+                                                className="w-full bg-slate-100 text-slate-400 py-5 rounded-2xl font-black text-xs uppercase tracking-widest cursor-not-allowed mb-3 flex items-center justify-center gap-2"
+                                            >
+                                                Call Completed
+                                            </button>
+                                        ) : scheduledTime && now.isBefore(scheduledTime) ? (
+                                            <div className="w-full bg-amber-50 border border-amber-200 text-amber-600 py-5 rounded-2xl font-black text-xs uppercase tracking-widest cursor-not-allowed mb-3 flex flex-col items-center justify-center gap-1">
+                                                <span>Meeting Scheduled At {scheduledTime.format("hh:mm A")}</span>
+                                                <span className="text-[9px] font-bold text-amber-500 font-sans text-center">The video call link will become available exactly when the scheduled time arrives.</span>
+                                            </div>
+                                        ) : endTime && now.isAfter(endTime) ? (
+                                            <button
+                                                disabled
+                                                className="w-full bg-slate-100 text-slate-400 py-5 rounded-2xl font-black text-xs uppercase tracking-widest cursor-not-allowed mb-3 flex items-center justify-center gap-2"
+                                            >
+                                                Video call time expired. You cannot join.
+                                            </button>
+                                        ) : (
+                                            <button
+                                                onClick={() =>
+                                                    router.push(`/consultation/${app.roomId}`)
+                                                }
+                                                className="w-full bg-emerald-600 text-white py-5 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-emerald-700 transition-all shadow-xl mb-3 flex items-center justify-center gap-2"
+                                            >
+                                                Join Consultation Room
+                                            </button>
+                                        )}
 
-                                    {app.consultationStatus !== "completed" && (
-                                        <>
-                                            {dayjs().isBefore(dayjs(app.scheduledAt)) ? (
-                                                <div className="w-full bg-amber-50 border border-amber-100 p-4 rounded-2xl flex flex-col items-center gap-2 mb-3">
-                                                    <p className="text-[10px] font-black text-amber-600 uppercase tracking-widest text-center">
-                                                        Too Early to Complete
-                                                    </p>
-                                                    <p className="text-[9px] text-amber-500 font-bold text-center">
-                                                        This appointment is scheduled for {dayjs(app.scheduledAt).format("hh:mm A")}. 
-                                                        You can only mark it as completed once the session time has arrived.
-                                                    </p>
-                                                </div>
-                                            ) : (
-                                                <button
-                                                    onClick={() =>
-                                                        handleCompleteConsultation(app.roomId)
-                                                    }
-                                                    className="w-full bg-slate-900 text-white py-5 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-emerald-600 transition-all shadow-xl mb-3 flex items-center justify-center gap-2"
-                                                >
-                                                    Mark as Completed
-                                                </button>
-                                            )}
-                                        </>
-                                    )}
-                                </>
-                            )}
+                                        {app.consultationStatus !== "completed" && (
+                                            <>
+                                                {now.isBefore(scheduledTime || now) ? (
+                                                    <div className="w-full bg-amber-50 border border-amber-100 p-4 rounded-2xl flex flex-col items-center gap-2 mb-3">
+                                                        <p className="text-[10px] font-black text-amber-600 uppercase tracking-widest text-center">
+                                                            Too Early to Complete
+                                                        </p>
+                                                        <p className="text-[9px] text-amber-500 font-bold text-center">
+                                                            This appointment is scheduled for {scheduledTime?.format("hh:mm A")}. 
+                                                            You can only mark it as completed once the session time has arrived.
+                                                        </p>
+                                                    </div>
+                                                ) : (
+                                                    <button
+                                                        onClick={() =>
+                                                            handleCompleteConsultation(app.roomId)
+                                                        }
+                                                        className="w-full bg-slate-900 text-white py-5 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-emerald-600 transition-all shadow-xl mb-3 flex items-center justify-center gap-2"
+                                                    >
+                                                        Mark as Completed
+                                                    </button>
+                                                )}
+                                            </>
+                                        )}
+                                    </>
+                                );
+                            })()}
                             <button
                                 onClick={onClose}
                                 className="w-full bg-slate-900 text-white py-5 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-emerald-600 transition-all shadow-xl"

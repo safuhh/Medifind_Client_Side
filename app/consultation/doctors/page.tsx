@@ -104,7 +104,7 @@ export default function DoctorsListPage() {
                     <div className="flex items-start gap-4 mb-5">
                       <div className="relative shrink-0">
                         <img 
-                          src={doc.profileImage ? getImageUrl(doc.profileImage) : null} 
+                          src={doc.profileImage ? getImageUrl(doc.profileImage) : undefined} 
                           alt={doc.fullName}
                           className="w-16 h-16 rounded-xl object-cover bg-slate-50"
                         />
