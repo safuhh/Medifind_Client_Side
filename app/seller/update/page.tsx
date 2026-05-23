@@ -122,7 +122,14 @@ const handleSubmit = async (e: React.FormEvent) => {
   setLoading(true);
 
   try {
-    await updateSellerInfo(form);
+    await updateSellerInfo({
+      shopName: form.shopName,
+      licenseNumber: form.licenseNumber,
+      address: form.address,
+      phone: form.phone,
+      lat: form.lat ?? undefined,
+      lng: form.lng ?? undefined,
+    });
     toast.success("Profile updated ");
     setEditing(false);
     await load(false);
@@ -134,13 +141,6 @@ const handleSubmit = async (e: React.FormEvent) => {
   }
 };
 
-  if (fetching) {
-    return (
-      <div className="h-screen flex items-center justify-center text-gray-500">
-        Loading seller profile...
-      </div>
-    );
-  }
 
   return (
   <div className="min-h-screen bg-[#fafafa] flex">

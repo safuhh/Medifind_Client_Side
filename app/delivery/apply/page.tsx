@@ -15,7 +15,7 @@ type FormType = {
   vehicleNumber: string;
   address: string;
   aadhaarNumber: string;
-  aadhaarImage: string;
+  aadhaarImageFile: File | null;
   lat: number | null;
   lng: number | null;
 };
@@ -28,13 +28,14 @@ export default function DeliveryApplyPage() {
     vehicleNumber: "",
     address: "",
     aadhaarNumber: "",
-    aadhaarImage: "",
+    aadhaarImageFile: null,
     lat: null,
     lng: null,
   });
 
   const [loading, setLoading] = useState(false);
   const [locating, setLocating] = useState(false);
+  const [ocrVerifying, setOcrVerifying] = useState(false);
 
   const validateForm = (): boolean => {
     if (!form.name || form.name.length < 3)
@@ -55,11 +56,8 @@ export default function DeliveryApplyPage() {
     if (!/^\d{12}$/.test(form.aadhaarNumber))
       return toast.error("Aadhaar must be 12 digits"), false;
 
-    try {
-      new URL(form.aadhaarImage);
-    } catch {
-      return toast.error("Invalid Aadhaar image URL"), false;
-    }
+    if (!form.aadhaarImageFile)
+      return toast.error("Please upload Aadhaar image file"), false;
 
     if (form.lat === null || form.lng === null)
       return toast.error("Please add location"), false;
@@ -78,34 +76,47 @@ export default function DeliveryApplyPage() {
     navigator.geolocation.getCurrentPosition(
       async (pos) => {
         const { latitude, longitude } = pos.coords;
+        // Always save coordinates first
         setForm((prev) => ({
           ...prev,
           lat: latitude,
           lng: longitude,
         }));
 
+        // Try to reverse-geocode the address (non-critical – failure is OK)
         try {
           const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
-          const res = await fetch(`${apiUrl}/locations/reverse?lat=${latitude}&lng=${longitude}`);
-          const data = await res.json();
-          
-          setForm((prev) => ({
-            ...prev,
-            address: data.address || prev.address,
-          }));
-          toast.success("Location & address captured");
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 8000);
+          const res = await fetch(
+            `${apiUrl}/locations/reverse?lat=${latitude}&lng=${longitude}`,
+            { signal: controller.signal }
+          );
+          clearTimeout(timeoutId);
+          if (res.ok) {
+            const data = await res.json();
+            setForm((prev) => ({
+              ...prev,
+              address: data.address || prev.address,
+            }));
+            toast.success("Location & address captured 📍");
+          } else {
+            toast.success("Location coordinates saved 📍");
+          }
         } catch (err) {
-          console.error("Error fetching address:", err);
-          toast.error("Failed to fetch address from location");
+          // Network error or timeout – location coords are already saved above
+          console.warn("Address lookup failed (coords still saved):", err);
+          toast.success("Location saved 📍 (address lookup unavailable)");
         } finally {
           setLocating(false);
         }
       },
-      () => {
+      (geoErr) => {
         setLocating(false);
-        toast.error("Location error");
+        console.error("Geolocation error:", geoErr);
+        toast.error("Could not get location. Please allow location access.");
       },
-      { enableHighAccuracy: true }
+      { enableHighAccuracy: true, timeout: 10000 }
     );
   };
 
@@ -115,18 +126,24 @@ export default function DeliveryApplyPage() {
 
     try {
       setLoading(true);
+      setOcrVerifying(true);
 
-      const payload = {
-        ...form,
-        name: form.name.trim(),
-        phone: form.phone.trim(),
-        address: form.address.trim(),
-      };
+      const data = new FormData();
+      data.append("name", form.name.trim());
+      data.append("phone", form.phone.trim());
+      data.append("vehicleType", form.vehicleType);
+      data.append("vehicleNumber", form.vehicleNumber.trim());
+      data.append("address", form.address.trim());
+      data.append("aadhaarNumber", form.aadhaarNumber.replace(/\s+/g, "").trim());
+      if (form.aadhaarImageFile) {
+        data.append("aadhaarImage", form.aadhaarImageFile);
+      }
+      data.append("lat", String(form.lat));
+      data.append("lng", String(form.lng));
 
-      const res = await applyDeliveryBoy(payload);
+      const res = await applyDeliveryBoy(data);
 
-      toast.success("Application submitted ");
-
+      toast.success("✅ Application submitted successfully!");
       console.log(res.data);
 
       setForm({
@@ -136,14 +153,16 @@ export default function DeliveryApplyPage() {
         vehicleNumber: "",
         address: "",
         aadhaarNumber: "",
-        aadhaarImage: "",
+        aadhaarImageFile: null,
         lat: null,
         lng: null,
       });
     } catch (err: any) {
-      toast.error(err.response?.data?.message || "Something went wrong");
+      const msg = err.response?.data?.message || "Something went wrong. Please try again.";
+      toast.error(msg);
     } finally {
       setLoading(false);
+      setOcrVerifying(false);
     }
   };
 
@@ -245,12 +264,15 @@ export default function DeliveryApplyPage() {
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-bold text-slate-500 uppercase tracking-wide ml-1">Aadhaar Image URL</label>
+                <label className="text-xs font-bold text-slate-500 uppercase tracking-wide ml-1">Upload Aadhaar Image or PDF</label>
                 <input
-                  placeholder="Enter public image URL"
-                  value={form.aadhaarImage}
-                  onChange={(e) => setForm({ ...form, aadhaarImage: e.target.value })}
-                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition text-sm"
+                  type="file"
+                  accept="image/*,application/pdf"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0] || null;
+                    setForm({ ...form, aadhaarImageFile: file });
+                  }}
+                  className="w-full px-4 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition text-sm file:mr-4 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100"
                 />
               </div>
 
@@ -264,9 +286,19 @@ export default function DeliveryApplyPage() {
               <button
                 onClick={handleSubmit}
                 disabled={loading}
-                className="w-full py-3 rounded-xl bg-[#0a4d33] text-white font-bold text-sm hover:bg-[#083d28] transition shadow-md shadow-[#0a4d33]/10 disabled:opacity-50 mt-2 md:col-span-2"
+                className="w-full py-3 rounded-xl bg-[#0a4d33] text-white font-bold text-sm hover:bg-[#083d28] transition shadow-md shadow-[#0a4d33]/10 disabled:opacity-50 mt-2 md:col-span-2 flex items-center justify-center gap-2"
               >
-                {loading ? "Submitting..." : "Submit Application"}
+                {loading ? (
+                  ocrVerifying ? (
+                    <>
+                      <svg className="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+                      </svg>
+                      Verifying Aadhaar document...
+                    </>
+                  ) : "Submitting..."
+                ) : "Submit Application"}
               </button>
             </div>
           </div>

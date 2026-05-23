@@ -10,6 +10,8 @@ export const useDeliveryDetails = () => {
     const searchParams = useSearchParams();
     const buyNowMedicineId = searchParams ? searchParams.get("buyNowMedicineId") : null;
     const buyNowQuantity = searchParams ? searchParams.get("buyNowQuantity") : null;
+    const splitFulfillmentId = searchParams ? searchParams.get("splitFulfillmentId") : null;
+    const prescribedQty = searchParams ? searchParams.get("prescribedQty") : null;
     
     const [deliveryDetails, setDeliveryDetails] = useState({
         name: "",
@@ -203,7 +205,9 @@ export const useDeliveryDetails = () => {
             const res = await api.post("/orders/checkout", { 
                 deliveryDetailsId: addressId,
                 buyNowMedicineId,
-                buyNowQuantity
+                buyNowQuantity,
+                splitFulfillmentId,
+                prescribedQty: prescribedQty ? Number(prescribedQty) : undefined,
             });
             
             if (res.data.success && res.data.url) {

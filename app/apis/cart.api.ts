@@ -1,6 +1,6 @@
 import api from "./api";
 
-export const addToCart = (data: { medicineId: string; quantity: number }) => {
+export const addToCart = (data: { medicineId: string; quantity: number; prescribedQty?: number }) => {
   return api.post("/cart/add-to-cart", data);
 };
 
@@ -19,3 +19,8 @@ export const deleteCart = (data: { medicineId: string }) => {
 export const getCart = () => {
   return api.post("/cart/get-cart");
 };
+
+export const optimizeOrderSplits = (data?: { patientCoords?: [number, number]; prescriptionId?: string }) => {
+  return api.post("/orders/optimize-split", data || {});
+};
+

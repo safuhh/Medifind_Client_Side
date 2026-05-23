@@ -113,11 +113,11 @@ export default function DeliveryDashboardPage() {
     }
   };
 
-  const handlePickup = async (orderId: string) => {
+  const handlePickup = async (orderId: string, sellerId?: string) => {
     try {
-      const res = await pickupOrder({ orderId });
+      const res = await pickupOrder({ orderId, sellerId });
       if (res.data.success) {
-        toast.success("Order marked as picked up!");
+        toast.success(sellerId ? "Shop items marked as picked up!" : "Order marked as picked up!");
         fetchData(); // Refresh to update status and map
       }
     } catch (err: any) {
@@ -145,6 +145,30 @@ export default function DeliveryDashboardPage() {
       </div>
     );
   }
+
+  const groupedShops = data?.currentOrderId?.items 
+    ? Object.values(
+        data.currentOrderId.items.reduce((acc: any, item: any) => {
+          const sellerId = item.sellerId?._id || item.sellerId;
+          if (!sellerId) return acc;
+          
+          if (!acc[sellerId]) {
+            acc[sellerId] = {
+              sellerId,
+              sellerShop: item.sellerShop,
+              sellerInfo: item.sellerId,
+              items: [],
+              isPickedUp: true
+            };
+          }
+          acc[sellerId].items.push(item);
+          if (!item.isPickedUp) {
+            acc[sellerId].isPickedUp = false;
+          }
+          return acc;
+        }, {})
+      )
+    : [];
 
  return (
   <div>
@@ -206,14 +230,6 @@ export default function DeliveryDashboardPage() {
               {data.currentOrderId.orderStatus}
             </span>
 
-            {(data.currentOrderId.orderStatus === "confirmed" || data.currentOrderId.orderStatus === "pending") && (
-              <button
-                onClick={() => handlePickup(data.currentOrderId._id)}
-                className="bg-blue-600 text-white px-4 py-1.5 rounded-full text-xs font-bold hover:bg-blue-700 transition"
-              >
-                Mark Picked Up
-              </button>
-            )}
             {data.currentOrderId.orderStatus === "picked_up" && (
               <button
                 onClick={() => handleDeliver(data.currentOrderId._id)}
@@ -236,29 +252,53 @@ export default function DeliveryDashboardPage() {
               <h3 className="text-sm font-bold uppercase tracking-wider text-slate-500 mb-4">Pickup Locations (Pharmacies)</h3>
               
               <div className="space-y-4">
-                {data.currentOrderId.items?.map((item: any, idx: number) => (
+                {groupedShops.map((shop: any, idx: number) => (
                   <div key={idx} className="bg-slate-50 rounded-xl p-4 border border-slate-100">
-                    <div className="flex justify-between items-start mb-3">
+                    <div className="flex justify-between items-start mb-3 gap-4">
                       <div>
-                        <p className="font-bold text-slate-900 text-lg">{item.sellerShop?.shopName || item.sellerId?.name || "Unknown Pharmacy"}</p>
+                        <p className="font-bold text-slate-900 text-lg">
+                          {shop.sellerShop?.shopName || shop.sellerInfo?.name || "Unknown Pharmacy"}
+                        </p>
                         <p className="text-slate-600 text-sm flex items-center gap-1 mt-1">
                           <MapPin className="w-4 h-4 text-slate-400" />
-                          {item.sellerShop?.address || "Address not available"}
+                          {shop.sellerShop?.address || "Address not available"}
                         </p>
                         <p className="text-slate-600 text-sm flex items-center gap-1 mt-1">
                           <Phone className="w-4 h-4 text-slate-400" />
-                          {item.sellerShop?.phone || item.sellerId?.phone || "No phone"}
+                          {shop.sellerShop?.phone || shop.sellerInfo?.phone || "No phone"}
                         </p>
                       </div>
+                      <div className="shrink-0">
+                        {shop.isPickedUp ? (
+                          <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-50 text-emerald-700 rounded-full text-xs font-bold uppercase border border-emerald-100">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                            Picked Up
+                          </span>
+                        ) : (
+                          <button
+                            onClick={() => handlePickup(data.currentOrderId._id, shop.sellerId)}
+                            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-1.5 rounded-xl text-xs font-bold transition shadow-sm"
+                          >
+                            Mark Picked Up
+                          </button>
+                        )}
+                      </div>
                     </div>
-                    <div className="bg-white rounded-lg p-3 border border-slate-200 flex items-center gap-3">
-                      <div className="w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center">
-                        <Package className="w-5 h-5 text-slate-400" />
-                      </div>
-                      <div>
-                        <p className="font-semibold text-slate-800 text-sm">{item.medicineId?.name || "Medicine"}</p>
-                        <p className="text-xs text-slate-500">Qty: {item.quantity}</p>
-                      </div>
+                    <div className="space-y-2 mt-4">
+                      {shop.items.map((item: any, itemIdx: number) => (
+                        <div key={itemIdx} className="bg-white rounded-lg p-3 border border-slate-200 flex items-center gap-3">
+                          <div className="w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center">
+                            <Package className="w-5 h-5 text-slate-400" />
+                          </div>
+                          <div className="flex-1">
+                            <p className="font-semibold text-slate-800 text-sm">{item.medicineId?.name || "Medicine"}</p>
+                            <p className="text-xs text-slate-500">Qty: {item.quantity}</p>
+                          </div>
+                          {item.isPickedUp && (
+                            <span className="text-emerald-600 text-xs font-bold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-100">Picked</span>
+                          )}
+                        </div>
+                      ))}
                     </div>
                   </div>
                 ))}
@@ -294,10 +334,13 @@ export default function DeliveryDashboardPage() {
             </h3>
             <DeliveryMap 
               currentLocation={currentLocation} 
-              pickupLocations={data.currentOrderId.items?.map((item: any) => ({
-                lat: item.sellerShop?.location?.lat || item.sellerId?.location?.coordinates?.[1] || 0,
-                lng: item.sellerShop?.location?.lng || item.sellerId?.location?.coordinates?.[0] || 0
-              })).filter((loc: any) => loc.lat !== 0)}
+              pickupLocations={groupedShops
+                .filter((shop: any) => !shop.isPickedUp)
+                .map((shop: any) => ({
+                  lat: shop.sellerShop?.location?.lat || shop.sellerInfo?.location?.coordinates?.[1] || 0,
+                  lng: shop.sellerShop?.location?.lng || shop.sellerInfo?.location?.coordinates?.[0] || 0
+                }))
+                .filter((loc: any) => loc.lat !== 0)}
               dropoffLocation={data.currentOrderId.userId?.location?.coordinates ? {
                 lat: data.currentOrderId.userId.location.coordinates[1],
                 lng: data.currentOrderId.userId.location.coordinates[0]

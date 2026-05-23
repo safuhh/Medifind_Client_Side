@@ -169,7 +169,7 @@ export default function MedicineDetailClient({ initialData }: { initialData?: Me
       router.push(`/login?redirect=/medicines/${medicine._id}`);
       return;
     }
-    router.push(`/deliveryDetails?buyNowMedicineId=${medicine._id}&buyNowQuantity=${quantity}`);
+    router.push(`/deliveryDetails?buyNowMedicineId=${medicine._id}&buyNowQuantity=${quantity}${prescribedQty ? `&prescribedQty=${prescribedQty}` : ""}`);
   };
 
   useEffect(() => {

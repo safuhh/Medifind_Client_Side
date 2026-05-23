@@ -2,12 +2,12 @@
 
 import React, { useState, useEffect } from "react";
 import Sidebar from "../navbar/page";
-import { saveAvailability } from "../../apis/doctor.api"; // I'll add this to doctor.api
 import { getApplicationStatus } from "../../apis/doctor.api";
 import { toast } from "react-toastify";
-import { motion } from "framer-motion";
 import { FiSave, FiClock, FiCalendar } from "react-icons/fi";
 import api from "../../apis/api";
+import { useRouter } from "next/navigation";
+import { getSubscriptionStatus } from "../../apis/subcription.api";
 
 export default function AvailabilityPage() {
   const [loading, setLoading] = useState(true);
@@ -30,6 +30,42 @@ export default function AvailabilityPage() {
   });
 
   const [slotDuration, setSlotDuration] = useState(15);
+  const router = useRouter();
+  const [isLocked, setIsLocked] = useState(false);
+  const [checkingSub, setCheckingSub] = useState(true);
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+
+    const checkSub = async () => {
+      try {
+        const res = await getSubscriptionStatus();
+        if (res.subscription) {
+          if (!res.subscription.isPro && res.subscription.trialStartedAt) {
+            // Check immediately
+            const checkExpiry = () => {
+              const diffMs = Date.now() - new Date(res.subscription.trialStartedAt!).getTime();
+              const diffSeconds = diffMs / 1000;
+              if (diffSeconds >= 20) {
+                setIsLocked(true);
+                clearInterval(interval);
+              }
+            };
+            
+            checkExpiry();
+            // Then check every second
+            interval = setInterval(checkExpiry, 1000);
+          }
+        }
+      } catch (err) {
+        console.error("Failed to check subscription", err);
+      } finally {
+        setCheckingSub(false);
+      }
+    };
+    checkSub();
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -106,6 +142,27 @@ export default function AvailabilityPage() {
             <p className="text-slate-500 text-sm">Configure your weekly schedule and consultation time slots.</p>
           </div>
 
+          {checkingSub ? (
+            <div className="p-20 flex justify-center bg-white rounded-2xl border border-slate-100 shadow-sm">
+              <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-emerald-600 border-r-2 border-emerald-600/30"></div>
+            </div>
+          ) : isLocked ? (
+            <div className="p-16 text-center space-y-6 bg-white rounded-2xl border border-slate-100 shadow-sm">
+              <div className="w-24 h-24 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                <span className="text-4xl">🔒</span>
+              </div>
+              <h2 className="text-2xl font-bold text-slate-900">Free Trial Expired</h2>
+              <p className="text-slate-500 max-w-md mx-auto">
+                Your 20-second free trial has ended. Upgrade to our Pro plan to save unlimited availability slots and get priority placement!
+              </p>
+              <button 
+                onClick={() => router.push("/subcription")}
+                className="bg-gradient-to-r from-indigo-500 to-violet-500 text-white font-bold py-4 px-10 rounded-xl shadow-lg shadow-indigo-500/30 hover:scale-105 transition-transform"
+              >
+                View Pro Plans
+              </button>
+            </div>
+          ) : (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Left Column - Days */}
             <div className="lg:col-span-2 space-y-6">
@@ -278,6 +335,7 @@ export default function AvailabilityPage() {
               </button>
             </div>
           </div>
+          )}
         </div>
       </main>
     </div>

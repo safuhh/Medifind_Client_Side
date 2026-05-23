@@ -272,10 +272,10 @@ const handleSubmit = async () => {
                 
                 {/* Shop & License in one row on larger screens to save height */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {[
+                  {([
                     { id: 'shopName', label: 'Shop Name', placeholder: 'Heart Pharmacy' },
                     { id: 'licenseNumber', label: 'License', placeholder: 'MED-12345' }
-                  ].map((input) => (
+                  ] as const).map((input) => (
                     <div key={input.id} className="relative">
                       <label className="absolute left-3.5 top-2 text-[9px] font-bold text-emerald-700 uppercase tracking-widest">
                         {input.label}

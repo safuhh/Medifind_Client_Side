@@ -79,15 +79,12 @@ export default function SellerAdminPage() {
   return (
   <div className="flex min-h-screen bg-slate-50 text-gray-900 font-sans relative">
     <AdminSidebar />
-    <div className="flex-1 w-full md:ml-64 p-4 sm:p-6 lg:p-10 transition-all duration-300">
-      
-      <div className="max-w-7xl mx-auto space-y-6 sm:space-y-8">
+    <main className="flex-1 w-full md:ml-72 p-4 sm:p-6 lg:p-10 pt-24 md:pt-10 transition-all duration-300">
+      <div className="w-full max-w-7xl space-y-6 sm:space-y-8">
 
         {/* Header Section */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-5 pb-6 border-b border-gray-200">
           <div className="space-y-1">
-            <br/>
-            <br/>
             <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
               Seller Management
             </h1>
@@ -210,7 +207,7 @@ export default function SellerAdminPage() {
           
         </div>
       </div>
-    </div>
+    </main>
   </div>
 );
 }

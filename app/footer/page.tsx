@@ -38,7 +38,7 @@ export const Footer = () => {
           <nav className="flex flex-col gap-6">
             <h3 className="text-lg font-bold">For Pharmacies</h3>
             <ul className="flex flex-col gap-4">
-              <li><Link href="/dashboard" className="text-emerald-100/60 hover:text-emerald-400 transition-colors text-sm font-medium">Seller Dashboard</Link></li>
+              <li><Link href="/seller" className="text-emerald-100/60 hover:text-emerald-400 transition-colors text-sm font-medium">Seller Dashboard</Link></li>
               <li><Link href="/partner" className="text-emerald-100/60 hover:text-emerald-400 transition-colors text-sm font-medium">Register Your Pharmacy</Link></li>
             </ul>
           </nav>

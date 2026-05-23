@@ -19,15 +19,16 @@ export default function HealthReportModal({ isOpen, onClose, booking, onSaveSucc
     const [prescribedMedicines, setPrescribedMedicines] = useState<any[]>([]);
     const [medicineSearch, setMedicineSearch] = useState("");
     const [medicineResults, setMedicineResults] = useState<any[]>([]);
+    const [saving, setSaving] = useState(false);
 
     useEffect(() => {
         const fetchExistingReport = async () => {
             if (!isOpen || !booking?._id) return;
             try {
-                const res = await api.get(`/health-report/booking/${booking._id}`);
-                if (res.data.success && res.data.report) {
-                    setReportNotes(res.data.report.notes || "");
-                    setPrescribedMedicines(res.data.report.medicines || []);
+                const reportRes = await api.get(`/health-report/booking/${booking._id}`);
+                if (reportRes.data.success && reportRes.data.report) {
+                    setReportNotes(reportRes.data.report.notes || "");
+                    setPrescribedMedicines(reportRes.data.report.medicines || []);
                 }
             } catch (err: any) {
                 if (err.response?.status !== 404) {
@@ -47,7 +48,18 @@ export default function HealthReportModal({ isOpen, onClose, booking, onSaveSucc
             return;
         }
         try {
-            const res = await api.get(`/medicines/all?search=${query}`);
+            let lat = "";
+            let lng = "";
+            if (booking?.userId?.location?.coordinates && booking.userId.location.coordinates.length === 2) {
+                lng = booking.userId.location.coordinates[0];
+                lat = booking.userId.location.coordinates[1];
+            }
+
+            const url = lat && lng 
+                ? `/medicines/all?search=${query}&lat=${lat}&lng=${lng}`
+                : `/medicines/all?search=${query}`;
+
+            const res = await api.get(url);
             if (res.data.success) {
                 setMedicineResults(res.data.medicines);
             }
@@ -71,26 +83,60 @@ export default function HealthReportModal({ isOpen, onClose, booking, onSaveSucc
     };
 
     const handleSaveReport = async () => {
-        if (!reportNotes) {
+        if (!reportNotes || !reportNotes.trim()) {
             toast.error("Please add notes to the report");
             return;
         }
+        
+        if (prescribedMedicines && prescribedMedicines.length > 0) {
+            for (const med of prescribedMedicines) {
+                if (!med.dosage || !med.dosage.trim()) {
+                    toast.error(`Dosage schedule is required for ${med.name}`);
+                    return;
+                }
+                if (!med.instructions || !med.instructions.trim()) {
+                    toast.error(`Instructions are required for ${med.name}`);
+                    return;
+                }
+                if (med.quantity < 1) {
+                    toast.error(`Quantity must be at least 1 for ${med.name}`);
+                    return;
+                }
+                if (med.quantity > (med.stock || 0)) {
+                    toast.error(`Quantity for ${med.name} exceeds available stock (${med.stock})`);
+                    return;
+                }
+            }
+        }
+
         try {
+            setSaving(true);
             const res = await api.post("/health-report", {
                 bookingId: booking._id,
                 notes: reportNotes,
-                medicines: prescribedMedicines
+                medicines: prescribedMedicines.map(med => ({
+                    medicineId: med.medicineId,
+                    name: med.name,
+                    dosage: med.dosage,
+                    instructions: med.instructions,
+                    timesPerDay: med.timesPerDay,
+                    quantity: med.quantity
+                }))
             });
+
             if (res.data.success) {
-                toast.success("Health report saved!");
+                toast.success("Health report saved successfully!");
                 onClose();
                 setReportNotes("");
                 setPrescribedMedicines([]);
                 if (onSaveSuccess) onSaveSuccess();
             }
-        } catch (err) {
+        } catch (err: any) {
             console.error("Error saving report:", err);
-            toast.error("Failed to save report");
+            const errMsg = err.response?.data?.message || "Failed to save report";
+            toast.error(errMsg);
+        } finally {
+            setSaving(false);
         }
     };
 
@@ -109,7 +155,7 @@ export default function HealthReportModal({ isOpen, onClose, booking, onSaveSucc
                         initial={{ opacity: 0, scale: 0.95, y: 10 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.95, y: 10 }}
-                        className="relative bg-white w-full max-w-2xl rounded-2xl p-6 md:p-8 shadow-xl border border-slate-100 overflow-hidden max-h-[90vh] flex flex-col"
+                        className="relative bg-white w-full max-w-2xl rounded-2xl p-6 md:p-8 shadow-xl border border-slate-100 shadow-2xl overflow-hidden max-h-[90vh] flex flex-col"
                     >
                         {/* Header */}
                         <div className="flex justify-between items-center mb-6">
@@ -176,7 +222,10 @@ export default function HealthReportModal({ isOpen, onClose, booking, onSaveSucc
                                                         />
                                                         <div>
                                                             <p className="font-medium text-slate-900">{med.name}</p>
-                                                            <p className="text-xs text-slate-400">{med.brand} • ₹{med.pricing?.sellingPrice} • Stock: {med.stock}</p>
+                                                            <p className="text-xs text-slate-400">
+                                                                {med.brand} • ₹{med.pricing?.sellingPrice} • Stock: {med.stock}
+                                                                {med.shop?.name && ` • ${med.shop.name} (${med.shop.distance || 0} km)`}
+                                                            </p>
                                                         </div>
                                                     </div>
                                                     {med.stock > 0 ? (
@@ -197,8 +246,8 @@ export default function HealthReportModal({ isOpen, onClose, booking, onSaveSucc
                                     <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider block">Prescribed Medicines</label>
                                     <div className="border border-slate-100 rounded-lg overflow-hidden">
                                         {prescribedMedicines.map((med, idx) => (
-                                            <div key={idx} className="border-b border-slate-100 last:border-b-0 p-4 bg-white hover:bg-slate-50/50 transition-colors">
-                                                <div className="flex justify-between items-center mb-3">
+                                            <div key={idx} className="border-b border-slate-100 last:border-b-0 p-4 bg-white hover:bg-slate-50/50 transition-colors space-y-4">
+                                                <div className="flex justify-between items-center">
                                                     <div>
                                                         <p className="font-medium text-slate-900">{med.name}</p>
                                                         <p className="text-xs text-slate-400">Stock: {med.stock}</p>
@@ -261,8 +310,8 @@ export default function HealthReportModal({ isOpen, onClose, booking, onSaveSucc
                                                             value={med.quantity}
                                                             onChange={(e) => {
                                                                 const updated = [...prescribedMedicines];
-                                                                const val = Number(e.target.value);
-                                                                updated[idx].quantity = val > med.stock ? med.stock : val;
+                                                                const val = parseInt(e.target.value, 10);
+                                                                updated[idx].quantity = isNaN(val) || val < 1 ? 1 : (val > med.stock ? med.stock : val);
                                                                 setPrescribedMedicines(updated);
                                                             }}
                                                             className="w-full border border-slate-200 rounded p-2 text-xs focus:border-emerald-500 outline-none transition-all"
@@ -282,15 +331,21 @@ export default function HealthReportModal({ isOpen, onClose, booking, onSaveSucc
                         <div className="mt-6 pt-4 border-t border-slate-100 flex justify-end gap-3 text-sm">
                             <button 
                                 onClick={onClose}
-                                className="px-5 py-2.5 rounded-lg font-medium text-slate-600 hover:bg-slate-50 transition-colors"
+                                disabled={saving}
+                                className="px-5 py-2.5 rounded-lg font-medium text-slate-600 hover:bg-slate-50 transition-colors disabled:opacity-50"
                             >
                                 Cancel
                             </button>
                             <button 
                                 onClick={handleSaveReport}
-                                className="bg-emerald-600 text-white px-5 py-2.5 rounded-lg font-medium hover:bg-emerald-700 transition-colors shadow-sm shadow-emerald-600/10"
+                                disabled={saving}
+                                className="bg-emerald-600 text-white px-5 py-2.5 rounded-lg font-medium hover:bg-emerald-700 transition-colors shadow-sm shadow-emerald-600/10 flex items-center gap-1.5 disabled:opacity-50"
                             >
-                                Save Report
+                                {saving ? (
+                                    <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                                ) : (
+                                    "Save Report"
+                                )}
                             </button>
                         </div>
                     </motion.div>

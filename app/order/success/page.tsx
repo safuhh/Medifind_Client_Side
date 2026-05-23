@@ -44,6 +44,9 @@ export default function OrderSuccessPage() {
     return (
         <div className="min-h-screen bg-[#fafafa] flex flex-col font-sans">
             <NavbarPage />
+                   <br/>
+      <br/>
+      
             
             <div className="flex-1 flex items-center justify-center p-6 py-24 sm:py-32">
                 <div className="w-full max-w-md bg-white rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-100 p-8 sm:p-10 text-center animate-in fade-in zoom-in-95 duration-500 relative overflow-hidden">

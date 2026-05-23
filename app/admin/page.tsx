@@ -68,12 +68,11 @@ const handleApprove = async (id: string) => {
     }
   };
 
- return (
-  <div className="min-h-screen bg-[#F8F9FA] p-6 md:p-12 font-sans text-slate-900 selection:bg-indigo-100">
-    <AdminSidebar />
-    <br />
-    <br />
-    <div className="max-w-4xl mx-auto space-y-8">
+  return (
+    <div className="min-h-screen bg-[#F8F9FA] font-sans text-slate-900 selection:bg-indigo-100 flex">
+      <AdminSidebar />
+      <main className="flex-1 md:ml-72 p-4 sm:p-6 md:p-12 pt-24 md:pt-12">
+        <div className="w-full max-w-5xl space-y-8">
       
       {/* Header Section */}
       <header className="flex flex-col gap-1">
@@ -230,7 +229,8 @@ const handleApprove = async (id: string) => {
       <p className="text-center text-xs text-slate-400 font-medium">
         Secure Admin Panel &bull; {new Date().getFullYear()}
       </p>
-    </div>
+      </div>
+    </main>
   </div>
 );
 }

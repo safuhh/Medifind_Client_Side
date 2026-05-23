@@ -15,11 +15,16 @@ import {
   FiShield,
   FiLock,
   FiUserCheck,
-  FiAlertCircle
+  FiAlertCircle,
+  FiStar,
+  FiMapPin,
+  FiCalendar
 } from "react-icons/fi";
 import Footer from "../footer/page";
 import { useRouter } from "next/navigation";
 import api from "../apis/api";
+import { getNearbyDoctors } from "@/app/apis/doctor.api";
+import { getImageUrl } from "@/app/utils/imageUrl";
 
 const SPECIALTIES = [
   { name: "General Physician", icon: <FiActivity /> },
@@ -49,6 +54,8 @@ export default function ConsultationPage() {
   const [showModal, setShowModal] = useState(false);
   const [isAgreed, setIsAgreed] = useState(false);
   const [hasConsented, setHasConsented] = useState(false);
+  const [nearbyDoctors, setNearbyDoctors] = useState<any[]>([]);
+  const [nearbyLoading, setNearbyLoading] = useState(false);
 
   useEffect(() => {
     const checkConsent = async () => {
@@ -69,6 +76,38 @@ export default function ConsultationPage() {
       checkConsent();
     }
   }, [accessToken]);
+
+  useEffect(() => {
+    if (!accessToken || !hasConsented) return;
+
+    const fetchNearby = async (lat?: number, lng?: number) => {
+      try {
+        setNearbyLoading(true);
+        const res = await getNearbyDoctors(lat, lng);
+        if (res.data.success) {
+          setNearbyDoctors(res.data.doctors || []);
+        }
+      } catch (err) {
+        console.error("Error fetching nearby doctors:", err);
+      } finally {
+        setNearbyLoading(false);
+      }
+    };
+
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          fetchNearby(pos.coords.latitude, pos.coords.longitude);
+        },
+        () => {
+          fetchNearby();
+        },
+        { timeout: 5000 }
+      );
+    } else {
+      fetchNearby();
+    }
+  }, [accessToken, hasConsented]);
 
   const handleSelectSpecialty = (name: string) => {
     router.push(`/consultation/doctors?specialization=${encodeURIComponent(name)}`);
@@ -241,6 +280,106 @@ export default function ConsultationPage() {
                 ))}
               </AnimatePresence>
             </div>
+          </section>
+        )}
+
+        {/* Recommended Nearby Doctors Section */}
+        {hasConsented && (
+          <section className="mb-24">
+            <div className="flex flex-col mb-8">
+              <h2 className="text-2xl font-black text-slate-900 tracking-tight flex items-center gap-2">
+                <FiMapPin className="text-emerald-600" /> Recommended Nearby Doctors
+              </h2>
+              <p className="text-slate-500 text-sm mt-1">
+                Find available medical practitioners closest to your current location.
+              </p>
+            </div>
+
+            {nearbyLoading ? (
+              <div className="flex items-center justify-center py-20 bg-white rounded-3xl border border-slate-100 shadow-sm">
+                <div className="w-8 h-8 border-2 border-slate-200 border-t-emerald-600 rounded-full animate-spin"></div>
+              </div>
+            ) : nearbyDoctors.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {nearbyDoctors.slice(0, 6).map((doc, idx) => (
+                  <motion.div
+                    key={doc._id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: idx * 0.05 }}
+                    className="bg-white rounded-3xl border border-slate-100 shadow-sm hover:shadow-md hover:border-emerald-100 transition-all p-6 flex flex-col justify-between group"
+                  >
+                    <div>
+                      <div className="flex items-start gap-4 mb-5">
+                        <div className="relative shrink-0">
+                          <img
+                            src={doc.profileImage ? getImageUrl(doc.profileImage) : undefined}
+                            alt={doc.fullName}
+                            className="w-16 h-16 rounded-2xl object-cover bg-slate-50 border border-slate-100 shadow-sm"
+                          />
+                          {doc.isAvailable && (
+                            <div className="absolute -bottom-1 -right-1 bg-white p-0.5 rounded-full">
+                              <span className="flex h-3.5 w-3.5 relative">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-emerald-500"></span>
+                              </span>
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="flex-1 min-w-0">
+                          <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full uppercase tracking-wider">
+                            {doc.specialization}
+                          </span>
+                          <h3 className="text-base font-extrabold text-slate-800 group-hover:text-emerald-600 transition-colors mt-1.5 truncate">
+                            Dr. {doc.fullName}
+                          </h3>
+                          
+                          {/* Rating & Distance */}
+                          <div className="flex items-center gap-3 mt-1 text-xs font-semibold text-slate-500">
+                            <div className="flex items-center gap-1">
+                              <FiStar className="text-amber-500 fill-amber-500" size={13} />
+                              <span className="text-slate-800">{doc.rating ? doc.rating.toFixed(1) : "0.0"}</span>
+                              <span className="text-slate-400 font-medium">({doc.ratingCount || 0})</span>
+                            </div>
+                            {doc.distance !== null && (
+                              <div className="flex items-center gap-1">
+                                <FiMapPin className="text-slate-400" size={13} />
+                                <span>{doc.distance} km away</span>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4 border-t border-slate-50 pt-4 mb-5 text-xs font-semibold text-slate-600">
+                        <div>
+                          <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">Experience</p>
+                          <p className="text-slate-800">{doc.experienceYears} Years</p>
+                        </div>
+                        <div>
+                          <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">Consultation Fee</p>
+                          <p className="text-slate-900 font-bold">₹{doc.consultationFee}</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <button
+                      onClick={() => router.push(`/consultation/doctor/${doc._id}`)}
+                      className="w-full bg-slate-50 group-hover:bg-emerald-600 group-hover:text-white text-slate-700 py-3 rounded-2xl font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 shadow-sm active:scale-95 cursor-pointer"
+                    >
+                      Book Consultation <FiChevronRight />
+                    </button>
+                  </motion.div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-12 bg-white rounded-3xl border border-slate-100 shadow-sm p-8">
+                <FiMapPin className="text-slate-300 mx-auto mb-3" size={32} />
+                <h4 className="text-base font-bold text-slate-800">No Doctors Nearby</h4>
+                <p className="text-slate-400 text-xs mt-1">We couldn't find any medical practitioners in your proximity right now.</p>
+              </div>
+            )}
           </section>
         )}
 

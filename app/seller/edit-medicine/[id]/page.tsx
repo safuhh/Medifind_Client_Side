@@ -8,6 +8,35 @@ import { FiUploadCloud, FiTrash2, FiArrowLeft, FiCheck, FiX, FiPlus } from "reac
 import SellerNavbar from "@/app/seller/SellerBar/page";
 import { getImageUrl } from "@/app/utils/imageUrl";
 
+const calculateSellingPrice = (mrpVal: string, offerVal: string, gstVal: string): string => {
+  const mrp = parseFloat(mrpVal);
+  if (isNaN(mrp) || mrp <= 0) return "";
+
+  let discountPercent = 0;
+  if (offerVal) {
+    const pctMatch = offerVal.match(/(\d+(?:\.\d+)?)\s*%/);
+    if (pctMatch) {
+      discountPercent = parseFloat(pctMatch[1]);
+    } else {
+      const numMatch = offerVal.match(/^\s*(\d+(?:\.\d+)?)\s*$/);
+      if (numMatch) {
+        discountPercent = parseFloat(numMatch[1]);
+      } else {
+        const fallbackMatch = offerVal.match(/(\d+(?:\.\d+)?)/);
+        if (fallbackMatch) {
+          discountPercent = parseFloat(fallbackMatch[1]);
+        }
+      }
+    }
+  }
+
+  const finalPrice = mrp * (1 - discountPercent / 100);
+  const gstPercent = parseFloat(gstVal) || 0;
+  const sellingPrice = finalPrice / (1 + gstPercent / 100);
+
+  return isNaN(sellingPrice) || sellingPrice < 0 ? "0.00" : sellingPrice.toFixed(2);
+};
+
 export default function EditMedicinePage() {
   const { id } = useParams();
   const router = useRouter();
@@ -37,12 +66,28 @@ export default function EditMedicinePage() {
     const { name, value } = e.target;
     if (name.includes(".")) {
       const [parent, child] = name.split(".");
-      setMedicine({
-        ...medicine,
-        [parent]: { ...medicine[parent], [child]: value }
+      setMedicine((prev: any) => {
+        if (!prev) return prev;
+        const updatedParent = { ...prev[parent], [child]: value };
+        
+        if (parent === "pricing" && (child === "mrp" || child === "offer" || child === "gst")) {
+          updatedParent.sellingPrice = calculateSellingPrice(
+            updatedParent.mrp || "",
+            updatedParent.offer || "",
+            updatedParent.gst || ""
+          );
+        }
+        
+        return {
+          ...prev,
+          [parent]: updatedParent
+        };
       });
     } else {
-      setMedicine({ ...medicine, [name]: value });
+      setMedicine((prev: any) => {
+        if (!prev) return prev;
+        return { ...prev, [name]: value };
+      });
     }
   };
 

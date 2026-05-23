@@ -243,10 +243,10 @@ export default function PatientDetailsPage() {
                                                     {/* Subjective Analysis */}
                                                     {booking.reason && (
                                                         <div className="relative pl-6 border-l-2 border-slate-100">
-                                                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 flex items-center gap-2">
-                                                                <div className="w-1.5 h-1.5 rounded-full bg-slate-200"></div>
-                                                                Primary Complaint
-                                                            </p>
+                                                             <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 flex items-center gap-2">
+                                                                 <div className="w-1.5 h-1.5 rounded-full bg-slate-200"></div>
+                                                                 Primary Complaint
+                                                             </div>
                                                             <p className="text-slate-700 text-sm leading-relaxed font-medium">{booking.reason}</p>
                                                         </div>
                                                     )}

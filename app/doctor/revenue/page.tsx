@@ -53,70 +53,75 @@ const Revenue = () => {
         {
             title: "Today's Yield",
             value: totals.today,
-            icon: <TrendingUp className="w-5 h-5 text-emerald-500" />,
-            bg: "bg-emerald-50/50",
-            border: "border-emerald-100",
+            icon: <TrendingUp className="w-4 h-4" />,
+            colorClass: "text-emerald-600 bg-emerald-50 border-emerald-100",
+            glowClass: "from-emerald-500/10 to-transparent",
             label: "Daily Audit"
         },
         {
             title: "Monthly Revenue",
             value: totals.month,
-            icon: <Calendar className="w-5 h-5 text-sky-500" />,
-            bg: "bg-sky-50/50",
-            border: "border-sky-100",
+            icon: <Calendar className="w-4 h-4" />,
+            colorClass: "text-sky-600 bg-sky-50 border-sky-100",
+            glowClass: "from-sky-500/10 to-transparent",
             label: "Fiscal Period"
         },
         {
             title: "Annual Earnings",
             value: totals.year,
-            icon: <Wallet className="w-5 h-5 text-purple-500" />,
-            bg: "bg-purple-50/50",
-            border: "border-purple-100",
+            icon: <Wallet className="w-4 h-4" />,
+            colorClass: "text-indigo-600 bg-indigo-50 border-indigo-100",
+            glowClass: "from-indigo-500/10 to-transparent",
             label: "Total Revenue"
         }
     ];
 
     if (loading) {
         return (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {[1, 2, 3].map((i) => (
-                    <div key={i} className="h-48 bg-white rounded-[2.5rem] border border-slate-100 animate-pulse"></div>
+                    <div key={i} className="h-44 bg-white rounded-2xl border border-slate-100 animate-pulse"></div>
                 ))}
             </div>
         );
     }
 
     return (
-        <div className="space-y-12">
+        <div className="space-y-8">
             {/* Top Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {stats.map((stat, index) => (
                     <div 
                         key={index}
-                        className="bg-white p-10 rounded-[3rem] border border-slate-100 hover:shadow-2xl hover:shadow-slate-200/50 transition-all group"
+                        className="bg-white rounded-2xl border border-slate-100 p-6 shadow-sm hover:shadow-md hover:border-slate-200 transition-all duration-300 relative overflow-hidden group flex flex-col justify-between"
                     >
-                        <div className="flex justify-between items-start mb-10">
-                            <div>
-                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mb-2">{stat.label}</p>
-                                <h3 className="text-lg font-black text-slate-900 tracking-tight">{stat.title}</h3>
-                            </div>
-                            <div className={`w-14 h-14 rounded-3xl ${stat.bg} border ${stat.border} flex items-center justify-center group-hover:scale-110 transition-all duration-500`}>
-                                {stat.icon}
-                            </div>
-                        </div>
+                        {/* Radial Hover Glow Effect */}
+                        <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${stat.glowClass} rounded-bl-full opacity-50 group-hover:scale-110 transition-transform duration-500 pointer-events-none -mr-4 -mt-4 mix-blend-multiply filter blur-xl`}></div>
                         
-                        <div className="flex items-baseline gap-2">
-                            <span className="text-4xl font-black text-slate-900 tracking-tighter">
-                                {formatCurrency(stat.value)}
-                            </span>
+                        <div className="relative">
+                            <div className="flex justify-between items-center mb-4">
+                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{stat.label}</span>
+                                <div className={`w-8 h-8 rounded-lg flex items-center justify-center border transition-all ${stat.colorClass}`}>
+                                    {stat.icon}
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <h3 className="text-sm font-medium text-slate-500">{stat.title}</h3>
+                                <p className="text-2xl font-bold text-slate-900 tracking-tight mt-1">
+                                    {formatCurrency(stat.value)}
+                                </p>
+                            </div>
                         </div>
 
-                        <div className="mt-8 pt-8 border-t border-slate-50 flex items-center justify-between">
-                            <span className="text-[10px] font-black text-emerald-600 uppercase tracking-widest flex items-center gap-2">
-                                <Activity className="w-4 h-4" />
+                        <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400 font-medium">
+                            <span className="flex items-center gap-1.5">
+                                <Activity className="w-3.5 h-3.5 text-emerald-500 animate-pulse" />
                                 Live Ledger
                             </span>
-                            <ArrowUpRight className="w-5 h-5 text-slate-300 group-hover:text-emerald-500 transition-colors" />
+                            <span className="text-slate-400 group-hover:text-slate-600 transition-colors flex items-center gap-0.5 cursor-pointer">
+                                View ledger <ArrowUpRight className="w-3 h-3 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                            </span>
                         </div>
                     </div>
                 ))}

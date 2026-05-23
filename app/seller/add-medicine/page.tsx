@@ -8,6 +8,36 @@ import { FiUploadCloud, FiTrash2, FiCheck, FiPlus, FiList } from "react-icons/fi
 import Link from "next/link";
 import SellerNavbar from "@/app/seller/SellerBar/page";
 import api from "@/app/apis/api";
+import { getSubscriptionStatus, type Subscription } from "@/app/apis/subcription.api";
+
+const calculateSellingPrice = (mrpVal: string, offerVal: string, gstVal: string): string => {
+  const mrp = parseFloat(mrpVal);
+  if (isNaN(mrp) || mrp <= 0) return "";
+
+  let discountPercent = 0;
+  if (offerVal) {
+    const pctMatch = offerVal.match(/(\d+(?:\.\d+)?)\s*%/);
+    if (pctMatch) {
+      discountPercent = parseFloat(pctMatch[1]);
+    } else {
+      const numMatch = offerVal.match(/^\s*(\d+(?:\.\d+)?)\s*$/);
+      if (numMatch) {
+        discountPercent = parseFloat(numMatch[1]);
+      } else {
+        const fallbackMatch = offerVal.match(/(\d+(?:\.\d+)?)/);
+        if (fallbackMatch) {
+          discountPercent = parseFloat(fallbackMatch[1]);
+        }
+      }
+    }
+  }
+
+  const finalPrice = mrp * (1 - discountPercent / 100);
+  const gstPercent = parseFloat(gstVal) || 0;
+  const sellingPrice = finalPrice / (1 + gstPercent / 100);
+
+  return isNaN(sellingPrice) || sellingPrice < 0 ? "0.00" : sellingPrice.toFixed(2);
+};
 
 export default function AddMedicinePage() {
   const router = useRouter();
@@ -29,10 +59,54 @@ export default function AddMedicinePage() {
   const [images, setImages] = useState<File[]>([]);
   const [externalImages, setExternalImages] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
+  
+  const [isLocked, setIsLocked] = useState(false);
+  const [checkingSub, setCheckingSub] = useState(true);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    
+    const checkSub = async () => {
+      try {
+        const res = await getSubscriptionStatus();
+        if (res.subscription) {
+          if (!res.subscription.isPro && res.subscription.trialStartedAt) {
+            // Check immediately
+            const checkExpiry = () => {
+              const diffMs = Date.now() - new Date(res.subscription.trialStartedAt!).getTime();
+              const diffSeconds = diffMs / 1000;
+              if (diffSeconds >= 20) {
+                setIsLocked(true);
+                clearInterval(interval);
+              }
+            };
+            
+            checkExpiry();
+            // Then check every second
+            interval = setInterval(checkExpiry, 1000);
+          }
+        }
+      } catch (err) {
+        console.error("Failed to check subscription", err);
+      } finally {
+        setCheckingSub(false);
+      }
+    };
+    
+    checkSub();
+    return () => clearInterval(interval);
+  }, []);
+
   const handleChange = (e: any) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setForm((prev) => {
+      const updated = { ...prev, [name]: value };
+      if (name === "mrp" || name === "offer" || name === "gst") {
+        updated.sellingPrice = calculateSellingPrice(updated.mrp, updated.offer, updated.gst);
+      }
+      return updated;
+    });
   };
 
 
@@ -125,6 +199,27 @@ export default function AddMedicinePage() {
               </div>
             </div>
 
+            {checkingSub ? (
+              <div className="p-20 flex justify-center">
+                <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-emerald-600 border-r-2 border-emerald-600/30"></div>
+              </div>
+            ) : isLocked ? (
+              <div className="p-16 text-center space-y-6">
+                <div className="w-24 h-24 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <span className="text-4xl">🔒</span>
+                </div>
+                <h2 className="text-2xl font-bold text-gray-900">Free Trial Expired</h2>
+                <p className="text-gray-500 max-w-md mx-auto">
+                  Your 20-second free trial has ended. Upgrade to our Pro plan to list unlimited medicines and get priority search ranking!
+                </p>
+                <button 
+                  onClick={() => router.push("/subcription")}
+                  className="bg-gradient-to-r from-indigo-500 to-violet-500 text-white font-bold py-4 px-10 rounded-xl shadow-lg shadow-indigo-500/30 hover:scale-105 transition-transform"
+                >
+                  View Pro Plans
+                </button>
+              </div>
+            ) : (
             <form onSubmit={handleCreate} className="p-8 space-y-8">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
                 <div className="space-y-1.5 md:col-span-2">
@@ -256,6 +351,7 @@ export default function AddMedicinePage() {
                 </button>
               </div>
             </form>
+            )}
           </div>
         </div>
       </main>

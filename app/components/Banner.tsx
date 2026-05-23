@@ -39,10 +39,10 @@ export const PartnerBanner = () => {
           </button>
 
           <button
-            onClick={() => router.push("/doctor/apply")}
+            onClick={() => router.push("/delivery/apply")}
             className="group px-10 py-5 bg-emerald-600/30 backdrop-blur-md border border-emerald-400/30 text-white rounded-3xl font-bold text-lg shadow-xl hover:bg-emerald-600/50 transition-all active:scale-95 flex items-center justify-center gap-3"
           >
-            Apply as Doctor
+            Apply as DeliveryBoy
             <div className="bg-white/10 p-1 rounded-full group-hover:translate-x-1 transition-transform">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M5 12h14m-7-7 7 7-7 7"/>

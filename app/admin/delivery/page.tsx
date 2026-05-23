@@ -71,10 +71,8 @@ return (
       <AdminSidebar />
 
       {/* Adjusted margin and padding for mobile-first responsiveness */}
-      <main className="flex-1 ml-0 lg:ml-64 p-4 sm:p-6 lg:p-8 transition-all duration-300 w-full overflow-hidden">
-        <br />
-        <br />
-        <div className="max-w-6xl mx-auto">
+      <main className="flex-1 md:ml-72 p-4 sm:p-6 lg:p-8 pt-24 md:pt-8 transition-all duration-300 w-full overflow-hidden">
+        <div className="w-full max-w-6xl">
           
           {/* Header Section */}
           <div className="mb-6 sm:mb-8">

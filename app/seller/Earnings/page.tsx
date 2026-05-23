@@ -26,7 +26,7 @@ import {
 } from "recharts";
 import dayjs from "dayjs";
 
-export default function SellerEarnings() {
+export default function SellerEarnings({ isDashboard = false }: { isDashboard?: boolean }) {
   const [todayEarnings, setTodayEarnings] = useState(0);
   const [todayOrders, setTodayOrders] = useState(0);
   const [thisMonthEarnings, setThisMonthEarnings] = useState(0);
@@ -105,185 +105,169 @@ export default function SellerEarnings() {
     },
   ];
 
+  const content = (
+    <div className="space-y-12">
+   
+
+      {loading ? (
+        <div className="flex items-center justify-center h-64">
+          <div className="flex flex-col items-center gap-3 text-slate-500">
+            <span className="w-10 h-10 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></span>
+            <p className="text-sm font-black uppercase tracking-widest text-slate-400">Syncing Data...</p>
+          </div>
+        </div>
+      ) : (
+        <>
+          {/* Stats Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {data.map((item, index) => (
+              <div
+                key={index}
+                className="bg-white p-8 rounded-[2rem] border border-slate-100 hover:border-emerald-200 hover:shadow-2xl hover:shadow-slate-200/50 transition-all group"
+              >
+                <div className="flex justify-between items-center mb-8">
+                  <p className={`text-[10px] font-black uppercase tracking-[0.2em] ${item.textColor}`}>
+                    {item.title}
+                  </p>
+                  <div className={`w-12 h-12 border rounded-2xl flex items-center justify-center transition-all group-hover:scale-110 ${item.accent}`}>
+                    {item.icon}
+                  </div>
+                </div>
+
+                <h2 className="text-4xl font-black text-slate-900 tracking-tight mb-2">
+                  {formatCurrency(item.value)}
+                </h2>
+
+                <div className="flex items-center justify-between mt-6 pt-6 border-t border-slate-50">
+                  <div className="flex items-center gap-2 text-xs font-bold text-slate-400">
+                    <Package className="w-4 h-4" />
+                    <span>{item.count} Transactions</span>
+                  </div>
+                  <span className="text-[10px] font-black text-emerald-600 uppercase tracking-tighter flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all">
+                    Ledger <ArrowUpRight className="w-3 h-3" />
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Charts Section */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Monthly Revenue Chart */}
+            <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
+              <div className="flex items-center justify-between mb-8">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-sky-50 flex items-center justify-center text-sky-600">
+                    <BarChart3 className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-black text-slate-900 tracking-tight">Revenue Performance</h3>
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Monthly Growth Trend</p>
+                  </div>
+                </div>
+              </div>
+              <div className="h-[300px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={monthlyHistory}>
+                    <defs>
+                      <linearGradient id="colorRev" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#0ea5e9" stopOpacity={0.1}/>
+                        <stop offset="95%" stopColor="#0ea5e9" stopOpacity={0}/>
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                    <XAxis 
+                      dataKey="name" 
+                      axisLine={false} 
+                      tickLine={false} 
+                      tick={{fill: '#94a3b8', fontSize: 10, fontWeight: 700}}
+                      dy={10}
+                    />
+                    <YAxis 
+                      axisLine={false} 
+                      tickLine={false} 
+                      tick={{fill: '#94a3b8', fontSize: 10, fontWeight: 700}}
+                      tickFormatter={(value) => `₹${value}`}
+                    />
+                    <Tooltip 
+                      contentStyle={{borderRadius: '16px', border: 'none', boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1)'}}
+                      formatter={(value: any) => [formatCurrency(value), 'Revenue']}
+                    />
+                    <Area 
+                      type="monotone" 
+                      dataKey="value" 
+                      stroke="#0ea5e9" 
+                      strokeWidth={3}
+                      fillOpacity={1} 
+                      fill="url(#colorRev)" 
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+
+            {/* Daily Sales Chart */}
+            <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
+              <div className="flex items-center justify-between mb-8">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600">
+                    <TrendingUp className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-black text-slate-900 tracking-tight">Daily Volume</h3>
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">7-Day Sales Activity</p>
+                  </div>
+                </div>
+              </div>
+              <div className="h-[300px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={dailyHistory}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                    <XAxis 
+                      dataKey="name" 
+                      axisLine={false} 
+                      tickLine={false} 
+                      tick={{fill: '#94a3b8', fontSize: 10, fontWeight: 700}}
+                      dy={10}
+                    />
+                    <YAxis 
+                      axisLine={false} 
+                      tickLine={false} 
+                      tick={{fill: '#94a3b8', fontSize: 10, fontWeight: 700}}
+                      tickFormatter={(value) => `₹${value}`}
+                    />
+                    <Tooltip 
+                      contentStyle={{borderRadius: '16px', border: 'none', boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1)'}}
+                      cursor={{fill: '#f8fafc'}}
+                      formatter={(value: any) => [formatCurrency(value), 'Sales']}
+                    />
+                    <Bar 
+                      dataKey="value" 
+                      fill="#10b981" 
+                      radius={[6, 6, 0, 0]}
+                      barSize={30}
+                    />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+    </div>
+  );
+
+  if (isDashboard) {
+    return <div className="mt-8">{content}</div>;
+  }
+
   return (
     <div className="flex h-screen bg-white">
       <SellerBar />
 
-      <main className="flex-1 overflow-y-auto md:ml-72 transition-all duration-300">
-        <div className="p-8 max-w-6xl mx-auto space-y-12">
-          {/* Header Section */}
-          <div className="flex justify-between items-end border-b border-slate-100 pb-8">
-            <div>
-              <div className="flex items-center gap-2 mb-2">
-                <div className="w-8 h-8 rounded-lg bg-emerald-600 flex items-center justify-center text-white shadow-lg">
-                  <TrendingUp className="w-4 h-4" />
-                </div>
-                <span className="text-[10px] font-black text-emerald-600 uppercase tracking-[0.3em]">Financial Center</span>
-              </div>
-              <h1 className="text-4xl font-black text-slate-900 tracking-tight">
-                Earnings <span className="text-emerald-600">Analytics</span>
-              </h1>
-              <p className="text-slate-500 mt-1 text-sm font-medium">
-                Comprehensive breakdown of your store's fiscal performance.
-              </p>
-            </div>
-            <div className="hidden sm:flex items-center gap-3">
-              <div className="bg-white px-4 py-2.5 rounded-xl border border-slate-200 flex items-center gap-3 shadow-sm">
-                <span className="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-pulse ring-4 ring-emerald-500/20"></span>
-                <span className="text-[11px] font-bold text-slate-600 uppercase tracking-widest">
-                  Live Terminal Active
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {loading ? (
-            <div className="flex items-center justify-center h-64">
-              <div className="flex flex-col items-center gap-3 text-slate-500">
-                <span className="w-10 h-10 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></span>
-                <p className="text-sm font-black uppercase tracking-widest text-slate-400">Syncing Data...</p>
-              </div>
-            </div>
-          ) : (
-            <>
-              {/* Stats Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                {data.map((item, index) => (
-                  <div
-                    key={index}
-                    className="bg-white p-8 rounded-[2rem] border border-slate-100 hover:border-emerald-200 hover:shadow-2xl hover:shadow-slate-200/50 transition-all group"
-                  >
-                    <div className="flex justify-between items-center mb-8">
-                      <p className={`text-[10px] font-black uppercase tracking-[0.2em] ${item.textColor}`}>
-                        {item.title}
-                      </p>
-                      <div className={`w-12 h-12 border rounded-2xl flex items-center justify-center transition-all group-hover:scale-110 ${item.accent}`}>
-                        {item.icon}
-                      </div>
-                    </div>
-
-                    <h2 className="text-4xl font-black text-slate-900 tracking-tight mb-2">
-                      {formatCurrency(item.value)}
-                    </h2>
-
-                    <div className="flex items-center justify-between mt-6 pt-6 border-t border-slate-50">
-                      <div className="flex items-center gap-2 text-xs font-bold text-slate-400">
-                        <Package className="w-4 h-4" />
-                        <span>{item.count} Transactions</span>
-                      </div>
-                      <span className="text-[10px] font-black text-emerald-600 uppercase tracking-tighter flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all">
-                        Ledger <ArrowUpRight className="w-3 h-3" />
-                      </span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Charts Section */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                {/* Monthly Revenue Chart */}
-                <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
-                  <div className="flex items-center justify-between mb-8">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-sky-50 flex items-center justify-center text-sky-600">
-                        <BarChart3 className="w-5 h-5" />
-                      </div>
-                      <div>
-                        <h3 className="text-lg font-black text-slate-900 tracking-tight">Revenue Performance</h3>
-                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Monthly Growth Trend</p>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="h-[300px] w-full">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <AreaChart data={monthlyHistory}>
-                        <defs>
-                          <linearGradient id="colorRev" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%" stopColor="#0ea5e9" stopOpacity={0.1}/>
-                            <stop offset="95%" stopColor="#0ea5e9" stopOpacity={0}/>
-                          </linearGradient>
-                        </defs>
-                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                        <XAxis 
-                          dataKey="name" 
-                          axisLine={false} 
-                          tickLine={false} 
-                          tick={{fill: '#94a3b8', fontSize: 10, fontWeight: 700}}
-                          dy={10}
-                        />
-                        <YAxis 
-                          axisLine={false} 
-                          tickLine={false} 
-                          tick={{fill: '#94a3b8', fontSize: 10, fontWeight: 700}}
-                          tickFormatter={(value) => `₹${value}`}
-                        />
-                        <Tooltip 
-                          contentStyle={{borderRadius: '16px', border: 'none', boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1)'}}
-                          formatter={(value: any) => [formatCurrency(value), 'Revenue']}
-                        />
-                        <Area 
-                          type="monotone" 
-                          dataKey="value" 
-                          stroke="#0ea5e9" 
-                          strokeWidth={3}
-                          fillOpacity={1} 
-                          fill="url(#colorRev)" 
-                        />
-                      </AreaChart>
-                    </ResponsiveContainer>
-                  </div>
-                </div>
-
-                {/* Daily Sales Chart */}
-                <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
-                  <div className="flex items-center justify-between mb-8">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600">
-                        <TrendingUp className="w-5 h-5" />
-                      </div>
-                      <div>
-                        <h3 className="text-lg font-black text-slate-900 tracking-tight">Daily Volume</h3>
-                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">7-Day Sales Activity</p>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="h-[300px] w-full">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={dailyHistory}>
-                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                        <XAxis 
-                          dataKey="name" 
-                          axisLine={false} 
-                          tickLine={false} 
-                          tick={{fill: '#94a3b8', fontSize: 10, fontWeight: 700}}
-                          dy={10}
-                        />
-                        <YAxis 
-                          axisLine={false} 
-                          tickLine={false} 
-                          tick={{fill: '#94a3b8', fontSize: 10, fontWeight: 700}}
-                          tickFormatter={(value) => `₹${value}`}
-                        />
-                        <Tooltip 
-                          contentStyle={{borderRadius: '16px', border: 'none', boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1)'}}
-                          cursor={{fill: '#f8fafc'}}
-                          formatter={(value: any) => [formatCurrency(value), 'Sales']}
-                        />
-                        <Bar 
-                          dataKey="value" 
-                          fill="#10b981" 
-                          radius={[6, 6, 0, 0]}
-                          barSize={30}
-                        />
-                      </BarChart>
-                    </ResponsiveContainer>
-                  </div>
-                </div>
-              </div>
-
-             
-            </>
-          )}
+      <main className="flex-1 overflow-y-auto md:ml-72 transition-all duration-300 animate-fadeIn">
+        <div className="p-8 max-w-6xl mx-auto">
+          {content}
         </div>
       </main>
     </div>

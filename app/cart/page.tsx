@@ -13,7 +13,6 @@ import { toast } from "react-toastify";
 export default function CartPage() {
     const [cart, setCart] = useState<any>(null);
     const [loading, setLoading] = useState(true);
-
     const fetchCart = async (showLoading = false) => {
         try {
             if (showLoading) setLoading(true);
@@ -229,11 +228,15 @@ export default function CartPage() {
                                 <Link href="/deliveryDetails" className="w-full bg-[#0a4d33] text-white mt-6 py-3 rounded-xl font-bold text-sm hover:bg-[#083d28] transition-colors shadow-lg shadow-[#0a4d33]/10 flex items-center justify-center gap-2">
                                     Proceed to Checkout <FiArrowRight />
                                 </Link>
+
+
                             </div>
                         </div>
                     </div>
                 )}
             </main>
+
+
 
             <Footer />
         </div>

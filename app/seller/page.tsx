@@ -3,11 +3,10 @@ import LowStock from "./lowstock/page";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { setUser } from "@/app/redux/authSlice"
-
+import SellerEarnings from "./Earnings/page"
 import { useSeller } from "../hooks/useSeller";
 import { getSellerDashboard } from "../apis/seller.api";
 import { fetchCurrentUser } from "../apis/fetchapi";
-
 import SellerNavbar from "../seller/SellerBar/page";
 import {
   FiList,
@@ -26,11 +25,11 @@ export default function SellerDashboard() {
   useEffect(() => {
     const init = async () => {
       try {
-        // 🔥 STEP 1: sync current user
+        //  STEP 1: sync current user
         const userRes = await fetchCurrentUser();
         dispatch(setUser(userRes.data.user));
 
-        // 🔥 STEP 2: fetch seller dashboard info
+        //  STEP 2: fetch seller dashboard info
         const sellerRes = await getSellerDashboard();
         setData(sellerRes.data);
 
@@ -84,6 +83,8 @@ export default function SellerDashboard() {
 
             {/* Render LowStock component */}
             <div className="mt-6">
+              <SellerEarnings isDashboard={true} />
+
               <LowStock />
             </div>
           </div>

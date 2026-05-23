@@ -27,10 +27,12 @@ export default function DoctorsListPage() {
   const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
-    const fetchDoctors = async () => {
+    if (!specialization) return;
+
+    const fetchDoctors = async (lat?: number, lng?: number) => {
       try {
         setLoading(true);
-        const res = await getDoctorsBySpecialization(specialization || "");
+        const res = await getDoctorsBySpecialization(specialization, lat, lng);
         setDoctors(res.data.doctors || []);
       } catch (err) {
         console.error("Error fetching doctors:", err);
@@ -39,7 +41,19 @@ export default function DoctorsListPage() {
       }
     };
 
-    if (specialization) fetchDoctors();
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          fetchDoctors(pos.coords.latitude, pos.coords.longitude);
+        },
+        () => {
+          fetchDoctors();
+        },
+        { timeout: 5000 }
+      );
+    } else {
+      fetchDoctors();
+    }
   }, [specialization]);
 
   const filteredDoctors = doctors.filter(doc => 
@@ -119,9 +133,22 @@ export default function DoctorsListPage() {
                         </h3>
                         <p className="text-emerald-600 text-sm font-medium">{specialization}</p>
                         
-                        <div className="flex items-center gap-1 mt-1 text-sm text-slate-500">
-                          <FiMapPin size={14} className="text-slate-400" />
-                          <span className="truncate max-w-[150px]">{doc.address?.split(',')[0]}</span>
+                        <div className="flex items-center gap-1.5 mt-1 text-xs font-semibold text-slate-500">
+                          <FiStar className="text-amber-500 fill-amber-500" size={13} />
+                          <span className="text-slate-800">{doc.rating ? doc.rating.toFixed(1) : "0.0"}</span>
+                          <span className="text-slate-400 font-medium">({doc.ratingCount || 0} reviews)</span>
+                        </div>
+                        
+                        <div className="flex items-center gap-4 mt-1 text-sm text-slate-500">
+                          <div className="flex items-center gap-1">
+                            <FiMapPin size={14} className="text-slate-400" />
+                            <span className="truncate max-w-[120px]">{doc.address?.split(',')[0]}</span>
+                          </div>
+                          {doc.distance !== null && doc.distance !== undefined && (
+                            <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full shrink-0">
+                              {doc.distance} km away
+                            </span>
+                          )}
                         </div>
                       </div>
                     </div>

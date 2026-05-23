@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { getSingleDoctor } from "@/app/apis/doctor.api";
+import { getSingleDoctor, getDoctorReviews } from "@/app/apis/doctor.api";
 import NavbarPage from "../../../navbar/page";
 import Footer from "../../../footer/page";
 import { 
@@ -15,7 +15,8 @@ import {
   FiPhone,
   FiMail,
   FiChevronRight,
-  FiActivity
+  FiActivity,
+  FiStar
 } from "react-icons/fi";
 import { getImageUrl } from "@/app/utils/imageUrl";
 import BookingSection from "../../../components/BookingSection";
@@ -25,6 +26,8 @@ export default function DoctorProfilePage() {
   const router = useRouter();
   const [doctor, setDoctor] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [reviews, setReviews] = useState<any[]>([]);
+  const [reviewsLoading, setReviewsLoading] = useState(false);
     
   useEffect(() => {
     const fetchDoctor = async () => {
@@ -39,7 +42,24 @@ export default function DoctorProfilePage() {
       }
     };
 
-    if (id) fetchDoctor();
+    const fetchReviews = async () => {
+      try {
+        setReviewsLoading(true);
+        const res = await getDoctorReviews(id as string);
+        if (res.data.success) {
+          setReviews(res.data.reviews || []);
+        }
+      } catch (err) {
+        console.error("Error fetching reviews:", err);
+      } finally {
+        setReviewsLoading(false);
+      }
+    };
+
+    if (id) {
+      fetchDoctor();
+      fetchReviews();
+    }
   }, [id]);
 
   if (loading) {
@@ -108,6 +128,12 @@ export default function DoctorProfilePage() {
                                 Dr. {doctor.fullName}
                             </h1>
                             
+                            <div className="flex items-center gap-1.5 justify-center md:justify-start mb-3 text-sm font-semibold text-slate-500">
+                              <FiStar className="text-amber-500 fill-amber-500" size={14} />
+                              <span className="text-slate-800">{doctor.rating ? doctor.rating.toFixed(1) : "0.0"}</span>
+                              <span className="text-slate-400 font-medium">({doctor.ratingCount || 0} patient reviews)</span>
+                            </div>
+                            
                             <div className="flex flex-wrap justify-center md:justify-start gap-4 text-slate-500 text-sm font-medium mb-4">
                                 <div className="flex items-center gap-1.5">
                                     <FiMapPin className="text-slate-400" /> {doctor.address?.split(',')[0]}
@@ -172,7 +198,50 @@ export default function DoctorProfilePage() {
                     </section>
                 </div>
 
-            
+                {/* Reviews Section */}
+                <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 md:p-8">
+                    <section className="space-y-6">
+                        <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+                            <FiStar className="text-amber-500 fill-amber-500" /> Patient Reviews &amp; Feedback
+                        </h3>
+
+                        {reviewsLoading ? (
+                            <div className="flex justify-center py-8">
+                                <div className="w-6 h-6 border-2 border-slate-200 border-t-emerald-600 rounded-full animate-spin"></div>
+                            </div>
+                        ) : reviews.length > 0 ? (
+                            <div className="divide-y divide-slate-100">
+                                {reviews.map((rev: any) => (
+                                    <div key={rev._id} className="py-5 first:pt-0 last:pb-0 space-y-2">
+                                        <div className="flex justify-between items-start gap-4">
+                                            <div>
+                                                <p className="font-bold text-slate-800 text-sm">{rev.userId?.name || "Patient"}</p>
+                                                <p className="text-[10px] text-slate-400 font-semibold">{new Date(rev.createdAt).toLocaleDateString()}</p>
+                                            </div>
+                                            <div className="flex items-center gap-0.5">
+                                                {[...Array(5)].map((_, i) => (
+                                                    <FiStar 
+                                                        key={i} 
+                                                        className={`w-3.5 h-3.5 ${i < rev.rating ? "text-amber-500 fill-amber-500" : "text-slate-200"}`} 
+                                                    />
+                                                ))}
+                                            </div>
+                                        </div>
+                                        {rev.reviewText && (
+                                            <p className="text-slate-600 text-sm leading-relaxed font-medium pl-1">
+                                                "{rev.reviewText}"
+                                            </p>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="text-center py-8 text-slate-400 font-medium text-sm">
+                                No reviews or ratings submitted yet for Dr. {doctor.fullName}.
+                            </div>
+                        )}
+                    </section>
+                </div>
             </div>
 
             {/* Right Column - Booking & Contact */}

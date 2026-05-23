@@ -7,7 +7,6 @@ import HowItWorks from "./components/HowItWorks";
 import Navbar from "./navbar/page";
 import { Hero } from "./components/Hero";
 import BecomeDeliveryBoyPage from "../app/delivery/page";
-import { FAQ } from "./components/FAQ";
 
 export default function LandingPage() {
   return (
@@ -23,9 +22,9 @@ export default function LandingPage() {
       <HowItWorks />
       <AboutSectionClient />
       <PartnerSection />
-      <HelpSection />
+
       <BecomeDeliveryBoyPage />
-      <FAQ />
+      <HelpSection />
       <Footer />
     </div>
   );

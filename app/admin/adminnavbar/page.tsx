@@ -7,50 +7,47 @@ import { useAppDispatch } from "../../redux/hooks";
 import { logout } from "../../redux/authSlice";
 import {
   HomeIcon,
-  ClipboardDocumentListIcon,
+  DocumentPlusIcon,
+  TruckIcon,
+  CheckBadgeIcon,
+  BuildingStorefrontIcon,
+  MapPinIcon,
   UserGroupIcon,
-  Cog6ToothIcon,
   ArrowRightOnRectangleIcon,
   Bars3Icon,
   XMarkIcon,
-  UserCircleIcon,
 } from "@heroicons/react/24/outline";
 import { HeartIcon } from "@heroicons/react/24/solid";
 import { useAdmin } from "../../hooks/useAdmin";
 
 // Navigation items
 const navItems = [
-  { name: "Dashboard", href: "/admindashboard", icon: HomeIcon },
-  { name: "Seller Requests", href: "/admin", icon: ClipboardDocumentListIcon },
+  { name: "Dashboard", href: "/admin/admindashboard", icon: HomeIcon },
+  { name: "Seller Requests", href: "/admin", icon: DocumentPlusIcon },
   {
     name: "Delivery-Boy Requests",
     href: "/admin/delivery",
-    icon: UserCircleIcon,
+    icon: TruckIcon,
   },
   {
     name: "Doctor Verifications",
     href: "/admin/doctor-applications",
-    icon: ClipboardDocumentListIcon,
+    icon: CheckBadgeIcon,
   },
   {
     name: "Seller Management",
     href: "/admin/blockseller",
-    icon: UserCircleIcon,
+    icon: BuildingStorefrontIcon,
   },
   {
     name: "Delivery-Boy Management",
     href: "/admin/deliveryboy",
-    icon: UserCircleIcon,
+    icon: MapPinIcon,
   },
   {
     name: "Doctor Management",
     href: "/admin/blockdoctor",
-    icon: UserCircleIcon,
-  },
-  {
-    name: "Commission Management",
-    href: "/admin/commissions",
-    icon: UserCircleIcon,
+    icon: UserGroupIcon,
   },
 ];
 
@@ -127,7 +124,7 @@ export default function AdminSidebar() {
         </div>
 
         {/* Nav */}
-        <nav className="flex-1 px-5 py-8 space-y-3 overflow-y-auto">
+        <nav className="flex-1 px-5 py-8 space-y-3">
           {navItems.map((item) => {
             const isActive = pathname === item.href;
 

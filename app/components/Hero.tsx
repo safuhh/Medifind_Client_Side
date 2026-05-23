@@ -94,9 +94,9 @@ export const Hero = () => {
       >
         {/* Title */}
         <motion.h1 variants={itemVariants} className="text-5xl sm:text-7xl md:text-[100px] font-black text-slate-900 leading-[0.9] tracking-tighter mb-10">
-          The Digital Core of <br />
+          The Digital Core Of <br />
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0a4d33] to-[#10b981]">
-            Medicine Search.
+            Medicine Search
           </span>
         </motion.h1>
 

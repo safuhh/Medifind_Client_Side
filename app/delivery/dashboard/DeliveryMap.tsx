@@ -40,8 +40,11 @@ interface Location {
 }
 
 interface DeliveryMapProps {
+  // deliveryboy current location
   currentLocation: Location | null;
+  // pharmacy locations
   pickupLocations: Location[];
+  // customer location
   dropoffLocation: Location | null;
   orderStatus: "pending" | "confirmed" | "picked_up" | "delivered";
 }
@@ -63,7 +66,7 @@ export default function DeliveryMap({ currentLocation, pickupLocations, dropoffL
         let coordinates = "";
 
         if (orderStatus === "confirmed" || orderStatus === "pending") {
-          // Route from current location to pickup locations
+          // Route from current location to pickup locations pharmacy location
           if (pickupLocations.length === 0) return;
           coordinates = [
             `${currentLocation.lng},${currentLocation.lat}`,
@@ -71,6 +74,7 @@ export default function DeliveryMap({ currentLocation, pickupLocations, dropoffL
           ].join(";");
         } else if (orderStatus === "picked_up") {
           // Route from current location to dropoff location
+          // customer location
           if (!dropoffLocation) return;
           coordinates = [
             `${currentLocation.lng},${currentLocation.lat}`,

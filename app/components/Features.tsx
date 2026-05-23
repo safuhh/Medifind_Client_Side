@@ -44,34 +44,33 @@ function Counter({ value, suffix = "", decimals = 0 }: CounterProps) {
 const Features = () => {
   const features = [
     {
-      title: "Location Based Search",
-      desc: "Discover pharmacies near you with exactly what you need in stock.",
-      bullets: ["GPS-enabled routing", "Filter by 24/7 availability", "Skip multiple store visits"],
+      title: "AI Advisory & Reminder",
+      desc: "Get intelligent assistance for medication warnings, dosage guidelines, and automated prescription reminders.",
+      bullets: ["Smart AI medical advisor", "Automated intake scheduling", "Dosage warning indicators"],
       icon: (
-        <svg className="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+        <svg className="w-6 h-6 text-violet-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
         </svg>
       ),
-      bg: "bg-emerald-50",
-      border: "group-hover:border-emerald-200",
+      bg: "bg-violet-50",
+      border: "group-hover:border-violet-200",
     },
     {
-      title: "Real-Time Inventory",
-      desc: "Our network syncs directly with local pharmacies for accurate availability.",
-      bullets: ["Live stock level updates", "Alternative brand suggestions", "Price comparison tools"],
+      title: "AI RAG Medical Assistant",
+      desc: "Interact with our RAG-powered chatbot to query pharmacy catalogs, doctor availability, and trusted medical advice.",
+      bullets: ["Document-grounded answers", "Instant inventory lookups", "24/7 clinical query support"],
       icon: (
         <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
         </svg>
       ),
       bg: "bg-blue-50",
       border: "group-hover:border-blue-200",
     },
     {
-      title: "Doctor Consultation",
-      desc: "Connect with certified specialists online and get expert advice from home.",
-      bullets: ["HD Video consultations", "Verified top-tier specialists", "Instant digital prescriptions"],
+      title: "Doctor Video Consultations",
+      desc: "Find certified doctors by specialization, book slots, and enter secure virtual consultation rooms.",
+      bullets: ["Real-time countdown timer", "Jitsi video call integrations", "Live Socket.io notifications"],
       icon: (
         <svg className="w-6 h-6 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
@@ -81,40 +80,40 @@ const Features = () => {
       border: "group-hover:border-rose-200",
     },
     {
-      title: "Digital Prescriptions",
-      desc: "Upload, manage, and refill your prescriptions seamlessly through the app.",
-      bullets: ["Smart OCR upload", "Automated refill reminders", "Direct pharmacy forwarding"],
+      title: "Digital Health Reports",
+      desc: "Centralized medical diagnostics and prescription summaries generated after consultations.",
+      bullets: ["Linked to booking records", "Easily downloadable for patients", "Encrypted clinical data"],
       icon: (
-        <svg className="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className="w-6 h-6 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
         </svg>
       ),
-      bg: "bg-amber-50",
-      border: "group-hover:border-amber-200",
+      bg: "bg-teal-50",
+      border: "group-hover:border-teal-200",
     },
     {
-      title: "Express Delivery",
-      desc: "Get critical medications delivered right to your doorstep within hours.",
-      bullets: ["Under 2-hour delivery", "Temperature-controlled transit", "Live GPS tracking"],
+      title: "Live Delivery GPS Tracking",
+      desc: "Dedicated delivery agent portal with order acceptance, routing, and live coordinates tracking.",
+      bullets: ["Leaflet map route navigation", "Live location coordination", "Real-time socket updates"],
       icon: (
         <svg className="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M13 10V3L4 14h7v7l9-11h-7z" />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
         </svg>
       ),
       bg: "bg-indigo-50",
       border: "group-hover:border-indigo-200",
     },
     {
-      title: "Secure Health Records",
-      desc: "A centralized, encrypted vault for all your medical history and test results.",
-      bullets: ["End-to-End Encryption", "Share securely with doctors", "Timeline view of health"],
+      title: "Medicine Search & Ordering",
+      desc: "Search, filter, and buy medicines from local pharmacies with integrated payment flow.",
+      bullets: ["Interactive shopping cart", "Secure Stripe checkout", "Detailed order history"],
       icon: (
-        <svg className="w-6 h-6 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+        <svg className="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
         </svg>
       ),
-      bg: "bg-teal-50",
-      border: "group-hover:border-teal-200",
+      bg: "bg-emerald-50",
+      border: "group-hover:border-emerald-200",
     },
   ];
 
