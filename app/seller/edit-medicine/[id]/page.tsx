@@ -203,8 +203,19 @@ export default function EditMedicinePage() {
                   <input name="brand" value={medicine.brand} onChange={handleChange} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 outline-none focus:bg-white focus:ring-2 focus:ring-emerald-500 transition-all text-gray-900" />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">Category</label>
-                  <input name="category" value={medicine.category} onChange={handleChange} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 outline-none focus:bg-white focus:ring-2 focus:ring-emerald-500 transition-all text-gray-900" />
+                  <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">Category *</label>
+                  <select name="category" required value={medicine.category} onChange={handleChange} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 outline-none focus:bg-white focus:ring-2 focus:ring-emerald-500 transition-all text-gray-900">
+                    <option value="" disabled>Select Category</option>
+                    <option value="pain relief">Pain Relief</option>
+                    <option value="antibiotics">Antibiotics</option>
+                    <option value="diabetes">Diabetes</option>
+                    <option value="cardiology">Cardiology</option>
+                    <option value="skin care">Skin Care</option>
+                    <option value="vitamins">Vitamins</option>
+                    <option value="baby care">Baby Care</option>
+                    <option value="respiratory">Respiratory</option>
+                    <option value="other">Other</option>
+                  </select>
                 </div>
                 <div className="space-y-1.5">
                   <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">Unit / Weight (klg)</label>

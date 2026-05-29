@@ -40,7 +40,7 @@ const navItems = [
     icon: BuildingStorefrontIcon,
   },
   {
-    name: "Delivery-Boy Management",
+    name: "Delivery-Boy",
     href: "/admin/deliveryboy",
     icon: MapPinIcon,
   },

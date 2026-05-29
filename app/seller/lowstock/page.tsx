@@ -71,6 +71,11 @@ export default function LowStock() {
   return (
     <div className="bg-[#F8F9FA] p-6 md:p-10 font-sans text-slate-900 rounded-2xl border border-slate-100 shadow-sm">
       <div className="max-w-6xl mx-auto">
+        <div className="hidden md:block">
+          <br/>
+          <br/>
+          <br/>
+        </div>
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
           <div>

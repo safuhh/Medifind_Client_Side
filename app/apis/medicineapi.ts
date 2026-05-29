@@ -9,6 +9,7 @@ export const getAllMedicines = (
   search?: string,
   radius?: number,
   limit?: number,
+  categories?: string
 ) => {
   let url = `${BASE_URL}/medicines/all?`;
   if (lat) url += `lat=${lat}&`;
@@ -16,6 +17,7 @@ export const getAllMedicines = (
   if (search) url += `search=${encodeURIComponent(search)}&`;
   if (radius) url += `radius=${radius}&`;
   if (limit) url += `limit=${limit}&`;
+  if (categories) url += `categories=${encodeURIComponent(categories)}&`;
   console.log("FETCHING_FROM:", url);
   return api.get(url);
 };

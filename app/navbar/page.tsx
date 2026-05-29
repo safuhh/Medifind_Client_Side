@@ -3,8 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { useAppSelector, useAppDispatch } from "../redux/hooks";
-import { logout } from "../redux/authSlice";
+import { useAppSelector } from "../redux/hooks";
 import { io } from "socket.io-client";
 import { toast } from "react-toastify";
 
@@ -12,7 +11,6 @@ const NavbarPage = () => {
   const [isMounted, setIsMounted] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { user } = useAppSelector((state) => state.auth);
-  const dispatch = useAppDispatch();
 
   // Handle hydration mismatch and body scroll lock
   useEffect(() => {
@@ -83,26 +81,6 @@ const NavbarPage = () => {
                 </span>
               </div>
             </Link>
-            
-            <button
-              onClick={() => dispatch(logout())}
-              className="ml-2 p-2 text-gray-400 hover:bg-red-50 hover:text-red-600 rounded-full transition-all"
-              title="Logout"
-            >
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
-                />
-              </svg>
-            </button>
           </div>
         </div>
       );
@@ -150,7 +128,7 @@ const NavbarPage = () => {
 
       {/* 2. MAIN NAVBAR */}
       <nav className="w-full bg-white/95 backdrop-blur-md border-b border-gray-100 shadow-sm relative z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 md:h-20 flex items-center justify-between">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 h-16 md:h-20 flex items-center justify-between">
           
           {/* Logo Section */}
           <Link href="/" className="flex items-center gap-3 group">
@@ -170,7 +148,7 @@ const NavbarPage = () => {
           </Link>
 
           {/* Navigation Links - Desktop */}
-          <div className="hidden lg:flex items-center gap-8">
+          <div className="hidden lg:flex items-center gap-8 absolute left-1/2 -translate-x-1/2">
             <Link href="/medicines" className="text-sm font-medium text-gray-600 hover:text-[#0a4d33] transition-colors">
               Find Medicine
             </Link>
@@ -290,15 +268,6 @@ const NavbarPage = () => {
                         Doctor Dashboard
                       </Link>
                     )}
-                    <button
-                      onClick={() => {
-                        dispatch(logout());
-                        setIsMobileMenuOpen(false);
-                      }}
-                      className="w-full py-3 bg-white border border-red-200 text-red-600 font-semibold rounded-lg text-sm text-center hover:bg-red-50 transition-colors"
-                    >
-                      Logout
-                    </button>
                   </div>
                 ) : isMounted ? (
                   <Link

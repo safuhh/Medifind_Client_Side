@@ -107,7 +107,9 @@ export default function SellerEarnings({ isDashboard = false }: { isDashboard?: 
 
   const content = (
     <div className="space-y-12">
-   
+      <div className="hidden md:block">
+ 
+      </div>
 
       {loading ? (
         <div className="flex items-center justify-center h-64">
@@ -266,6 +268,7 @@ export default function SellerEarnings({ isDashboard = false }: { isDashboard?: 
       <SellerBar />
 
       <main className="flex-1 overflow-y-auto md:ml-72 transition-all duration-300 animate-fadeIn">
+        <div className="h-16 md:hidden" />
         <div className="p-8 max-w-6xl mx-auto">
           {content}
         </div>

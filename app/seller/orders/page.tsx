@@ -76,7 +76,11 @@ export default function SellerOrdersPage() {
       <SellerBar />
 
       <main className="flex-1 overflow-y-auto md:ml-72 transition-all duration-300">
+        <div className="h-16 md:hidden" />
         <div className="p-8 max-w-6xl mx-auto space-y-8">
+          <div className="hidden md:block">
+           
+          </div>
           {/* Header Section */}
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div>

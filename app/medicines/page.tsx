@@ -51,7 +51,17 @@ function MedicinesList() {
   const [locating, setLocating] = useState(false);
   const [locationName, setLocationName] = useState<string>("");
 
-  const categoriesList = Array.from(new Set(medicines.map(m => m.category).filter(Boolean))).sort();
+  const categoriesList = [
+    "Pain Relief",
+    "Antibiotics",
+    "Diabetes",
+    "Cardiology",
+    "Skin Care",
+    "Vitamins",
+    "Baby Care",
+    "Respiratory",
+    "Other"
+  ];
 
   useEffect(() => {
     if (medicines.length > 0) {
@@ -82,7 +92,7 @@ function MedicinesList() {
         setLocationName(`${lat.toFixed(2)}, ${lng.toFixed(2)}`);
       }
     } catch (err) {
-      console.error("Reverse geocoding error:", err);
+      console.warn("Reverse geocoding warning:", err instanceof Error ? err.message : String(err));
       setLocationName(`${lat.toFixed(2)}, ${lng.toFixed(2)}`);
     }
   };
@@ -130,7 +140,8 @@ function MedicinesList() {
         currentCoords?.lng || (searchParams.get("lng") ? Number(searchParams.get("lng")) : undefined),
         search,
         radius,
-        100
+        100,
+        selectedCategories.length > 0 ? selectedCategories.join(',') : undefined
       );
       setMedicines(res.data.medicines || []);
     } catch (err: any) {
@@ -146,8 +157,6 @@ function MedicinesList() {
     getLocation();
   }, []);
 
-
-
   useEffect(() => {
     const s = searchParams.get("search") || "";
     const r = searchParams.get("radius") ? Number(searchParams.get("radius")) : undefined;
@@ -157,7 +166,7 @@ function MedicinesList() {
 
   useEffect(() => {
     fetchData();
-  }, [coords, search, radius]);
+  }, [coords, search, radius, selectedCategories]);
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -165,10 +174,10 @@ function MedicinesList() {
   };
 
   const filteredMedicines = medicines.filter(med => {
-    const matchesCategory = selectedCategories.length === 0 || selectedCategories.some(c => med.category?.toLowerCase() === c.toLowerCase());
+    // Backend already filters categories accurately, including legacy db value mapping.
     const matchesPrice = (med.pricing?.sellingPrice || 0) <= maxPrice;
     const matchesVisibility = isDoctor || med.visibility !== "restricted";
-    return matchesCategory && matchesPrice && matchesVisibility;
+    return matchesPrice && matchesVisibility;
   });
 return (
     <div className="min-h-screen bg-white font-sans text-slate-900 selection:bg-emerald-100 selection:text-emerald-900 pb-20">

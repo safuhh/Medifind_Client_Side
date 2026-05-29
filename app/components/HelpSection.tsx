@@ -9,7 +9,7 @@ const FAQItem = ({ question, answer, isOpen, onClick, index }: any) => {
     <div className="mb-4">
       <button
         onClick={onClick}
-        className={`w-full text-left p-8 rounded-[32px] transition-all duration-500 flex items-start gap-6 outline-none border ${
+        className={`w-full text-left p-5 sm:p-8 rounded-[24px] sm:rounded-[32px] transition-all duration-500 flex items-start gap-4 sm:gap-6 outline-none border ${
           isOpen 
             ? "bg-emerald-50/40 border-emerald-100 shadow-[0_20px_40px_-15px_rgba(16,185,129,0.1)]" 
             : "bg-white border-slate-100 hover:border-emerald-200 hover:shadow-sm"
@@ -23,7 +23,7 @@ const FAQItem = ({ question, answer, isOpen, onClick, index }: any) => {
         </div>
 
         <div className="flex-grow pt-1.5">
-          <span className={`text-xl font-bold tracking-tight transition-colors duration-300 ${
+          <span className={`text-lg sm:text-xl font-bold tracking-tight transition-colors duration-300 ${
             isOpen ? "text-[#0a4d33]" : "text-slate-800"
           }`}>
             {question}
@@ -38,7 +38,7 @@ const FAQItem = ({ question, answer, isOpen, onClick, index }: any) => {
                 transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
                 className="overflow-hidden"
               >
-                <p className="text-slate-500 leading-relaxed text-lg mt-5 pr-6 font-medium">
+                <p className="text-slate-500 leading-relaxed text-base sm:text-lg mt-4 sm:mt-5 pr-0 sm:pr-6 font-medium">
                   {answer}
                 </p>
               </motion.div>
@@ -82,10 +82,10 @@ export const HelpSection = () => {
   ];
 
   return (
-    <section className="w-full py-32 bg-white relative">
+    <section className="w-full py-16 lg:py-32 bg-white relative">
       <div className="max-w-6xl mx-auto px-6">
         
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-start">
           
           {/* Left Column: Headline & Floating Card */}
           <div className="lg:col-span-5 lg:sticky lg:top-32">
@@ -94,7 +94,7 @@ export const HelpSection = () => {
               <span>Help Center</span>
             </div>
             
-            <h2 className="text-5xl font-bold text-slate-900 tracking-tighter leading-[1.1] mb-8">
+            <h2 className="text-4xl lg:text-5xl font-bold text-slate-900 tracking-tighter leading-[1.1] mb-6 lg:mb-8">
               Got <span className="text-emerald-500">questions?</span> <br />
               We have answers.
             </h2>
@@ -104,9 +104,9 @@ export const HelpSection = () => {
             </p>
             
             {/* Professional Light Support Card */}
-            <div className="group relative p-8 rounded-[40px] bg-slate-50 border border-slate-100 hover:border-emerald-200 transition-all duration-500">
-              <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity">
-                <ChatCircleText size={80} weight="duotone" className="text-emerald-600" />
+            <div className="group relative p-6 sm:p-8 rounded-[24px] sm:rounded-[40px] bg-slate-50 border border-slate-100 hover:border-emerald-200 transition-all duration-500 mb-10 lg:mb-0">
+              <div className="absolute top-0 right-0 p-4 sm:p-6 opacity-10 group-hover:opacity-20 transition-opacity">
+                <ChatCircleText size={64} weight="duotone" className="text-emerald-600" />
               </div>
               
               <div className="relative z-10">

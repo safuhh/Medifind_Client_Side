@@ -25,6 +25,7 @@ export default function DeliveryDashboardPage() {
   const [loading, setLoading] = useState(true);
   const [accepting, setAccepting] = useState<string | null>(null);
   const [currentLocation, setCurrentLocation] = useState<{lat: number, lng: number} | null>(null);
+  const [newOrderAlert, setNewOrderAlert] = useState<any>(null);
 
   useDeliveryBoy();
 
@@ -60,14 +61,28 @@ export default function DeliveryDashboardPage() {
 
   useEffect(() => {
     // Socket initialization
-    const socket = io(process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000", { withCredentials: true });
+    const baseUrl = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000").replace('/api', '');
+    const socket = io(baseUrl, { withCredentials: true });
     
     if (data?.currentOrderId?._id) {
       // join room specific to the order to broadcast location
       socket.emit("join_delivery_room", data.currentOrderId._id);
     }
 
+    // Listen for new orders
+    socket.on("new_order_available", (order) => {
+      setNewOrderAlert(order);
+      // Refresh available orders list
+      if (!data?.currentOrderId) {
+        fetchData();
+      }
+    });
 
+    // Listen for accepted orders to remove them
+    socket.on("order_assigned", ({ orderId }) => {
+      setAvailableOrders((prev) => prev.filter(order => order._id !== orderId));
+      setNewOrderAlert((prev) => prev?.orderId === orderId ? null : prev);
+    });
 
     let watchId: number;
     if (navigator.geolocation) {
@@ -376,16 +391,46 @@ export default function DeliveryDashboardPage() {
                 </button>
               </div>
 
+              <div className="mb-6 space-y-3">
+                <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider">Order Items</h4>
+                <div className="bg-slate-50 rounded-xl p-3 border border-slate-100 space-y-2">
+                  {order.items?.map((item: any, idx: number) => (
+                    <div key={idx} className="flex items-center gap-3 bg-white p-2 rounded-lg border border-slate-100">
+                      <div className="w-8 h-8 bg-emerald-50 rounded-md flex items-center justify-center">
+                        <Package className="w-4 h-4 text-emerald-600" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-sm font-semibold text-slate-800">{item.medicineId?.name || "Medicine"}</p>
+                        <p className="text-xs text-slate-500">Qty: {item.quantity}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
               <div className="grid md:grid-cols-2 gap-4">
-                <div className="bg-slate-50 p-4 rounded-xl border border-slate-100">
-                  <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Pickup From</h4>
-                  <div className="space-y-2">
-                    {order.items?.map((item: any, idx: number) => (
+                <div className="bg-blue-50/50 p-4 rounded-xl border border-blue-100">
+                  <h4 className="text-xs font-bold text-blue-600 uppercase tracking-wider mb-3">Pickup From</h4>
+                  <div className="space-y-4">
+                    {Object.values(
+                      order.items?.reduce((acc: any, item: any) => {
+                        const sellerId = item.sellerId?._id || item.sellerId;
+                        if (sellerId && !acc[sellerId]) {
+                          acc[sellerId] = item.sellerShop;
+                        }
+                        return acc;
+                      }, {}) || {}
+                    ).map((shop: any, idx: number) => (
                       <div key={idx} className="flex items-start gap-2">
                         <MapPin className="w-4 h-4 text-blue-500 mt-0.5 shrink-0" />
                         <div>
-                          <p className="text-sm font-medium text-slate-900">{item.sellerShop?.shopName || "Pharmacy"}</p>
-                          <p className="text-xs text-slate-500">{item.sellerShop?.address || "Location unavailable"}</p>
+                          <p className="text-sm font-bold text-slate-900">{shop?.shopName || "Pharmacy"}</p>
+                          <p className="text-xs text-slate-600 leading-relaxed mt-0.5">{shop?.address || "Location unavailable"}</p>
+                          {shop?.phone && (
+                            <p className="text-xs text-slate-500 flex items-center gap-1 mt-1">
+                              <Phone className="w-3 h-3" /> {shop.phone}
+                            </p>
+                          )}
                         </div>
                       </div>
                     ))}
@@ -393,12 +438,19 @@ export default function DeliveryDashboardPage() {
                 </div>
 
                 <div className="bg-emerald-50/50 p-4 rounded-xl border border-emerald-100">
-                  <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Dropoff At</h4>
+                  <h4 className="text-xs font-bold text-emerald-600 uppercase tracking-wider mb-3">Dropoff At</h4>
                   <div className="flex items-start gap-2">
                     <MapPin className="w-4 h-4 text-emerald-600 mt-0.5 shrink-0" />
                     <div>
-                      <p className="text-sm font-medium text-slate-900">{order.deliveryDetailsId?.name || "Customer"}</p>
-                      <p className="text-xs text-slate-600 leading-relaxed">{order.deliveryDetailsId?.address}, {order.deliveryDetailsId?.city}</p>
+                      <p className="text-sm font-bold text-slate-900">{order.deliveryDetailsId?.name || "Customer"}</p>
+                      <p className="text-xs text-slate-600 leading-relaxed mt-0.5">
+                        {order.deliveryDetailsId?.address}, {order.deliveryDetailsId?.city}, {order.deliveryDetailsId?.state} - {order.deliveryDetailsId?.zip}
+                      </p>
+                      {order.deliveryDetailsId?.phone && (
+                        <p className="text-xs text-slate-500 flex items-center gap-1 mt-1">
+                          <Phone className="w-3 h-3" /> {order.deliveryDetailsId.phone}
+                        </p>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -419,6 +471,39 @@ export default function DeliveryDashboardPage() {
   )}
 </main>
 </div>
+
+{/* New Order Modal Notification */}
+{newOrderAlert && (
+  <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+    <div className="bg-white rounded-3xl p-6 shadow-2xl max-w-sm w-full border border-emerald-100 transform transition-all">
+      <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
+        <Package className="w-8 h-8 text-emerald-600 animate-bounce" />
+      </div>
+      <h3 className="text-xl font-black text-center text-slate-900 mb-2">New Delivery Request!</h3>
+      <p className="text-center text-slate-500 mb-6 text-sm font-medium">
+        A new order #{newOrderAlert.orderId?.slice(-6).toUpperCase()} is ready for pickup.
+      </p>
+      <div className="flex gap-3">
+        <button
+          onClick={() => setNewOrderAlert(null)}
+          className="flex-1 px-4 py-2.5 bg-slate-100 text-slate-700 rounded-xl font-bold text-sm hover:bg-slate-200 transition-colors"
+        >
+          Dismiss
+        </button>
+        <button
+          onClick={() => {
+            setNewOrderAlert(null);
+            handleAcceptOrder(newOrderAlert.orderId);
+          }}
+          className="flex-1 px-4 py-2.5 bg-emerald-600 text-white rounded-xl font-bold text-sm hover:bg-emerald-700 transition-colors shadow-md shadow-emerald-200"
+        >
+          Accept Order
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
   </div>
   </div>
 );

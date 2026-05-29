@@ -25,7 +25,8 @@ export const Hero = () => {
   const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
   const [loadingLoc, setLoadingLoc] = useState(true);
 
-  useEffect(() => {
+  const getLocation = () => {
+    setLoadingLoc(true);
     if (!navigator.geolocation) {
       setLocation("Location not supported");
       setLoadingLoc(false);
@@ -69,6 +70,10 @@ export const Hero = () => {
       },
       { enableHighAccuracy: true }
     );
+  };
+
+  useEffect(() => {
+    getLocation();
   }, []);
 
   const handleSearch = () => {
@@ -125,8 +130,12 @@ export const Hero = () => {
             </div>
 
             {/* Location (AUTO FILLED) */}
-            <div className="flex-1 flex items-center w-full px-6 py-2">
-              <MapPin className="w-6 h-6 text-emerald-500 mr-4" />
+            <button 
+              type="button"
+              onClick={getLocation}
+              className="flex-1 flex items-center w-full px-6 py-2 hover:bg-slate-50/50 transition-colors group/loc"
+            >
+              <MapPin className={`w-6 h-6 ${loadingLoc ? "text-emerald-400" : "text-emerald-500"} mr-4 shrink-0 group-hover/loc:scale-110 transition-transform`} />
               <div className="flex flex-col items-start overflow-hidden">
                 <span className="text-[10px] font-black text-emerald-600 uppercase tracking-widest mb-0.5">Nearby (5KM)</span>
                 <span className="text-lg font-bold text-slate-900 truncate w-full text-left">
@@ -137,7 +146,7 @@ export const Hero = () => {
                   ) : location}
                 </span>
               </div>
-            </div>
+            </button>
 
             {/* Button */}
             <button 

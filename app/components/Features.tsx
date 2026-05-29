@@ -44,28 +44,16 @@ function Counter({ value, suffix = "", decimals = 0 }: CounterProps) {
 const Features = () => {
   const features = [
     {
-      title: "AI Advisory & Reminder",
-      desc: "Get intelligent assistance for medication warnings, dosage guidelines, and automated prescription reminders.",
-      bullets: ["Smart AI medical advisor", "Automated intake scheduling", "Dosage warning indicators"],
+      title: "AI Medicine Fulfillment",
+      desc: "Our RAG-powered engine resolves generic equivalents and applies a greedy set-cover algorithm to route your prescription across the fewest, nearest pharmacies — automatically.",
+      bullets: ["RAG generic-name resolution", "Greedy set-cover optimisation", "Multi-pharmacy split ordering"],
       icon: (
         <svg className="w-6 h-6 text-violet-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2v-4M9 21H5a2 2 0 01-2-2v-4m0 0h18" />
         </svg>
       ),
       bg: "bg-violet-50",
       border: "group-hover:border-violet-200",
-    },
-    {
-      title: "AI RAG Medical Assistant",
-      desc: "Interact with our RAG-powered chatbot to query pharmacy catalogs, doctor availability, and trusted medical advice.",
-      bullets: ["Document-grounded answers", "Instant inventory lookups", "24/7 clinical query support"],
-      icon: (
-        <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
-        </svg>
-      ),
-      bg: "bg-blue-50",
-      border: "group-hover:border-blue-200",
     },
     {
       title: "Doctor Video Consultations",
@@ -115,6 +103,18 @@ const Features = () => {
       bg: "bg-emerald-50",
       border: "group-hover:border-emerald-200",
     },
+    {
+      title: "Become a MediFind Partner",
+      desc: "Join our growing network as a verified pharmacy or certified doctor. Expand your reach, manage your listings, and grow your practice on MediFind.",
+      bullets: ["Verified pharmacy onboarding", "Doctor profile & slot management", "Commission-based revenue model"],
+      icon: (
+        <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+        </svg>
+      ),
+      bg: "bg-blue-50",
+      border: "group-hover:border-blue-200",
+    },
   ];
 
   // Animation variants for staggered rendering
@@ -136,22 +136,14 @@ const Features = () => {
       <div className="max-w-7xl mx-auto">
         
         {/* Header Section */}
-        <div className="text-center mb-20">
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-100/50 border border-emerald-200 text-emerald-800 text-[11px] font-bold uppercase tracking-widest mb-6"
-          >
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            Platform Capabilities
-          </motion.div>
+        <div className="text-center mb-10 md:mb-20">
+          
           <motion.h2 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.1 }}
-            className="text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight mb-6"
+            className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight mb-6"
           >
             A Complete Ecosystem for <br />
             <span className="text-emerald-600">Smarter Healthcare.</span>
@@ -180,11 +172,11 @@ const Features = () => {
               key={idx}
               variants={itemVariants}
               whileHover={{ y: -4 }}
-              className={`p-8 bg-white rounded-[24px] border border-slate-200 shadow-sm hover:shadow-xl transition-all duration-300 group ${feature.border}`}
+              className={`p-6 md:p-8 bg-white rounded-[24px] border border-slate-200 shadow-sm hover:shadow-xl transition-all duration-300 group ${feature.border}`}
             >
               {/* Header: Icon & Title */}
-              <div className="flex items-start gap-5 mb-6">
-                <div className={`w-14 h-14 shrink-0 ${feature.bg} rounded-2xl flex items-center justify-center transition-transform duration-300 group-hover:scale-110`}>
+              <div className="flex flex-col sm:flex-row items-start gap-4 md:gap-5 mb-6">
+                <div className={`w-12 h-12 md:w-14 md:h-14 shrink-0 ${feature.bg} rounded-2xl flex items-center justify-center transition-transform duration-300 group-hover:scale-110`}>
                   {feature.icon}
                 </div>
                 <div>
@@ -221,7 +213,7 @@ const Features = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ delay: 0.4 }}
-          className="mt-20 py-16 bg-[#105e3f] w-screen relative left-1/2 -translate-x-1/2 flex flex-wrap justify-center gap-12 md:gap-24"
+          className="mt-12 md:mt-20 py-12 md:py-16 bg-[#105e3f] w-screen relative left-1/2 -translate-x-1/2 flex flex-col sm:flex-row flex-wrap justify-center items-center gap-10 md:gap-24 px-6"
         >
           <div className="text-center">
             <h4 className="text-3xl md:text-4xl font-black text-white mb-1">

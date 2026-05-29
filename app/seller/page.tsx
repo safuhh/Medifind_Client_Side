@@ -50,6 +50,9 @@ export default function SellerDashboard() {
 
         <div className="p-4 sm:p-6 md:p-10">
           <div className="max-w-6xl mx-auto">
+            <div className="hidden md:block">
+          
+            </div>
             <header className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-6 mb-6 border-b border-slate-100">
               <div>
                 <div className="flex items-center gap-3 mb-2">

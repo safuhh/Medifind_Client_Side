@@ -49,8 +49,12 @@ export default function ManageMedicinesPage() {
       <SellerNavbar />
       
       <main className="flex-1 md:ml-72 p-6 md:p-10">
+        <div className="h-16 md:hidden" />
         <div className="max-w-7xl mx-auto space-y-10">
+          <div className="hidden md:block">
           
+   
+          </div>
           {/* Header */}
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-gray-100 pb-8">
             <div>

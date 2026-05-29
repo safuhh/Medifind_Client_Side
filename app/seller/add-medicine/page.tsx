@@ -169,10 +169,15 @@ export default function AddMedicinePage() {
   return (
     <div className="min-h-screen bg-white flex">
       <SellerNavbar />
+  
       
       <main className="flex-1 md:ml-72 p-6 md:p-10">
+        <div className="h-16 md:hidden" />
         <div className="max-w-4xl mx-auto">
-          
+          <div className="hidden md:block">
+            <br/>
+      
+          </div>
           {/* Header */}
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10 border-b border-gray-100 pb-8">
             <div>
@@ -238,8 +243,19 @@ export default function AddMedicinePage() {
                   <input name="brand" value={form.brand} onChange={handleChange} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 outline-none focus:bg-white focus:ring-2 focus:ring-emerald-500 transition-all placeholder:text-gray-300 text-gray-900" placeholder="e.g. Crocin" />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">Category</label>
-                  <input name="category" value={form.category} onChange={handleChange} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 outline-none focus:bg-white focus:ring-2 focus:ring-emerald-500 transition-all placeholder:text-gray-300 text-gray-900" placeholder="e.g. Pain Reliever" />
+                  <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">Category *</label>
+                  <select name="category" required value={form.category} onChange={handleChange} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 outline-none focus:bg-white focus:ring-2 focus:ring-emerald-500 transition-all text-gray-900">
+                    <option value="" disabled>Select Category</option>
+                    <option value="pain relief">Pain Relief</option>
+                    <option value="antibiotics">Antibiotics</option>
+                    <option value="diabetes">Diabetes</option>
+                    <option value="cardiology">Cardiology</option>
+                    <option value="skin care">Skin Care</option>
+                    <option value="vitamins">Vitamins</option>
+                    <option value="baby care">Baby Care</option>
+                    <option value="respiratory">Respiratory</option>
+                    <option value="other">Other</option>
+                  </select>
                 </div>
                 <div className="space-y-1.5">
                   <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">Unit / Weight (klg)</label>
