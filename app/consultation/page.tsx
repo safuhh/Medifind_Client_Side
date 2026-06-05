@@ -42,13 +42,14 @@ const SPECIALTIES = [
 
 export default function ConsultationPage() {
   const router = useRouter();
-  const { user, accessToken } = useSelector((state: any) => state.auth);
+  const { user, isLoading } = useSelector((state: any) => state.auth);
   
   useEffect(() => {
-    if (!accessToken) {
+    if (isLoading) return;
+    if (!user) {
       router.push("/login");
     }
-  }, [accessToken, router]);
+  }, [user, isLoading, router]);
 
   const [searchQuery, setSearchQuery] = useState("");
   const [showModal, setShowModal] = useState(false);
@@ -72,13 +73,15 @@ export default function ConsultationPage() {
         setShowModal(true);
       }
     };
-    if (accessToken) {
+    if (isLoading) return;
+    if (user) {
       checkConsent();
     }
-  }, [accessToken]);
+  }, [user, isLoading]);
 
   useEffect(() => {
-    if (!accessToken || !hasConsented) return;
+    if (isLoading) return;
+    if (!user || !hasConsented) return;
 
     const fetchNearby = async (lat?: number, lng?: number) => {
       try {
@@ -107,7 +110,7 @@ export default function ConsultationPage() {
     } else {
       fetchNearby();
     }
-  }, [accessToken, hasConsented]);
+  }, [user, isLoading, hasConsented]);
 
   const handleSelectSpecialty = (name: string) => {
     router.push(`/consultation/doctors?specialization=${encodeURIComponent(name)}`);
@@ -116,6 +119,8 @@ export default function ConsultationPage() {
   const filteredSpecialties = SPECIALTIES.filter((s) =>
     s.name.toLowerCase().includes(searchQuery.toLowerCase()),
   );
+
+  if (isLoading || !user) return null;
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 font-sans">

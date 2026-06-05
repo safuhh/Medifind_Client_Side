@@ -6,17 +6,18 @@ import { useSelector } from "react-redux";
 
 export const useSeller = () => {
   const router = useRouter();
-  const { user, accessToken } = useSelector((state: any) => state.auth);
+  const { user, isLoading } = useSelector((state: any) => state.auth);
 
   useEffect(() => {
-    if (!accessToken) {
+    if (isLoading) return;
+
+    if (!user) {
       router.push("/login");
       return;
     }
-  if (!user) return;
 
-    if (user && user.role !== "seller") {
+    if (user.role !== "seller") {
       router.push("/");
     }
-  }, [user, accessToken, router]);
+  }, [user, isLoading, router]);
 };

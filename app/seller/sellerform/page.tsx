@@ -8,7 +8,7 @@ import { applySeller } from "../../apis/seller.api";
 import Footer from "@/app/footer/page";
 
 export default function BecomeSellerPage() {
-  const { accessToken } = useSelector((state: any) => state.auth);
+  const { user, isLoading } = useSelector((state: any) => state.auth);
   const router = useRouter();
 
   const [form, setForm] = useState({
@@ -26,10 +26,11 @@ export default function BecomeSellerPage() {
   const [success, setSuccess] = useState(false);
 
   useEffect(() => {
-    if (!accessToken) router.push("/login");
-  }, [accessToken]);
+    if (isLoading) return;
+    if (!user) router.push("/login");
+  }, [user, isLoading, router]);
 
-  if (!accessToken) return null;
+  if (isLoading || !user) return null;
 
   const handleGetLocation = () => {
     if (!navigator.geolocation) {

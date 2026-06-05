@@ -26,7 +26,6 @@ const GoogleLogin = () => {
         const res = await googleAuth({ accessToken });
         dispatch(setCredentials({
           user: res.data.user,
-          accessToken: res.data.accessToken,
         }));
 
         if(res.data.user.role === "admin") {

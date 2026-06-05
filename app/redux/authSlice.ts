@@ -10,12 +10,12 @@ export interface User {
 
 export interface AuthState {
   user: User | null;
-  accessToken: string | null;
+  isLoading: boolean;
 }
 
 const initialState: AuthState = {
   user: null,
-  accessToken: null,
+  isLoading: true,
 };
 
 const authSlice = createSlice({
@@ -24,10 +24,9 @@ const authSlice = createSlice({
   reducers: {
     setCredentials: (
       state,
-      action: PayloadAction<{ user: User; accessToken: string }>
+      action: PayloadAction<{ user: User }>
     ) => {
       state.user = action.payload.user;
-      state.accessToken = action.payload.accessToken;
     },
 
     setUser: (state, action: PayloadAction<User>) => {
@@ -36,10 +35,13 @@ const authSlice = createSlice({
 
     logout: (state) => {
       state.user = null;
-      state.accessToken = null;
+    },
+
+    setLoading: (state, action: PayloadAction<boolean>) => {
+      state.isLoading = action.payload;
     },
   },
 });
 
-export const { setCredentials, setUser, logout } = authSlice.actions;
+export const { setCredentials, setUser, logout, setLoading } = authSlice.actions;
 export default authSlice.reducer;

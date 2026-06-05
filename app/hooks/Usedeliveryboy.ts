@@ -6,18 +6,18 @@ import { useSelector } from "react-redux";
 
 export const useDeliveryBoy = () => {
   const router = useRouter();
-  const { user, accessToken } = useSelector((state: any) => state.auth);
+  const { user, isLoading } = useSelector((state: any) => state.auth);
 
   useEffect(() => {
-    if (!accessToken) {
+    if (isLoading) return;
+
+    if (!user) {
       router.push("/login");
       return;
     }
-  if (!user) return;
 
-    // 🔥 FIX: wait for user load + safer check
-    if (user && user.role !== "delivery_boy") {
+    if (user.role !== "delivery_boy") {
       router.push("/");
     }
-  }, [user, accessToken, router]);
+  }, [user, isLoading, router]);
 };

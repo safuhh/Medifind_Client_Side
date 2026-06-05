@@ -18,7 +18,7 @@ export default function AdminPage() {
   useAdmin();
 
   const dispatch = useDispatch();
-  const { accessToken } = useSelector((state: any) => state.auth);
+  const { user, isLoading } = useSelector((state: any) => state.auth);
 
   const [requests, setRequests] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
@@ -36,8 +36,12 @@ export default function AdminPage() {
   };
 
   useEffect(() => {
-    loadRequests();
-  }, []);
+    if (!isLoading && user) {
+      loadRequests();
+    }
+  }, [isLoading, user]);
+
+  if (isLoading || !user) return null;
 const handleApprove = async (id: string) => {
   try {
     await approveSeller(id);
@@ -47,7 +51,6 @@ const handleApprove = async (id: string) => {
     dispatch(
       setCredentials({
         user: userRes.data.user,
-        accessToken, // or refreshed token if needed
       }),
     );
 

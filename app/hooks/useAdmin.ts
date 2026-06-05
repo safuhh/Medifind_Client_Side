@@ -7,16 +7,18 @@ import { useSelector } from "react-redux";
 
 export const useAdmin = () => {
   const router = useRouter();
-  const { user, accessToken } = useSelector((state: any) => state.auth);
+  const { user, isLoading } = useSelector((state: any) => state.auth);
 
   useEffect(() => {
-    if (!accessToken) {
+    if (isLoading) return;
+
+    if (!user) {
       router.push("/login");
       return;
     }
 
-    if (user?.role !== "admin") {
+    if (user.role !== "admin") {
       router.push("/");
     }
-  }, [user, accessToken, router]);
+  }, [user, isLoading, router]);
 };
