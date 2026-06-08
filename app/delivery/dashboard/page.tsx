@@ -79,9 +79,9 @@ export default function DeliveryDashboardPage() {
     });
 
     // Listen for accepted orders to remove them
-    socket.on("order_assigned", ({ orderId }) => {
-      setAvailableOrders((prev) => prev.filter(order => order._id !== orderId));
-      setNewOrderAlert((prev) => prev?.orderId === orderId ? null : prev);
+    socket.on("order_assigned", ({ orderId }: { orderId: string }) => {
+      setAvailableOrders((prev: any[]) => prev.filter((order: any) => order._id !== orderId));
+      setNewOrderAlert((prev: any) => prev?.orderId === orderId ? null : prev);
     });
 
     let watchId: number;
