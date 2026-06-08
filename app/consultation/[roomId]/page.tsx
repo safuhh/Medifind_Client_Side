@@ -81,7 +81,7 @@ export default function ConsultationRoom() {
   useEffect(() => {
     if (!roomId) return;
 
-    const socketUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+    const socketUrl = process.env.NEXT_PUBLIC_API_URL || "http://medifind-env.eba-6rdig2er.eu-north-1.elasticbeanstalk.com";
     const socket = io(socketUrl);
 
     socket.emit("join_consultation_room", roomId);

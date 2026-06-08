@@ -4,7 +4,7 @@ export const getImageUrl = (path: string | undefined | null) => {
   if (path.startsWith("http")) {
     return path;
   }
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://medifind-env.eba-6rdig2er.eu-north-1.elasticbeanstalk.com";
   
 
   const cleanPath = path.replace(/^(\/?uploads[/\\]|^\/)/, "");

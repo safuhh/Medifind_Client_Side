@@ -5,7 +5,7 @@ import MedicineDetailClient from "./MedicineDetailClient";
 import { getImageUrl } from "@/app/utils/imageUrl";
 
 async function getMedicineData(id: string) {
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://medifind-env.eba-6rdig2er.eu-north-1.elasticbeanstalk.com";
   try {
     const res = await fetch(`${baseUrl}/medicines/${id}`, {
       next: { revalidate: 3600 }, // Cache for 1 hour

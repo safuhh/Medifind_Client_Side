@@ -1,6 +1,6 @@
 import api from "./api";
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://medifind-env.eba-6rdig2er.eu-north-1.elasticbeanstalk.com";
 
 export const getApplicationStatus = () => {
     return api.get(`${BASE_URL}/doctor/status`);

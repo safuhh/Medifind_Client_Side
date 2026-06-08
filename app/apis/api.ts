@@ -5,7 +5,7 @@ import { store } from "../redux/store";
 import { setCredentials, logout } from "../redux/authSlice";
 
 const baseURL =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+  process.env.NEXT_PUBLIC_API_URL || "http://medifind-env.eba-6rdig2er.eu-north-1.elasticbeanstalk.com";
 
 const api = axios.create({
   baseURL,

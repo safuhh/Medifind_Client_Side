@@ -113,7 +113,7 @@ export const useDeliveryDetails = () => {
             async (position) => {
                 const { latitude, longitude } = position.coords;
                 try {
-                    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+                    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://medifind-env.eba-6rdig2er.eu-north-1.elasticbeanstalk.com";
                     const res = await fetch(`${apiUrl}/locations/reverse?lat=${latitude}&lng=${longitude}`);
                     const data = await res.json();
                     

@@ -19,7 +19,7 @@ const NavbarPage = () => {
 
   useEffect(() => {
     if (isMounted && user && user._id) {
-      const socket = io(process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000");
+      const socket = io(process.env.NEXT_PUBLIC_API_URL || "http://medifind-env.eba-6rdig2er.eu-north-1.elasticbeanstalk.com");
       
       socket.emit("join_doctor_room", user._id);
       
