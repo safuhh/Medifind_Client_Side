@@ -1,3 +1,4 @@
+import React from "react";
 import { Metadata } from "next";
 import { JsonLd } from "@/app/components/seo/JsonLd";
 import { Breadcrumbs } from "@/app/components/seo/Breadcrumbs";
@@ -53,7 +54,11 @@ export default async function Page({ params }: { params: { id: string } }) {
   const medicine = await getMedicineData(params.id);
 
   if (!medicine) {
-    return <MedicineDetailClient />; // Let the client handle the "not found" state
+    return (
+      <React.Suspense fallback={<div className="text-center p-10 text-slate-500">Loading details...</div>}>
+        <MedicineDetailClient />
+      </React.Suspense>
+    ); // Let the client handle the "not found" state
   }
 
   const productSchema = {
@@ -91,7 +96,9 @@ export default async function Page({ params }: { params: { id: string } }) {
       <div className="max-w-5xl mx-auto px-6 pt-24">
         <Breadcrumbs items={breadcrumbs} />
       </div>
-      <MedicineDetailClient initialData={medicine} />
+      <React.Suspense fallback={<div className="text-center p-10 text-slate-500">Loading details...</div>}>
+        <MedicineDetailClient initialData={medicine} />
+      </React.Suspense>
     </div>
   );
 }

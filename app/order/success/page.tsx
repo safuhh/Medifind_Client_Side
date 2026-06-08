@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { CheckCircle2, Loader2, Package, ArrowRight, AlertCircle } from "lucide-react";
 import NavbarPage from "@/app/navbar/page";
 import Footer from "@/app/footer/page";
 
-export default function OrderSuccessPage() {
+function OrderSuccessContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const sessionId = searchParams.get("session_id");
@@ -125,5 +125,13 @@ export default function OrderSuccessPage() {
             
             <Footer />
         </div>
+    );
+}
+
+export default function OrderSuccessPage() {
+    return (
+        <React.Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+            <OrderSuccessContent />
+        </React.Suspense>
     );
 }

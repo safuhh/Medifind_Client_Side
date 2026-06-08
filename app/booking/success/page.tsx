@@ -8,7 +8,7 @@ import Navbar from "../../navbar/page";
 import Footer from "../../footer/page";
 import api from "../../apis/api";
 
-export default function BookingSuccessPage() {
+function BookingSuccessContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [verifying, setVerifying] = useState(true);
@@ -123,5 +123,13 @@ export default function BookingSuccessPage() {
 
       <Footer />
     </div>
+  );
+}
+
+export default function BookingSuccessPage() {
+  return (
+    <React.Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+      <BookingSuccessContent />
+    </React.Suspense>
   );
 }

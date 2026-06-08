@@ -17,7 +17,7 @@ import {
 } from "react-icons/fi";
 import { getImageUrl } from "@/app/utils/imageUrl";
 
-export default function DoctorsListPage() {
+function DoctorsListContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const specialization = searchParams.get("specialization");
@@ -195,5 +195,13 @@ export default function DoctorsListPage() {
 
       <Footer />
     </div>
+  );
+}
+
+export default function DoctorsListPage() {
+  return (
+    <React.Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+      <DoctorsListContent />
+    </React.Suspense>
   );
 }
