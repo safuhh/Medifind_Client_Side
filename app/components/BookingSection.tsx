@@ -8,7 +8,7 @@ import { toast } from "react-toastify";
 import { motion, AnimatePresence } from "framer-motion";
 import { FiCalendar, FiClock, FiCheckCircle, FiAlertCircle } from "react-icons/fi";
 
-const socket = io(process.env.NEXT_PUBLIC_API_URL || "http://medifind-env.eba-6rdig2er.eu-north-1.elasticbeanstalk.com");
+const socket = io(process.env.NEXT_PUBLIC_API_URL || "http://newmedifinddeploy-env.eba-pp6njqrd.eu-north-1.elasticbeanstalk.com");
 
 interface BookingSectionProps {
     doctorId: string;

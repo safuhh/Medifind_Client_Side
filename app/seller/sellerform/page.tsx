@@ -54,7 +54,7 @@ export default function BecomeSellerPage() {
         }));
 
         try {
-          const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://medifind-env.eba-6rdig2er.eu-north-1.elasticbeanstalk.com";
+          const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://newmedifinddeploy-env.eba-pp6njqrd.eu-north-1.elasticbeanstalk.com";
           const res = await fetch(`${apiUrl}/locations/reverse?lat=${lat}&lng=${lng}`);
           const data = await res.json();
 

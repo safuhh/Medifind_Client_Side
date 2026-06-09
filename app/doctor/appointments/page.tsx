@@ -18,7 +18,7 @@ import { useRouter } from "next/navigation";
 import HealthReportModal from "@/app/components/HealthReportModal";
 import AppointmentDetailsModal from "@/app/components/AppointmentDetailsModal";
 
-const socket = io(process.env.NEXT_PUBLIC_API_URL || "http://medifind-env.eba-6rdig2er.eu-north-1.elasticbeanstalk.com");
+const socket = io(process.env.NEXT_PUBLIC_API_URL || "http://newmedifinddeploy-env.eba-pp6njqrd.eu-north-1.elasticbeanstalk.com");
 
 const parseLocalSlot = (bookingDate: string | Date, timeSlot: string) => {
   let hours = 0;

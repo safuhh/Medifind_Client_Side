@@ -56,7 +56,7 @@ const OrdersPage = () => {
   useEffect(() => {
     if (!user?._id) return;
     
-    const baseUrl = (process.env.NEXT_PUBLIC_API_URL || "http://medifind-env.eba-6rdig2er.eu-north-1.elasticbeanstalk.com").replace('/api', '');
+    const baseUrl = (process.env.NEXT_PUBLIC_API_URL || "http://newmedifinddeploy-env.eba-pp6njqrd.eu-north-1.elasticbeanstalk.com").replace('/api', '');
     const socket = io(baseUrl, { 
       withCredentials: true 
     });
