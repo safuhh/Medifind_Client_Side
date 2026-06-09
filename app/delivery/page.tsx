@@ -1,16 +1,7 @@
 "use client";
-import { useEffect } from "react";
-import { useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
 export default function BecomeDeliveryPage() {
-  const { user, isLoading } = useSelector((state: any) => state.auth);
   const router = useRouter();
-  useEffect(() => {
-    if (isLoading) return;
-    if (!user) router.push("/login");
-  }, [user, isLoading, router]);
-
-  if (isLoading || !user) return null;
   return (
     <div className="min-h-screen bg-white flex items-center justify-center px-6 relative overflow-hidden">
       {/* Decorative Background Elements */}

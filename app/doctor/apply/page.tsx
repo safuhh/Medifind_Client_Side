@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useSelector } from "react-redux";
 import { applyDoctor, getApplicationStatus } from "@/app/apis/doctor.api";
 import Navbar from "@/app/navbar/page";
 import Footer from "@/app/footer/page";
@@ -15,6 +16,13 @@ import { toast } from "react-toastify";
 
 export default function DoctorApplyPage() {
   const router = useRouter();
+  const { user, isLoading: authLoading } = useSelector((state: any) => state.auth);
+
+  useEffect(() => {
+    if (authLoading) return;
+    if (!user) router.push("/login");
+  }, [user, authLoading, router]);
+
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [appStatus, setAppStatus] = useState<any>(null);
@@ -199,13 +207,15 @@ export default function DoctorApplyPage() {
     }
   };
 
-  if (checkingStatus) {
+  if (checkingStatus || authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-emerald-600 border-r-2 border-emerald-600/30"></div>
       </div>
     );
   }
+
+  if (!user) return null;
 
   if (appStatus) {
     return (

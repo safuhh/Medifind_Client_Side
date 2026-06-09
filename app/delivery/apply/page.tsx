@@ -1,7 +1,9 @@
 "use client";
 
 import Navbar from "@/app/navbar/page";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSelector } from "react-redux";
+import { useRouter } from "next/navigation";
 import { applyDeliveryBoy } from "@/app/apis/deliveryboyapi";
 import { toast } from "react-toastify";
 import Link from "next/link";
@@ -21,6 +23,14 @@ type FormType = {
 };
 
 export default function DeliveryApplyPage() {
+  const { user, isLoading } = useSelector((state: any) => state.auth);
+  const router = useRouter();
+
+  useEffect(() => {
+    if (isLoading) return;
+    if (!user) router.push("/login");
+  }, [user, isLoading, router]);
+
   const [form, setForm] = useState<FormType>({
     name: "",
     phone: "",
@@ -162,6 +172,8 @@ export default function DeliveryApplyPage() {
       setLoading(false);
     }
   };
+
+  if (isLoading || !user) return null;
 
   return (
     <div className="min-h-screen bg-[#fafafa] text-slate-800 flex flex-col font-sans">
