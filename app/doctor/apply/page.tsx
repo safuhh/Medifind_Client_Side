@@ -87,7 +87,7 @@ export default function DoctorApplyPage() {
         setFormData((prev) => ({ ...prev, lat, lng }));
 
         try {
-          const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://newmedifinddeploy-env.eba-pp6njqrd.eu-north-1.elasticbeanstalk.com"}/locations/reverse?lat=${lat}&lng=${lng}`);
+          const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "https://newmedifinddeploy-env.eba-pp6njqrd.eu-north-1.elasticbeanstalk.com"}/locations/reverse?lat=${lat}&lng=${lng}`);
           if (!res.ok) throw new Error("Backend failed");
           const data = await res.json();
           setLocationName(data.address);
