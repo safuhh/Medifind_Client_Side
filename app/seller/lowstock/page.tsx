@@ -37,7 +37,7 @@ export default function LowStock() {
   useEffect(() => {
     if (!user?._id) return;
 
-    const socket = io(process.env.NEXT_PUBLIC_API_URL || "https://newmedifinddeploy-env.eba-pp6njqrd.eu-north-1.elasticbeanstalk.com", { withCredentials: true });
+    const socket = io(process.env.NEXT_PUBLIC_API_URL || "http://newmedifinddeploy-env.eba-pp6njqrd.eu-north-1.elasticbeanstalk.com", { withCredentials: true });
     
     socket.emit("join_seller_room", user._id);
 
