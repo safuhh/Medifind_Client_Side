@@ -18,7 +18,7 @@ import { useRouter } from "next/navigation";
 import HealthReportModal from "@/app/components/HealthReportModal";
 import AppointmentDetailsModal from "@/app/components/AppointmentDetailsModal";
 
-const socket = io(process.env.NEXT_PUBLIC_API_URL || "http://newmedifinddeploy-env.eba-pp6njqrd.eu-north-1.elasticbeanstalk.com");
+const socket = io(process.env.NEXT_PUBLIC_API_URL || "http://newmedifinddeploy-env.eba-pp6njqrd.eu-north-1.elasticbeanstalk.com/api");
 
 const parseLocalSlot = (bookingDate: string | Date, timeSlot: string) => {
   let hours = 0;
@@ -204,7 +204,7 @@ export default function DoctorAppointmentsPage() {
                         Fee
                       </p>
                       <p className="font-semibold text-slate-800 text-sm">
-                        ₹{app.amount || 0}
+                        â‚¹{app.amount || 0}
                       </p>
                     </div>
 

@@ -4,8 +4,8 @@ export const getImageUrl = (path: string | undefined | null) => {
   if (path.startsWith("http")) {
     return path;
   }
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://newmedifinddeploy-env.eba-pp6njqrd.eu-north-1.elasticbeanstalk.com";
-  
+  let baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://newmedifinddeploy-env.eba-pp6njqrd.eu-north-1.elasticbeanstalk.com/api";
+  baseUrl = baseUrl.replace(/\/api\/?$/, "");
 
   const cleanPath = path.replace(/^(\/?uploads[/\\]|^\/)/, "");
   

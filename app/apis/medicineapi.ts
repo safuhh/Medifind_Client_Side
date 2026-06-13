@@ -1,8 +1,8 @@
 import api from "./api";
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://newmedifinddeploy-env.eba-pp6njqrd.eu-north-1.elasticbeanstalk.com";
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://newmedifinddeploy-env.eba-pp6njqrd.eu-north-1.elasticbeanstalk.com/api";
 
-// 📦 GET all medicines (Public)
+// ðŸ“¦ GET all medicines (Public)
 export const getAllMedicines = (
   lat?: number,
   lng?: number,
@@ -22,7 +22,7 @@ export const getAllMedicines = (
   return api.get(url);
 };
 
-// 📦 GET single
+// ðŸ“¦ GET single
 export const getMedicine = (id: string, lat?: number, lng?: number) => {
   let url = `${BASE_URL}/medicines/${id}?`;
   if (lat) url += `lat=${lat}&`;

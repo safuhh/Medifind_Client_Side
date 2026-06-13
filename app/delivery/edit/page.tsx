@@ -91,7 +91,7 @@ export default function EditDeliveryProfile() {
         }));
 
         try {
-          const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://newmedifinddeploy-env.eba-pp6njqrd.eu-north-1.elasticbeanstalk.com";
+          const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://newmedifinddeploy-env.eba-pp6njqrd.eu-north-1.elasticbeanstalk.com/api";
           const controller = new AbortController();
           const timeoutId = setTimeout(() => controller.abort(), 8000);
           const res = await fetch(
@@ -105,13 +105,13 @@ export default function EditDeliveryProfile() {
               ...prev,
               address: data.address || prev.address,
             }));
-            toast.success("Location & address captured 📍");
+            toast.success("Location & address captured ðŸ“");
           } else {
-            toast.success("Location coordinates saved 📍");
+            toast.success("Location coordinates saved ðŸ“");
           }
         } catch (err) {
           console.warn("Address lookup failed:", err);
-          toast.success("Location saved 📍 (address lookup unavailable)");
+          toast.success("Location saved ðŸ“ (address lookup unavailable)");
         } finally {
           setLocating(false);
         }
@@ -149,7 +149,7 @@ export default function EditDeliveryProfile() {
 
     try {
       await updateDeliveryBoyInfo(form);
-      toast.success("Profile updated 🚀");
+      toast.success("Profile updated ðŸš€");
       router.push("/delivery/profile");
     } catch (err: any) {
       toast.error(
@@ -233,7 +233,7 @@ export default function EditDeliveryProfile() {
                   onClick={handleLocation}
                   className="w-full sm:w-auto px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs border border-slate-200 active:scale-95 transition-all flex items-center justify-center gap-2"
                 >
-                  📍 {locating ? "Capturing Location..." : "Capture Location"}
+                  ðŸ“ {locating ? "Capturing Location..." : "Capture Location"}
                 </button>
                 {form.lat !== null && form.lng !== null && (
                   <span className="text-xs font-semibold text-emerald-600">

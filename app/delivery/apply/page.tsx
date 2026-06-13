@@ -74,7 +74,7 @@ export default function DeliveryApplyPage() {
     return true;
   };
 
-  // 📍 LOCATION
+  // ðŸ“ LOCATION
   const handleLocation = () => {
     if (!navigator.geolocation) {
       return toast.error("Geolocation not supported");
@@ -92,9 +92,9 @@ export default function DeliveryApplyPage() {
           lng: longitude,
         }));
 
-        // Try to reverse-geocode the address (non-critical – failure is OK)
+        // Try to reverse-geocode the address (non-critical â€“ failure is OK)
         try {
-          const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://newmedifinddeploy-env.eba-pp6njqrd.eu-north-1.elasticbeanstalk.com";
+          const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://newmedifinddeploy-env.eba-pp6njqrd.eu-north-1.elasticbeanstalk.com/api";
           const controller = new AbortController();
           const timeoutId = setTimeout(() => controller.abort(), 8000);
           const res = await fetch(
@@ -108,14 +108,14 @@ export default function DeliveryApplyPage() {
               ...prev,
               address: data.address || prev.address,
             }));
-            toast.success("Location & address captured 📍");
+            toast.success("Location & address captured ðŸ“");
           } else {
-            toast.success("Location coordinates saved 📍");
+            toast.success("Location coordinates saved ðŸ“");
           }
         } catch (err) {
-          // Network error or timeout – location coords are already saved above
+          // Network error or timeout â€“ location coords are already saved above
           console.warn("Address lookup failed (coords still saved):", err);
-          toast.success("Location saved 📍 (address lookup unavailable)");
+          toast.success("Location saved ðŸ“ (address lookup unavailable)");
         } finally {
           setLocating(false);
         }
@@ -129,7 +129,7 @@ export default function DeliveryApplyPage() {
     );
   };
 
-  // 🚀 SUBMIT
+  // ðŸš€ SUBMIT
   const handleSubmit = async () => {
     if (!validateForm()) return;
 
@@ -151,7 +151,7 @@ export default function DeliveryApplyPage() {
 
       const res = await applyDeliveryBoy(data);
 
-      toast.success("✅ Application submitted successfully!");
+      toast.success("âœ… Application submitted successfully!");
       console.log(res.data);
 
       setForm({
@@ -289,7 +289,7 @@ export default function DeliveryApplyPage() {
                 onClick={handleLocation}
                 className="w-full py-2.5 rounded-xl border border-dashed border-slate-300 text-xs font-medium hover:border-emerald-500 hover:text-emerald-600 hover:bg-emerald-50 transition md:col-span-2"
               >
-                {locating ? "Fetching..." : form.lat ? "Location Captured 📍" : "Capture My Location"}
+                {locating ? "Fetching..." : form.lat ? "Location Captured ðŸ“" : "Capture My Location"}
               </button>
 
               <button
@@ -328,7 +328,7 @@ export default function DeliveryApplyPage() {
                     <CreditCard className="w-4 h-4 text-[#0a4d33]" />
                   </div>
                   <div>
-                    <h4 className="text-sm font-bold text-slate-800 mb-0.5">Earn up to ₹30,000/mo</h4>
+                    <h4 className="text-sm font-bold text-slate-800 mb-0.5">Earn up to â‚¹30,000/mo</h4>
                     <p className="text-xs text-slate-500 leading-relaxed">Be your own boss and earn competitive payouts based on your deliveries.</p>
                   </div>
                 </div>

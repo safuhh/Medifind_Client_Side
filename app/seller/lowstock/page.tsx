@@ -37,7 +37,7 @@ export default function LowStock() {
   useEffect(() => {
     if (!user?._id) return;
 
-    const socket = io(process.env.NEXT_PUBLIC_API_URL || "http://newmedifinddeploy-env.eba-pp6njqrd.eu-north-1.elasticbeanstalk.com", { withCredentials: true });
+    const socket = io(process.env.NEXT_PUBLIC_API_URL || "http://newmedifinddeploy-env.eba-pp6njqrd.eu-north-1.elasticbeanstalk.com/api", { withCredentials: true });
     
     socket.emit("join_seller_room", user._id);
 
@@ -141,7 +141,7 @@ export default function LowStock() {
                       <span className="text-xs text-slate-500 truncate">
                         {med.brand || "Generic"}
                       </span>
-                      <span className="text-slate-300">•</span>
+                      <span className="text-slate-300">â€¢</span>
                       <span className="text-xs text-slate-500">
                         {med.category}
                       </span>

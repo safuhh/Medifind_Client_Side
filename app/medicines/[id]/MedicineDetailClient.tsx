@@ -90,7 +90,7 @@ export default function MedicineDetailClient({ initialData }: { initialData?: Me
 
   const reverseGeocode = async (lat: number, lng: number) => {
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://newmedifinddeploy-env.eba-pp6njqrd.eu-north-1.elasticbeanstalk.com";
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://newmedifinddeploy-env.eba-pp6njqrd.eu-north-1.elasticbeanstalk.com/api";
       const res = await fetch(`${apiUrl}/locations/reverse?lat=${lat}&lng=${lng}`);
       const data = await res.json();
       if (data && data.shortName) {

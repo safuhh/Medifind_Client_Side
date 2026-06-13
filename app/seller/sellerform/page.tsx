@@ -54,7 +54,7 @@ export default function BecomeSellerPage() {
         }));
 
         try {
-          const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://newmedifinddeploy-env.eba-pp6njqrd.eu-north-1.elasticbeanstalk.com";
+          const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://newmedifinddeploy-env.eba-pp6njqrd.eu-north-1.elasticbeanstalk.com/api";
           const res = await fetch(`${apiUrl}/locations/reverse?lat=${lat}&lng=${lng}`);
           const data = await res.json();
 
@@ -112,7 +112,7 @@ const handleSubmit = async () => {
     }
 
     if (form.lat === null || form.lng === null) {
-      toast.error("Please click 'Use My Location' first 📍");
+      toast.error("Please click 'Use My Location' first ðŸ“");
       return;
     }
 
@@ -133,7 +133,7 @@ const handleSubmit = async () => {
 
     console.log("BACKEND RESPONSE:", res.data);
 
-    toast.success("Application submitted 🚀");
+    toast.success("Application submitted ðŸš€");
     setSuccess(true);
 
   } catch (err: any) {
@@ -253,10 +253,10 @@ const handleSubmit = async () => {
 
             <div className="hidden md:block space-y-2 mt-6">
               <div className="flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                <span className="text-emerald-500 text-base">✓</span> Secure
+                <span className="text-emerald-500 text-base">âœ“</span> Secure
               </div>
               <div className="flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                <span className="text-emerald-500 text-base">✓</span> Verified
+                <span className="text-emerald-500 text-base">âœ“</span> Verified
               </div>
             </div>
           </div>

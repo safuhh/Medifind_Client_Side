@@ -87,7 +87,7 @@ export default function DoctorApplyPage() {
         setFormData((prev) => ({ ...prev, lat, lng }));
 
         try {
-          const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://newmedifinddeploy-env.eba-pp6njqrd.eu-north-1.elasticbeanstalk.com"}/locations/reverse?lat=${lat}&lng=${lng}`);
+          const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://newmedifinddeploy-env.eba-pp6njqrd.eu-north-1.elasticbeanstalk.com/api"}/locations/reverse?lat=${lat}&lng=${lng}`);
           if (!res.ok) throw new Error("Backend failed");
           const data = await res.json();
           setLocationName(data.address);
@@ -106,7 +106,7 @@ export default function DoctorApplyPage() {
           }
         }
         setLocating(false);
-        toast.success("Location added 📍");
+        toast.success("Location added ðŸ“");
       },
       (error) => {
         setLocating(false);
@@ -199,7 +199,7 @@ export default function DoctorApplyPage() {
 
       await applyDoctor(data);
       setStep(4);
-      toast.success("Application submitted! 🚀");
+      toast.success("Application submitted! ðŸš€");
     } catch (err: any) {
       toast.error(err.response?.data?.message || "Submission failed");
     } finally {
@@ -251,7 +251,7 @@ export default function DoctorApplyPage() {
               </div>
               <div>
                 <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Consultation Fee</p>
-                <p className="text-sm font-semibold text-slate-700">₹{appStatus.consultationFee}</p>
+                <p className="text-sm font-semibold text-slate-700">â‚¹{appStatus.consultationFee}</p>
               </div>
             </div>
 
@@ -493,7 +493,7 @@ export default function DoctorApplyPage() {
                         {errors.regNo && <p className="text-[10px] text-red-500 font-bold ml-2">{errors.regNo}</p>}
                       </div>
                       <div className="space-y-2 md:col-span-2">
-                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Consultation Fee (₹)</label>
+                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Consultation Fee (â‚¹)</label>
                         <input 
                           type="number"
                           name="consultationFee" 

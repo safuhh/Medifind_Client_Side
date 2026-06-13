@@ -56,7 +56,7 @@ const OrdersPage = () => {
   useEffect(() => {
     if (!user?._id) return;
     
-    const baseUrl = (process.env.NEXT_PUBLIC_API_URL || "http://newmedifinddeploy-env.eba-pp6njqrd.eu-north-1.elasticbeanstalk.com").replace('/api', '');
+    const baseUrl = (process.env.NEXT_PUBLIC_API_URL || "http://newmedifinddeploy-env.eba-pp6njqrd.eu-north-1.elasticbeanstalk.com/api").replace('/api', '');
     const socket = io(baseUrl, { 
       withCredentials: true 
     });
@@ -139,7 +139,7 @@ const OrdersPage = () => {
                     </p>
                   </div>
                   <div className="text-right flex flex-col items-end gap-2">
-                    <p className="text-sm font-semibold text-slate-900">₹{order.totalAmount}</p>
+                    <p className="text-sm font-semibold text-slate-900">â‚¹{order.totalAmount}</p>
                     <div className="flex items-center gap-2 mt-1">
                       {/* Current Status Badge */}
                       <span className={`text-[10px] px-2.5 py-1 rounded-md font-bold uppercase tracking-wider ${

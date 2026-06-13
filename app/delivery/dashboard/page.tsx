@@ -61,7 +61,7 @@ export default function DeliveryDashboardPage() {
 
   useEffect(() => {
     // Socket initialization
-    const baseUrl = (process.env.NEXT_PUBLIC_API_URL || "http://newmedifinddeploy-env.eba-pp6njqrd.eu-north-1.elasticbeanstalk.com").replace('/api', '');
+    const baseUrl = (process.env.NEXT_PUBLIC_API_URL || "http://newmedifinddeploy-env.eba-pp6njqrd.eu-north-1.elasticbeanstalk.com/api").replace('/api', '');
     const socket = io(baseUrl, { withCredentials: true });
     
     if (data?.currentOrderId?._id) {
@@ -206,7 +206,7 @@ export default function DeliveryDashboardPage() {
         <p className="text-[10px] md:text-xs text-slate-500 font-medium">
           Agent <span className="hidden sm:inline">Portal</span>
         </p>
-        <span className="text-[8px] text-slate-300">•</span>
+        <span className="text-[8px] text-slate-300">â€¢</span>
         <p className="text-[9px] md:text-[10px] text-slate-400 uppercase font-bold">
           {data?.name || "Driver"}
         </p>
@@ -380,7 +380,7 @@ export default function DeliveryDashboardPage() {
               <div className="flex justify-between items-start mb-6">
                 <div>
                   <p className="font-semibold text-slate-900">Order #{order._id?.slice(-6).toUpperCase()}</p>
-                  <p className="text-sm text-slate-500">{order.items?.length || 0} items • ₹{order.totalAmount}</p>
+                  <p className="text-sm text-slate-500">{order.items?.length || 0} items â€¢ â‚¹{order.totalAmount}</p>
                 </div>
                 <button
                   onClick={() => handleAcceptOrder(order._id)}

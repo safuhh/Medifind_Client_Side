@@ -8,7 +8,7 @@ import { toast } from "react-toastify";
 import { motion, AnimatePresence } from "framer-motion";
 import { FiCalendar, FiClock, FiCheckCircle, FiAlertCircle } from "react-icons/fi";
 
-const socket = io(process.env.NEXT_PUBLIC_API_URL || "http://newmedifinddeploy-env.eba-pp6njqrd.eu-north-1.elasticbeanstalk.com");
+const socket = io(process.env.NEXT_PUBLIC_API_URL || "http://newmedifinddeploy-env.eba-pp6njqrd.eu-north-1.elasticbeanstalk.com/api");
 
 interface BookingSectionProps {
     doctorId: string;
@@ -71,11 +71,11 @@ export default function BookingSection({ doctorId }: BookingSectionProps) {
             });
 
             if (res.data.success) {
-                toast.success("Proceeding to secure payment... 💳");
+                toast.success("Proceeding to secure payment... ðŸ’³");
                 if (res.data.clientSecret) {
                     window.location.href = `/booking/payment?client_secret=${res.data.clientSecret}&doctorId=${doctorId}&amount=${res.data.booking.amount}`;
                 } else {
-                    toast.success("Appointment booked successfully! ✨");
+                    toast.success("Appointment booked successfully! âœ¨");
                     setSelectedSlot(null);
                 }
             }

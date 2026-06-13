@@ -80,7 +80,7 @@ function MedicinesList() {
 
   const reverseGeocode = async (lat: number, lng: number) => {
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://newmedifinddeploy-env.eba-pp6njqrd.eu-north-1.elasticbeanstalk.com";
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://newmedifinddeploy-env.eba-pp6njqrd.eu-north-1.elasticbeanstalk.com/api";
       const res = await fetch(`${apiUrl}/locations/reverse?lat=${lat}&lng=${lng}`);
       const data = await res.json();
       
@@ -304,7 +304,7 @@ return (
             <div>
               <div className="flex justify-between items-center mb-4">
                 <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Max Price</h4>
-                <span className="text-sm font-medium text-emerald-800">₹{maxPrice}</span>
+                <span className="text-sm font-medium text-emerald-800">â‚¹{maxPrice}</span>
               </div>
               <input 
                 type="range" 
@@ -316,8 +316,8 @@ return (
                 className="w-full accent-emerald-700 h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer"
               />
               <div className="flex justify-between text-xs text-slate-400 mt-2">
-                <span>₹0</span>
-                <span>₹{sliderMax}</span>
+                <span>â‚¹0</span>
+                <span>â‚¹{sliderMax}</span>
               </div>
             </div>
           </div>
@@ -409,13 +409,13 @@ return (
                         </div>
                         
                         <div className="flex items-baseline gap-2 mb-1">
-                          <span className="text-lg font-bold text-slate-900">₹{med.pricing.sellingPrice}</span>
+                          <span className="text-lg font-bold text-slate-900">â‚¹{med.pricing.sellingPrice}</span>
                           {med.pricing.mrp > med.pricing.sellingPrice && (
-                            <span className="text-sm text-slate-400 line-through">₹{med.pricing.mrp}</span>
+                            <span className="text-sm text-slate-400 line-through">â‚¹{med.pricing.mrp}</span>
                           )}
                         </div>
                         <p className="text-[10px] text-slate-500 mb-4 font-medium">
-                          + {med.pricing.gst || 0}% GST (₹{((med.pricing.sellingPrice * (med.pricing.gst || 0)) / 100).toFixed(2)})
+                          + {med.pricing.gst || 0}% GST (â‚¹{((med.pricing.sellingPrice * (med.pricing.gst || 0)) / 100).toFixed(2)})
                         </p>
 
                         <div className="mt-auto pt-4 border-t border-slate-100">
