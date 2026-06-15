@@ -87,7 +87,7 @@ export const Hero = () => {
   };
 
   return (
-    <main className="relative w-full min-h-[100dvh] flex flex-col items-center justify-center px-4 sm:px-6 py-20 overflow-hidden bg-white">
+    <main className="relative w-full min-h-[calc(100vh-80px)] flex flex-col items-center justify-center px-4 sm:px-6 py-10 md:py-16 overflow-hidden bg-white">
       {/* Background blobs (Safely inside overflow-hidden to prevent horizontal scrolling) */}
       <div className="absolute top-0 right-[-10%] w-[500px] h-[500px] bg-emerald-100/50 rounded-full blur-[120px] -z-10 animate-pulse pointer-events-none" />
       <div className="absolute bottom-0 left-[-10%] w-[600px] h-[600px] bg-blue-50/50 rounded-full blur-[140px] -z-10 pointer-events-none" />
@@ -96,7 +96,7 @@ export const Hero = () => {
         variants={containerVariants}
         initial="hidden"
         animate="visible"
-        className="w-full max-w-7xl mx-auto text-center relative z-10"
+        className="w-full max-w-7xl mx-auto text-center relative z-10 -mt-10 md:-mt-16"
       >
         {/* Title */}
         <motion.h1 variants={itemVariants} className="text-5xl sm:text-7xl md:text-[90px] lg:text-[100px] font-black text-slate-900 leading-[1.1] md:leading-[0.9] tracking-tighter mb-8">
