@@ -177,8 +177,9 @@ const NavbarPage = () => {
 
           {/* Mobile Menu Toggle */}
           <button
+            suppressHydrationWarning
             onClick={() => setIsMobileMenuOpen(true)}
-            className="lg:hidden p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-all focus:outline-none"
+            className="lg:hidden p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-[#0a4d33]/20"
             aria-label="Open Menu"
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -211,7 +212,7 @@ const NavbarPage = () => {
             >
               {/* Sidebar Header */}
               <div className="px-6 h-20 flex items-center justify-between border-b border-gray-100">
-                <span className="text-lg font-bold text-gray-900">Navigation</span>
+                <span className="text-lg font-bold text-gray-900">MediFind</span>
                 <button
                   onClick={() => setIsMobileMenuOpen(false)}
                   className="p-2 bg-gray-50 text-gray-500 hover:text-gray-800 hover:bg-gray-100 rounded-full transition-all focus:outline-none"

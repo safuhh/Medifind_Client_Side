@@ -87,22 +87,25 @@ export const Hero = () => {
   };
 
   return (
-    <main className="relative w-full min-h-[calc(100vh-80px)] flex flex-col items-center justify-center px-4 sm:px-6 py-10 md:py-16 overflow-hidden bg-white">
+    <main className="relative w-full min-h-[100dvh] flex flex-col items-center justify-center px-4 sm:px-6 pt-20 pb-10 md:pt-20 md:pb-16 overflow-hidden bg-white">
       {/* Background blobs (Safely inside overflow-hidden to prevent horizontal scrolling) */}
       <div className="absolute top-0 right-[-10%] w-[500px] h-[500px] bg-emerald-100/50 rounded-full blur-[120px] -z-10 animate-pulse pointer-events-none" />
       <div className="absolute bottom-0 left-[-10%] w-[600px] h-[600px] bg-blue-50/50 rounded-full blur-[140px] -z-10 pointer-events-none" />
-
       <motion.div
         variants={containerVariants}
         initial="hidden"
         animate="visible"
         className="w-full max-w-7xl mx-auto text-center relative z-10 -mt-10 md:-mt-16"
       >
-        {/* Title */}
-        <motion.h1 variants={itemVariants} className="text-5xl sm:text-7xl md:text-[90px] lg:text-[100px] font-black text-slate-900 leading-[1.1] md:leading-[0.9] tracking-tighter mb-8">
-          The Digital Core Of <br />
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0a4d33] to-[#10b981]">
-            Medicine Search
+        <motion.h1 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+          className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-[#022C22] leading-[1.1] mb-8"
+        >
+          Find exactly what you need.<br />
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#047857] to-[#10B981]">
+            Right where you are.
           </span>
         </motion.h1>
 
@@ -113,9 +116,7 @@ export const Hero = () => {
 
         {/* Search Box */}
         <motion.div variants={itemVariants} className="max-w-4xl mx-auto relative group">
-          {/* Enhanced glow effect */}
-          <div className="absolute -inset-1 bg-gradient-to-r from-[#0a4d33] to-[#10b981] rounded-[32px] blur-lg opacity-20 group-hover:opacity-40 transition duration-500 pointer-events-none" />
-          <div className="relative flex flex-col md:flex-row items-center bg-white border border-slate-200 rounded-[28px] shadow-xl p-2 md:p-3">
+          <div className="relative flex flex-col md:flex-row items-center bg-white border border-slate-200 rounded-[28px] p-2 md:p-3">
             {/* Medicine Input */}
             <div className="flex-1 flex items-center w-full px-4 md:px-6 py-3 border-b md:border-b-0 md:border-r border-slate-200">
               <Search className="w-5 h-5 text-slate-400 mr-3 shrink-0" />
