@@ -10,6 +10,11 @@ import { motion, AnimatePresence } from "framer-motion";
 import NavbarPage from "@/app/navbar/page";
 import { getImageUrl } from "@/utils/imageUrl";
 import { useSelector } from "react-redux";
+import dynamic from "next/dynamic";
+
+const LocationModal = dynamic(() => import("@/components/LocationModal"), {
+  ssr: false,
+});
 interface Medicine {
   _id: string;
   name: string;
@@ -51,6 +56,53 @@ function MedicinesList() {
   const [locating, setLocating] = useState(false);
   const [locationName, setLocationName] = useState<string>("");
   const [locationGranted, setLocationGranted] = useState<boolean | null>(null);
+  const [isMapModalOpen, setIsMapModalOpen] = useState(false);
+  const [locInput, setLocInput] = useState("");
+  const [suggestions, setSuggestions] = useState<any[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [fetchingSuggestions, setFetchingSuggestions] = useState(false);
+
+  const handleSelectLocation = (lat: number, lng: number, address: string) => {
+    setCoords({ lat, lng });
+    setLocationName(address);
+    setLocationGranted(true);
+  };
+
+  useEffect(() => {
+    if (locationName) {
+      setLocInput(locationName);
+    }
+  }, [locationName]);
+
+  // Debounce autocomplete search
+  useEffect(() => {
+    if (!locInput || locInput === locationName) {
+      setSuggestions([]);
+      return;
+    }
+
+    const delayDebounce = setTimeout(async () => {
+      setFetchingSuggestions(true);
+      try {
+        const res = await fetch(
+          `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(locInput)}&format=json&limit=5`,
+          {
+            headers: {
+              "Accept-Language": "en",
+            },
+          }
+        );
+        const data = await res.json();
+        setSuggestions(data || []);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setFetchingSuggestions(false);
+      }
+    }, 400);
+
+    return () => clearTimeout(delayDebounce);
+  }, [locInput]);
 
   const categoriesList = [
     "Pain Relief",
@@ -245,26 +297,78 @@ return (
                   />
                 </div>
 
-                {/* Auto Location Display (Mimicking Hero style) */}
-                <button 
-                  type="button"
-                  onClick={getLocation}
-                  className="flex-1 flex items-center w-full px-6 py-2 hover:bg-slate-50/50 transition-colors group/loc"
-                >
-                  <MapPin className={`w-6 h-6 ${locating ? "text-emerald-400" : "text-emerald-600"} mr-4 shrink-0 group-hover/loc:scale-110 transition-transform`} />
-                  <div className="flex flex-col items-start overflow-hidden">
+                {/* Auto Location Display with Suggestions */}
+                <div className="flex-1 flex items-center w-full px-6 py-2 relative group/loc">
+                  <MapPin className="w-6 h-6 text-emerald-600 mr-4 shrink-0" />
+                  <div className="flex flex-col items-start overflow-hidden flex-1 text-left">
                     <span className="text-[10px] font-black text-emerald-600 uppercase tracking-widest mb-0.5">
                       {radius ? `Nearby (${radius}KM)` : "Detecting Range"}
                     </span>
-                    <span className="text-lg font-bold text-slate-900 truncate w-full text-left">
-                      {locating ? (
-                        <span className="flex items-center gap-2 text-slate-400">
-                          <Loader2 className="w-4 h-4 animate-spin" /> Detecting...
-                        </span>
-                      ) : locationName || "Set Location"}
-                    </span>
+                    <input
+                      type="text"
+                      value={locInput}
+                      onChange={(e) => setLocInput(e.target.value)}
+                      onFocus={() => setShowSuggestions(true)}
+                      onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+                      placeholder="Set Location..."
+                      className="w-full text-lg font-bold text-slate-900 placeholder:text-slate-400 focus:outline-none bg-transparent"
+                    />
                   </div>
-                </button>
+
+                  {/* Suggestions Dropdown */}
+                  {showSuggestions && (
+                    <div className="absolute left-0 right-0 top-full mt-2 bg-white border border-slate-200 rounded-xl shadow-xl overflow-hidden z-50 max-h-[250px] overflow-y-auto">
+                      
+                      {/* Option: Current Location */}
+                      <button
+                        onClick={getLocation}
+                        type="button"
+                        className="w-full text-left px-5 py-3 hover:bg-slate-50 text-sm font-bold text-emerald-800 border-b border-slate-100 flex items-center gap-2.5 cursor-pointer"
+                      >
+                        <Navigation className="w-4 h-4 fill-emerald-800/10 text-emerald-800" />
+                        Use Current Location
+                      </button>
+
+                      {/* Option: Map Pin */}
+                      <button
+                        onClick={() => setIsMapModalOpen(true)}
+                        type="button"
+                        className="w-full text-left px-5 py-3 hover:bg-slate-50 text-sm font-bold text-emerald-700 border-b border-slate-100 flex items-center gap-2.5 cursor-pointer"
+                      >
+                        <MapPin className="w-4 h-4 text-emerald-700" />
+                        Select from Map
+                      </button>
+
+                      {/* Loader */}
+                      {fetchingSuggestions && (
+                        <div className="px-5 py-3.5 text-sm text-slate-500 font-semibold flex items-center gap-2 bg-slate-50">
+                          <Loader2 className="w-4 h-4 animate-spin text-emerald-800" />
+                          Searching areas...
+                        </div>
+                      )}
+
+                      {/* Suggestions mapping */}
+                      {!fetchingSuggestions && suggestions.map((item, idx) => (
+                        <button
+                          key={idx}
+                          onClick={() => {
+                            handleSelectLocation(parseFloat(item.lat), parseFloat(item.lon), item.display_name);
+                          }}
+                          type="button"
+                          className="w-full text-left px-5 py-3 hover:bg-slate-50 text-sm font-semibold text-slate-700 truncate border-b border-slate-100 last:border-b-0 cursor-pointer"
+                        >
+                          {item.display_name}
+                        </button>
+                      ))}
+
+                      {!fetchingSuggestions && suggestions.length === 0 && locInput && locInput !== locationName && (
+                        <div className="px-5 py-3 text-sm text-slate-400 font-medium text-center">
+                          No matching addresses found.
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
 
                 {/* Search Button */}
                 <button
@@ -466,6 +570,15 @@ return (
         )}
         </div>
       </div>
+
+      {/* Interactive Map Picker Modal */}
+      <LocationModal
+        isOpen={isMapModalOpen}
+        onClose={() => setIsMapModalOpen(false)}
+        onSelectLocation={handleSelectLocation}
+        initialCoords={coords}
+        initialAddress={locationName}
+      />
     </div>
   );
 }

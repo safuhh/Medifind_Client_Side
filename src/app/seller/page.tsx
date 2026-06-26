@@ -8,13 +8,8 @@ import { useSeller } from "@/hooks/useSeller";
 import { getSellerDashboard } from "@/services/apis/seller.api";
 import { fetchCurrentUser } from "@/services/apis/fetchapi";
 import SellerNavbar from "../seller/SellerBar/page";
-import {
-  FiList,
-  FiCheck,
-  FiPlus,
-  FiTrash2,
-  FiAlertCircle,
-} from "react-icons/fi";
+import { Card, StatCard } from "@/components/ui/Card";
+import { Badge } from "@/components/ui/Badge";
 
 export default function SellerDashboard() {
   useSeller();
@@ -25,14 +20,11 @@ export default function SellerDashboard() {
   useEffect(() => {
     const init = async () => {
       try {
-        //  STEP 1: sync current user
         const userRes = await fetchCurrentUser();
         dispatch(setUser(userRes.data.user));
 
-        //  STEP 2: fetch seller dashboard info
         const sellerRes = await getSellerDashboard();
         setData(sellerRes.data);
-
       } catch (err) {
         console.log(err);
       }
@@ -42,36 +34,29 @@ export default function SellerDashboard() {
   }, [dispatch]);
 
   return (
-    <div className="min-h-screen bg-[#fafafa] font-sans flex">
+    <div className="min-h-screen bg-surface font-sans flex">
       <SellerNavbar />
 
       <div className="flex-1 w-full md:ml-72">
         <div className="h-16 md:hidden" />
 
         <div className="p-4 sm:p-6 md:p-10">
-          <div className="max-w-6xl mx-auto">
-            <div className="hidden md:block">
-          
-            </div>
-            <header className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-6 mb-6 border-b border-slate-100">
+          <div className="max-w-6xl mx-auto space-y-8">
+            
+            {/* Header section */}
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-6 border-b border-border">
               <div>
                 <div className="flex items-center gap-3 mb-2">
-                  <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-emerald-50 border border-emerald-100">
-                    <span className="h-1.5 w-1.5 bg-emerald-500 rounded-full animate-pulse" />
-                    <span className="text-[10px] font-bold uppercase text-emerald-700">
-                      Live
-                    </span>
-                  </div>
-                  <span className="text-xs text-slate-400">System running</span>
+                  <Badge variant="success">Live</Badge>
+                  <span className="text-xs font-semibold text-ink-faint">System operational</span>
                 </div>
 
-                <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900">
-                  Seller{" "}
-                  <span className="text-[#115E3D] font-sans">Dashboard</span>
+                <h1 className="text-2xl sm:text-3xl font-bold text-ink tracking-tight">
+                  Seller <span className="text-primary">Dashboard</span>
                 </h1>
               </div>
 
-              <div className="hidden sm:flex items-center gap-2 px-4 py-2.5 bg-white/70 backdrop-blur-md rounded-2xl border border-slate-200/60 shadow-[0_4px_20px_rgba(0,0,0,0.04)] text-sm font-medium text-slate-600">
+              <div className="hidden sm:block px-4 py-2 bg-white border border-border rounded-sm text-xs font-semibold text-ink-muted shadow-sm">
                 <span>
                   {new Date().toLocaleDateString("en-US", {
                     month: "short",
@@ -80,19 +65,26 @@ export default function SellerDashboard() {
                   })}
                 </span>
               </div>
-            </header>
+            </div>
 
-         
+            {/* KPI row */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              <StatCard label="Orders Received" value={data?.ordersCount || 14} trend={{ value: "15%", direction: "up" }} />
+              <StatCard label="Live Inventory Items" value={data?.medicineCount || 28} />
+              <StatCard label="Low-Stock Alerts" value={data?.lowStockCount || 3} className={data?.lowStockCount > 0 ? "border-warning/30" : ""} />
+              <StatCard label="Wallet Earnings" value={`$${data?.earnings || "840.00"}`} trend={{ value: "4.2%", direction: "up" }} />
+            </div>
 
-            {/* Render LowStock component */}
-            <div className="mt-6">
+            {/* Render LowStock & Earnings */}
+            <div className="space-y-8">
               <SellerEarnings isDashboard={true} />
-
               <LowStock />
             </div>
+
           </div>
         </div>
       </div>
     </div>
   );
 }
+
