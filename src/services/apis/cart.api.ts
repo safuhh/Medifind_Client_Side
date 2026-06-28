@@ -24,3 +24,6 @@ export const optimizeOrderSplits = (data?: { patientCoords?: [number, number]; p
   return api.post("/orders/optimize-split", data || {});
 };
 
+export const getRemainingPrescribedLimit = (medicineId: string) => {
+  return api.get(`/cart/remaining-prescription/${medicineId}`);
+};

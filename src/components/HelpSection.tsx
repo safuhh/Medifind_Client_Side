@@ -8,6 +8,7 @@ const FAQItem = ({ question, answer, isOpen, onClick, index }: any) => {
   return (
     <div className="mb-4">
       <button
+        suppressHydrationWarning
         onClick={onClick}
         className={`w-full text-left p-5 sm:p-8 rounded-[24px] sm:rounded-[32px] transition-all duration-500 flex items-start gap-4 sm:gap-6 outline-none border ${
           isOpen 
@@ -115,7 +116,10 @@ export const HelpSection = () => {
                   Our pharmacists and support team are available for a live chat.
                 </p>
                 
-                <button className="flex items-center gap-3 px-6 py-4 bg-white border border-slate-200 rounded-2xl text-sm font-bold text-slate-700 hover:text-emerald-600 hover:border-emerald-200 hover:shadow-md transition-all active:scale-95 group/btn">
+                <button 
+                  suppressHydrationWarning
+                  className="flex items-center gap-3 px-6 py-4 bg-white border border-slate-200 rounded-2xl text-sm font-bold text-slate-700 hover:text-emerald-600 hover:border-emerald-200 hover:shadow-md transition-all active:scale-95 group/btn"
+                >
                   Open Support Chat
                   <ArrowUpRight className="group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" />
                 </button>

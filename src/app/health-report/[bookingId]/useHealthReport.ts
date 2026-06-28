@@ -179,19 +179,17 @@ export function useHealthReport() {
 
   // ── Quantity Adjustments ──────────────────────────────────────────────────────
 
-  const handleIncreaseQty = (medId: string, maxQty: number) => {
+  const handleIncreaseQty = (medId: string, maxQty: number, currentQty: number) => {
     setSelectedQuantities((prev) => {
-      const current = prev[medId] ?? 0;
-      if (current >= maxQty) return prev;
-      return { ...prev, [medId]: current + 1 };
+      if (currentQty >= maxQty) return prev;
+      return { ...prev, [medId]: currentQty + 1 };
     });
   };
 
-  const handleDecreaseQty = (medId: string) => {
+  const handleDecreaseQty = (medId: string, currentQty: number) => {
     setSelectedQuantities((prev) => {
-      const current = prev[medId] ?? 0;
-      if (current <= 0) return prev;
-      return { ...prev, [medId]: current - 1 };
+      if (currentQty <= 0) return prev;
+      return { ...prev, [medId]: currentQty - 1 };
     });
   };
 

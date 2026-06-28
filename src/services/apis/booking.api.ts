@@ -4,6 +4,6 @@ export const getAvailableSlots = (doctorId: string, date: string) => {
     return api.post("/booking/get-slots", { doctorId, date });
 };
 
-export const bookSlot = (bookingData: { doctorId: string; date: string; timeSlot: string; reason?: string }) => {
+export const bookSlot = (bookingData: { doctorId: string; date: string; timeSlot: string; reason?: string; familyMemberId?: string }) => {
     return api.post("/booking/book", bookingData);
 };

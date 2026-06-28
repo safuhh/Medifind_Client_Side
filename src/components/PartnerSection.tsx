@@ -4,13 +4,8 @@ import { PartnerBanner } from "./Banner";
 
 export default function PartnerSection() {
   return (
-    <>
-    <br/>
-    <br />
-      <br />
+    <div className="py-8">
       <PartnerBanner />
-   <br />
-   <br />
-    </>
+    </div>
   );
 }

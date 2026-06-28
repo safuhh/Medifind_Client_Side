@@ -4,9 +4,10 @@ import React, { useState, useEffect } from "react";
 import { io } from "socket.io-client";
 import dayjs from "dayjs";
 import { getAvailableSlots, bookSlot } from "@/services/apis/booking.api";
+import { getFamilyMembers } from "@/services/apis/family.api";
 import { toast } from "react-toastify";
 import { motion, AnimatePresence } from "framer-motion";
-import { FiCalendar, FiClock, FiCheckCircle, FiAlertCircle } from "react-icons/fi";
+import { FiCalendar, FiClock, FiCheckCircle, FiAlertCircle, FiUser } from "react-icons/fi";
 
 const socket = io(process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api");
 
@@ -20,6 +21,10 @@ export default function BookingSection({ doctorId }: BookingSectionProps) {
     const [loading, setLoading] = useState(false);
     const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
     const [isBooking, setIsBooking] = useState(false);
+
+    const [familyMembers, setFamilyMembers] = useState<any[]>([]);
+    const [selectedPatientId, setSelectedPatientId] = useState<string>("");
+    const [loadingPatients, setLoadingPatients] = useState(true);
 
     const fetchSlots = async () => {
         setLoading(true);
@@ -37,6 +42,27 @@ export default function BookingSection({ doctorId }: BookingSectionProps) {
     };
 
     useEffect(() => {
+        const fetchPatients = async () => {
+            try {
+                const res = await getFamilyMembers();
+                if (res.data.success && res.data.members) {
+                    setFamilyMembers(res.data.members);
+                    const defaultMember = res.data.members.find((m: any) => m.isDefault);
+                    if (defaultMember) {
+                        setSelectedPatientId(defaultMember._id);
+                    } else if (res.data.members.length > 0) {
+                        setSelectedPatientId(res.data.members[0]._id);
+                    } else {
+                        setSelectedPatientId("self");
+                    }
+                }
+            } catch (err) {
+                console.error("Error fetching family members:", err);
+            } finally {
+                setLoadingPatients(false);
+            }
+        };
+        fetchPatients();
         fetchSlots();
 
         // Join doctor's room for live updates
@@ -60,6 +86,10 @@ export default function BookingSection({ doctorId }: BookingSectionProps) {
 
     const handleBooking = async () => {
         if (!selectedSlot) return;
+        if (!selectedPatientId) {
+            toast.error("Please select a patient first.");
+            return;
+        }
         
         setIsBooking(true);
         try {
@@ -67,7 +97,8 @@ export default function BookingSection({ doctorId }: BookingSectionProps) {
                 doctorId,
                 date: selectedDate,
                 timeSlot: selectedSlot,
-                reason: "General Consultation"
+                reason: "General Consultation",
+                familyMemberId: selectedPatientId !== "self" ? selectedPatientId : undefined
             });
 
             if (res.data.success) {
@@ -88,6 +119,30 @@ export default function BookingSection({ doctorId }: BookingSectionProps) {
 
     return (
         <div className="space-y-6">
+            <div className="space-y-3">
+                <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Select Patient</p>
+                {loadingPatients ? (
+                    <div className="flex justify-center py-2">
+                        <div className="w-5 h-5 border-2 border-slate-200 border-t-emerald-600 rounded-full animate-spin"></div>
+                    </div>
+                ) : (
+                    <select
+                        value={selectedPatientId}
+                        onChange={(e) => setSelectedPatientId(e.target.value)}
+                        className="w-full bg-slate-50 border border-slate-200 text-slate-700 text-sm rounded-lg focus:ring-emerald-500 focus:border-emerald-500 block p-2.5 outline-none"
+                    >
+                        {familyMembers.length === 0 && (
+                            <option value="self">Self (Primary Account)</option>
+                        )}
+                        {familyMembers.map((member) => (
+                            <option key={member._id} value={member._id}>
+                                {member.name} {member.isDefault ? "(Self)" : `(${member.relationship})`}
+                            </option>
+                        ))}
+                    </select>
+                )}
+            </div>
+
             <div className="flex items-center justify-between mb-4">
                 <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Select Date</p>
                 <input 

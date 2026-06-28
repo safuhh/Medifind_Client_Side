@@ -162,7 +162,7 @@ export default function CartPage() {
                                             <h3 className="font-semibold text-slate-900 truncate text-sm sm:text-base">{med.name}</h3>
                                             <p className="text-xs text-slate-500 truncate">{med.brand}</p>
                                             <p className="text-xs sm:text-sm font-bold text-[#0a4d33] mt-0.5">₹{med.pricing?.sellingPrice} <span className="text-[10px] font-normal text-slate-400"> + {med.pricing?.gst || 0}% GST</span></p>
-                                            {item.prescribedQty && (
+                                            {item.prescribedQty !== undefined && (
                                                 <p className="text-[10px] font-bold text-emerald-600 uppercase mt-0.5">
                                                     Max: {item.prescribedQty}
                                                 </p>
@@ -184,7 +184,7 @@ export default function CartPage() {
                                                 <button
                                                     onClick={() => handleIncrease(med._id)}
                                                     className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-full border border-slate-200 hover:bg-slate-50 text-slate-600 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-                                                    disabled={item.quantity >= (item.prescribedQty ? Math.min(med.stock, item.prescribedQty) : med.stock)}
+                                                    disabled={item.quantity >= (item.prescribedQty !== undefined ? Math.min(med.stock, item.prescribedQty) : med.stock)}
                                                 >
                                                     <FiPlus size={10} className="sm:hidden" />
                                                     <FiPlus size={12} className="hidden sm:block" />

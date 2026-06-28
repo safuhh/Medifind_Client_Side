@@ -2,20 +2,68 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
+import { usePathname } from "next/navigation";
+import { motion, AnimatePresence, Variants } from "framer-motion";
 import { useAppSelector } from "@/store/redux/hooks";
 import { io } from "socket.io-client";
 import { toast } from "react-toastify";
 
 const NavbarPage = () => {
+  const pathname = usePathname();
   const [isMounted, setIsMounted] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { user } = useAppSelector((state) => state.auth);
+
+  // Animation Variants for Mobile Sidebar
+  const backdropVariants: Variants = {
+    hidden: { opacity: 0, backdropFilter: "blur(0px)" },
+    visible: { opacity: 1, backdropFilter: "blur(8px)", transition: { duration: 0.25 } },
+    exit: { opacity: 0, backdropFilter: "blur(0px)", transition: { duration: 0.2 } },
+  };
+
+  const sidebarVariants: Variants = {
+    hidden: { x: "100%" },
+    visible: {
+      x: 0,
+      transition: {
+        type: "tween",
+        ease: [0.16, 1, 0.3, 1],
+        duration: 0.35,
+        staggerChildren: 0.04,
+        delayChildren: 0.05
+      }
+    },
+    exit: {
+      x: "100%",
+      transition: {
+        type: "tween",
+        ease: [0.16, 1, 0.3, 1],
+        duration: 0.25
+      }
+    }
+  };
+
+  const itemVariants: Variants = {
+    hidden: { opacity: 0, x: 16 },
+    visible: {
+      opacity: 1,
+      x: 0,
+      transition: {
+        ease: [0.16, 1, 0.3, 1],
+        duration: 0.3
+      }
+    }
+  };
 
   // Handle hydration mismatch and body scroll lock
   useEffect(() => {
     setIsMounted(true);
   }, []);
+
+  // Close mobile sidebar on route change
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+  }, [pathname]);
 
   useEffect(() => {
     if (isMounted && user && user._id) {
@@ -152,6 +200,9 @@ const NavbarPage = () => {
             <Link href="/medicines" className="text-sm font-medium text-gray-600 hover:text-[#0a4d33] transition-colors">
               Find Medicine
             </Link>
+            <Link href="/family-health" className="text-sm font-semibold text-emerald-600 hover:text-emerald-700 transition-colors flex items-center gap-1">
+              <span>Family Health</span>
+            </Link>
             <Link href="/consultation" className="text-sm font-medium text-gray-600 hover:text-[#0a4d33] transition-colors">
               Consultation
             </Link>
@@ -176,16 +227,17 @@ const NavbarPage = () => {
           </div>
 
           {/* Mobile Menu Toggle */}
-          <button
+          <motion.button
             suppressHydrationWarning
+            whileTap={{ scale: 0.92 }}
             onClick={() => setIsMobileMenuOpen(true)}
-            className="lg:hidden p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-[#0a4d33]/20"
+            className="lg:hidden p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-[#0a4d33]/20 cursor-pointer"
             aria-label="Open Menu"
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
             </svg>
-          </button>
+          </motion.button>
         </div>
       </nav>
 
@@ -195,58 +247,119 @@ const NavbarPage = () => {
           <>
             {/* Dark Backdrop */}
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
+              variants={backdropVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
               onClick={() => setIsMobileMenuOpen(false)}
-              className="fixed inset-0 bg-gray-900/60 backdrop-blur-sm z-[60] lg:hidden"
+              className="fixed inset-0 bg-slate-900/40 z-[60] lg:hidden"
             />
 
             {/* Sidebar Drawer */}
             <motion.div
-              initial={{ x: "100%" }}
-              animate={{ x: 0 }}
-              exit={{ x: "100%" }}
-              transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="fixed top-0 right-0 h-[100dvh] w-full max-w-sm bg-white shadow-2xl z-[70] lg:hidden flex flex-col"
+              variants={sidebarVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+              className="fixed top-0 right-0 h-[100dvh] w-full max-w-[320px] sm:max-w-sm bg-white/90 backdrop-blur-xl border-l border-white/20 shadow-2xl z-[70] lg:hidden flex flex-col"
             >
               {/* Sidebar Header */}
-              <div className="px-6 h-20 flex items-center justify-between border-b border-gray-100">
-                <span className="text-lg font-bold text-gray-900">MediFind</span>
-                <button
+              <div className="px-6 h-20 flex items-center justify-between border-b border-slate-100/60 bg-white/50">
+                <span className="text-lg font-black tracking-tight text-[#0a4d33]">MediFind Menu</span>
+                <motion.button
+                  whileTap={{ scale: 0.9 }}
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="p-2 bg-gray-50 text-gray-500 hover:text-gray-800 hover:bg-gray-100 rounded-full transition-all focus:outline-none"
+                  className="p-2 text-slate-500 hover:text-slate-800 bg-slate-100/50 hover:bg-slate-100 rounded-full transition-all focus:outline-none cursor-pointer"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
                   </svg>
-                </button>
+                </motion.button>
               </div>
 
               {/* Scrollable Links Section */}
-              <div className="flex-1 overflow-y-auto py-6 px-6 flex flex-col gap-5">
-                <Link onClick={() => setIsMobileMenuOpen(false)} href="/" className="text-base font-semibold text-gray-800 hover:text-[#0a4d33]">Home</Link>
-                <Link onClick={() => setIsMobileMenuOpen(false)} href="/medicines" className="text-base font-semibold text-gray-600 hover:text-[#0a4d33]">Find Medicine</Link>
-                <Link onClick={() => setIsMobileMenuOpen(false)} href="/consultation" className="text-base font-semibold text-gray-600 hover:text-[#0a4d33]">Consultation</Link>
-                <Link onClick={() => setIsMobileMenuOpen(false)} href="/about" className="text-base font-semibold text-gray-600 hover:text-[#0a4d33]">About Us</Link>
-                <Link onClick={() => setIsMobileMenuOpen(false)} href="/help" className="text-base font-semibold text-gray-600 hover:text-[#0a4d33]">Help & Support</Link>
-                <Link onClick={() => setIsMobileMenuOpen(false)} href="/partner" className="text-base font-semibold text-gray-600 hover:text-[#0a4d33]">Partners</Link>
-                <Link onClick={() => setIsMobileMenuOpen(false)} href="/notifications" className="text-base font-semibold text-gray-600 hover:text-[#0a4d33]">Notifications</Link>
-                <Link onClick={() => setIsMobileMenuOpen(false)} href="/cart" className="text-base font-semibold text-gray-600 hover:text-[#0a4d33]">cart</Link>
+              <div className="flex-1 overflow-y-auto py-6 px-4 flex flex-col gap-1.5">
+                {[
+                  { label: "Home", href: "/" },
+                  { label: "Find Medicine", href: "/medicines" },
+                  { label: "Consultation", href: "/consultation" },
+                  { label: "About Us", href: "/about" },
+                  { label: "Help & Support", href: "/help" },
+                  { label: "Partners", href: "/partner" },
+                  { label: "Notifications", href: "/notifications" },
+                  { label: "Cart", href: "/cart" }
+                ].map((link) => {
+                  const isActive = pathname === link.href;
+                  return (
+                    <motion.div key={link.href} variants={itemVariants}>
+                      <Link
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        href={link.href}
+                        className={`py-3 px-4 rounded-xl flex items-center justify-between text-sm font-bold transition-all group ${
+                          isActive
+                            ? "bg-emerald-50 text-[#0a4d33] border-l-4 border-[#0a4d33] shadow-sm"
+                            : "text-slate-700 hover:bg-slate-50/50 hover:text-[#0a4d33]"
+                        }`}
+                      >
+                        <span>{link.label}</span>
+                        <svg 
+                          className={`w-4 h-4 text-emerald-600 transition-all duration-300 opacity-0 group-hover:opacity-100 ${
+                            isActive ? "opacity-100 translate-x-0.5" : "translate-x-0 group-hover:translate-x-0.5"
+                          }`} 
+                          fill="none" 
+                          stroke="currentColor" 
+                          viewBox="0 0 24 24"
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7" />
+                        </svg>
+                      </Link>
+                    </motion.div>
+                  );
+                })}
 
+                <motion.div variants={itemVariants} className="w-full h-px bg-slate-100/80 my-2.5"></motion.div>
 
-                <div className="w-full h-px bg-gray-100 my-2"></div>
-
-                <Link onClick={() => setIsMobileMenuOpen(false)} href="/profile" className="text-base font-medium text-gray-500 hover:text-[#0a4d33]">My Profile</Link>
-                <Link onClick={() => setIsMobileMenuOpen(false)} href="/orders" className="text-base font-medium text-gray-500 hover:text-[#0a4d33]">My Orders</Link>
-                <Link onClick={() => setIsMobileMenuOpen(false)} href="/terms" className="text-base font-medium text-gray-500 hover:text-[#0a4d33]">Terms & Conditions</Link>
-                <Link onClick={() => setIsMobileMenuOpen(false)} href="/privacy-policy" className="text-base font-medium text-gray-500 hover:text-[#0a4d33]">Privacy Policy</Link>
+                {[
+                  { label: "My Profile", href: "/profile" },
+                  { label: "Family Health Hub", href: "/family-health" },
+                  { label: "My Orders", href: "/orders" },
+                  { label: "Terms & Conditions", href: "/terms" },
+                  { label: "Privacy Policy", href: "/privacy-policy" }
+                ].map((link) => {
+                  const isActive = pathname === link.href;
+                  return (
+                    <motion.div key={link.href} variants={itemVariants}>
+                      <Link
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        href={link.href}
+                        className={`py-2.5 px-4 rounded-xl flex items-center justify-between text-xs font-semibold transition-all group ${
+                          isActive
+                            ? "bg-emerald-50/30 text-[#0a4d33] font-bold"
+                            : "text-slate-500 hover:bg-slate-50/50 hover:text-slate-800"
+                        }`}
+                      >
+                        <span>{link.label}</span>
+                        <svg 
+                          className={`w-3.5 h-3.5 text-emerald-600 transition-all duration-300 opacity-0 group-hover:opacity-100 ${
+                            isActive ? "opacity-100 translate-x-0.5" : "translate-x-0 group-hover:translate-x-0.5"
+                          }`} 
+                          fill="none" 
+                          stroke="currentColor" 
+                          viewBox="0 0 24 24"
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7" />
+                        </svg>
+                      </Link>
+                    </motion.div>
+                  );
+                })}
               </div>
 
               {/* Sticky Bottom Actions */}
-              <div className="p-6 border-t border-gray-100 bg-gray-50 flex flex-col gap-4">
-              
-
+              <motion.div 
+                variants={itemVariants}
+                className="p-6 border-t border-slate-100/60 bg-slate-50/50 flex flex-col gap-4"
+              >
                 {isMounted && user && user._id ? (
                   <div className="flex flex-col gap-3">
                     <div className="flex items-center gap-3 p-3 bg-white border border-gray-200 rounded-lg shadow-sm">
@@ -279,7 +392,7 @@ const NavbarPage = () => {
                     Join MediFind
                   </Link>
                 ) : null}
-              </div>
+              </motion.div>
             </motion.div>
           </>
         )}

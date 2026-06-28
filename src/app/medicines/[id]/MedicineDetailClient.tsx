@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { getMedicine } from "@/services/apis/medicineapi";
-import { addToCart, getCart } from "@/services/apis/cart.api";
+import { addToCart, getCart, getRemainingPrescribedLimit } from "@/services/apis/cart.api";
 import { toast } from "react-toastify";
 import {
   MapPin,
@@ -40,6 +40,7 @@ interface Medicine {
   stock: number;
   manufacturer?: string;
   sellerId?: string;
+  isPrescriptionRequired?: boolean;
   shop?: {
     name: string;
     address: string;
@@ -71,13 +72,18 @@ export default function MedicineDetailClient({ initialData }: { initialData?: Me
   const [locationGranted, setLocationGranted] = useState<boolean | null>(null);
 
   const [selectableMax, setSelectableMax] = useState<number>(0);
+  const [serverPrescribedQty, setServerPrescribedQty] = useState<number | undefined>(undefined);
 
   useEffect(() => {
     if (medicine) {
       const remainingStock = Math.max(0, medicine.stock - cartQty);
-      const remainingPrescribed = prescribedQty 
-        ? Math.max(0, Number(prescribedQty) - cartQty) 
-        : Infinity;
+      
+      let remainingPrescribed = Infinity;
+      if (serverPrescribedQty !== undefined) {
+        remainingPrescribed = Math.max(0, serverPrescribedQty);
+      } else if (prescribedQty) {
+        remainingPrescribed = Math.max(0, Number(prescribedQty) - cartQty);
+      }
       
       const max = Math.min(remainingStock, remainingPrescribed);
       setSelectableMax(max);
@@ -87,7 +93,7 @@ export default function MedicineDetailClient({ initialData }: { initialData?: Me
         setQuantity(max > 0 ? 1 : 0);
       }
     }
-  }, [medicine, cartQty, prescribedQty]);
+  }, [medicine, cartQty, prescribedQty, serverPrescribedQty]);
 
   const reverseGeocode = async (lat: number, lng: number) => {
     try {
@@ -206,6 +212,22 @@ export default function MedicineDetailClient({ initialData }: { initialData?: Me
   useEffect(() => {
     fetchCartData();
   }, [id]);
+
+  useEffect(() => {
+    const fetchPrescriptionLimit = async () => {
+      if (user && id) {
+        try {
+          const res = await getRemainingPrescribedLimit(id as string);
+          if (res.data?.success && res.data.remainingLimit !== undefined) {
+            setServerPrescribedQty(res.data.remainingLimit);
+          }
+        } catch (err) {
+          console.error("Failed to fetch prescription limit:", err);
+        }
+      }
+    };
+    fetchPrescriptionLimit();
+  }, [user, id]);
 
   if (loading && !medicine) {
     return (
@@ -404,7 +426,17 @@ export default function MedicineDetailClient({ initialData }: { initialData?: Me
                   </div>
                   {cartQty > 0 && (
                     <p className="text-xs text-emerald-600 font-medium">
-                      ({cartQty} units already in your cart. Max total: {medicine.stock})
+                      ({cartQty} units already in your cart.)
+                    </p>
+                  )}
+                  {serverPrescribedQty !== undefined && (
+                    <p className="text-xs text-amber-600 font-medium mt-1">
+                      Prescribed limit: {serverPrescribedQty} units total
+                    </p>
+                  )}
+                  {serverPrescribedQty === undefined && medicine.isPrescriptionRequired && (
+                    <p className="text-xs text-red-600 font-medium mt-1">
+                      Prescription required to purchase this medicine.
                     </p>
                   )}
                 </div>

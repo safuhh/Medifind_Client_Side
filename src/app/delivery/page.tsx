@@ -109,6 +109,7 @@ export default function BecomeDeliveryPage() {
         {/* CTA SECTION */}
         <div className="flex flex-col items-center">
           <button
+            suppressHydrationWarning
             onClick={() => router.push("/delivery/apply")}
             className="group flex items-center justify-center gap-3 bg-emerald-700 hover:bg-emerald-800 text-white px-10 py-4 rounded-full text-lg font-semibold shadow-lg shadow-emerald-700/30 transition-all duration-300 hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0"
           >

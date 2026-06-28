@@ -4,6 +4,7 @@ import "./globals.css";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Providers from "./providers";
+import PageTransition from "@/components/PageTransition";
 import logoss from "@/assets/images/logoss.png";
 import { JsonLd } from "@/components/seo/JsonLd";
 
@@ -88,7 +89,10 @@ export default function RootLayout({
         <JsonLd data={organizationSchema} />
       </head>
       <body className="min-h-full flex flex-col" suppressHydrationWarning>
-        <Providers>{children}
+        <Providers>
+          <PageTransition>
+            {children}
+          </PageTransition>
           <ToastContainer position="top-right" autoClose={3000} />
         </Providers>
       </body>

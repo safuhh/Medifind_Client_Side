@@ -20,6 +20,18 @@ export default function HealthReportModal({ isOpen, onClose, booking, onSaveSucc
     const [medicineSearch, setMedicineSearch] = useState("");
     const [medicineResults, setMedicineResults] = useState<any[]>([]);
     const [saving, setSaving] = useState(false);
+    const [searchRadius, setSearchRadius] = useState<number>(20);
+    const [isSearching, setIsSearching] = useState(false);
+    const [doctorCoords, setDoctorCoords] = useState<{lat: number, lng: number} | null>(null);
+
+    useEffect(() => {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (pos) => setDoctorCoords({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
+                (err) => console.error("Error getting doctor location:", err)
+            );
+        }
+    }, []);
 
     useEffect(() => {
         const fetchExistingReport = async () => {
@@ -41,23 +53,27 @@ export default function HealthReportModal({ isOpen, onClose, booking, onSaveSucc
         fetchExistingReport();
     }, [isOpen, booking?._id]);
 
-    const handleSearchMedicine = async (query: string) => {
+    const handleSearchMedicine = async (query: string, radius: number = searchRadius) => {
         setMedicineSearch(query);
         if (query.length < 2) {
             setMedicineResults([]);
             return;
         }
+        setIsSearching(true);
         try {
-            let lat = "";
-            let lng = "";
+            let lat: string | number = "";
+            let lng: string | number = "";
             if (booking?.userId?.location?.coordinates && booking.userId.location.coordinates.length === 2) {
                 lng = booking.userId.location.coordinates[0];
                 lat = booking.userId.location.coordinates[1];
+            } else if (doctorCoords) {
+                lat = doctorCoords.lat;
+                lng = doctorCoords.lng;
             }
 
-            const url = lat && lng 
-                ? `/medicines/all?search=${query}&lat=${lat}&lng=${lng}`
-                : `/medicines/all?search=${query}`;
+            const url = lat !== "" && lng !== ""
+                ? `/medicines/all?search=${query}&lat=${lat}&lng=${lng}&radius=${radius}`
+                : `/medicines/all?search=${query}&radius=${radius}`;
 
             const res = await api.get(url);
             if (res.data.success) {
@@ -65,6 +81,16 @@ export default function HealthReportModal({ isOpen, onClose, booking, onSaveSucc
             }
         } catch (err) {
             console.error("Error searching medicines:", err);
+        } finally {
+            setIsSearching(false);
+        }
+    };
+
+    const handleRadiusChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const newRadius = Number(e.target.value);
+        setSearchRadius(newRadius);
+        if (medicineSearch.length >= 2) {
+            handleSearchMedicine(medicineSearch, newRadius);
         }
     };
 
@@ -197,7 +223,23 @@ export default function HealthReportModal({ isOpen, onClose, booking, onSaveSucc
 
                             {/* Medicine Search */}
                             <div>
-                                <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2 block">Prescribe Medicines</label>
+                                <div className="flex items-center justify-between mb-2">
+                                    <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider block">Prescribe Medicines</label>
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-xs text-slate-400">Search within:</span>
+                                        <select 
+                                            value={searchRadius} 
+                                            onChange={handleRadiusChange}
+                                            className="text-xs border border-slate-200 rounded p-1 text-slate-600 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                                        >
+                                            <option value={5}>5 km</option>
+                                            <option value={10}>10 km</option>
+                                            <option value={20}>20 km</option>
+                                            <option value={50}>50 km</option>
+                                            <option value={100}>100 km</option>
+                                        </select>
+                                    </div>
+                                </div>
                                 <div className="relative">
                                     <input 
                                         type="text"
@@ -206,6 +248,12 @@ export default function HealthReportModal({ isOpen, onClose, booking, onSaveSucc
                                         className="w-full border border-slate-200 rounded-lg p-3 text-sm focus:ring-4 focus:ring-emerald-500/5 focus:border-emerald-500 outline-none transition-all placeholder:text-slate-300"
                                         placeholder="Search medicine by name..."
                                     />
+                                    {medicineSearch.length >= 2 && !isSearching && medicineResults.length === 0 && (
+                                        <div className="absolute top-full left-0 right-0 bg-white border border-slate-100 shadow-lg rounded-lg mt-1 z-10 p-4 text-center">
+                                            <p className="text-sm text-slate-500">No nearby pharmacy has this medicine in stock.</p>
+                                            <p className="text-xs text-slate-400 mt-1">Try expanding the search radius.</p>
+                                        </div>
+                                    )}
                                     {medicineResults.length > 0 && (
                                         <div className="absolute top-full left-0 right-0 bg-white border border-slate-100 shadow-lg rounded-lg mt-1 z-10 max-h-48 overflow-y-auto">
                                             {medicineResults.map(med => (
@@ -224,7 +272,7 @@ export default function HealthReportModal({ isOpen, onClose, booking, onSaveSucc
                                                             <p className="font-medium text-slate-900">{med.name}</p>
                                                             <p className="text-xs text-slate-400">
                                                                 {med.brand} • ₹{med.pricing?.sellingPrice} • Stock: {med.stock}
-                                                                {med.shop?.name && ` • ${med.shop.name} (${med.shop.distance || 0} km)`}
+                                                                {med.shop?.name && ` • ${med.shop.name} (${med.shop.distance != null ? med.shop.distance : "N/A"} km)`}
                                                             </p>
                                                         </div>
                                                     </div>

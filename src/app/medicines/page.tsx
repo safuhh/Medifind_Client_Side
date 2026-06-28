@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { getAllMedicines } from "@/services/apis/medicineapi";
+import api from "@/services/apis/api";
 import { MapPin, Search, Loader2, Activity, ArrowRight, ShieldCheck, Navigation } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import NavbarPage from "@/app/navbar/page";
@@ -189,6 +190,23 @@ function MedicinesList() {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const fetchData = async (currentCoords: { lat: number; lng: number } | null = coords) => {
+    if (search && search.trim()) {
+      try {
+        const stored = localStorage.getItem("medifind_searched_medicines");
+        let searches = stored ? JSON.parse(stored) : [];
+        const isDuplicate = searches.some((s: any) => s.query.toLowerCase() === search.trim().toLowerCase());
+        if (!isDuplicate) {
+          searches = [
+            { query: search.trim(), timestamp: new Date().toISOString() },
+            ...searches
+          ].slice(0, 50);
+          localStorage.setItem("medifind_searched_medicines", JSON.stringify(searches));
+        }
+      } catch (e) {
+        console.error("Error saving search history:", e);
+      }
+    }
+
     try {
       setLoading(true);
       setErrorMsg(null);
@@ -200,7 +218,50 @@ function MedicinesList() {
         100,
         selectedCategories.length > 0 ? selectedCategories.join(',') : undefined
       );
-      setMedicines(res.data.medicines || []);
+      
+      const medsFound = res.data.medicines || [];
+      setMedicines(medsFound);
+
+      // Log to database search history if user is logged in
+      if (user && search && search.trim()) {
+        try {
+          const matchedMed = medsFound[0];
+          const payload: any = {
+            searchQuery: search.trim(),
+            searchLocation: locationName || "Detecting Location",
+            availablePharmaciesFound: medsFound.filter((m: any) => m.shop).length,
+          };
+
+          if (matchedMed) {
+            payload.medicineName = matchedMed.name;
+            payload.genericName = matchedMed.genericName || matchedMed.name;
+            payload.brandName = matchedMed.brand || "Generic";
+            payload.medicineDescription = matchedMed.description || "No description available.";
+            payload.medicineCategory = matchedMed.category;
+            payload.dosageInformation = matchedMed.unitWeight || "As directed by physician";
+            payload.usageInstructions = matchedMed.isPrescriptionRequired 
+              ? "Prescription required. Take as directed by physician." 
+              : "Over-the-counter medicine.";
+            payload.sideEffects = "May cause mild drowsiness, dry mouth or stomach upset. Consult physician.";
+            payload.warningsPrecautions = "Keep out of reach of children. Store below 25°C in a dry place.";
+            payload.alternativeMedicines = matchedMed.genericName ? [matchedMed.genericName] : [];
+            payload.searchResultStatus = matchedMed.stock > 0 ? "available" : "low_stock";
+            payload.nearbyPharmacyResults = medsFound.slice(0, 5).map((m: any) => ({
+              name: m.shop?.name || "Verified Pharmacy",
+              address: m.shop?.address || "Pharmacy Location Address",
+              distance: m.shop?.distance || null
+            }));
+          } else {
+            payload.medicineName = search.trim();
+            payload.searchResultStatus = "unavailable";
+            payload.nearbyPharmacyResults = [];
+          }
+
+          await api.post("/search-history", payload);
+        } catch (dbErr) {
+          console.error("Failed to log search history to database:", dbErr);
+        }
+      }
     } catch (err: any) {
       console.error("Error fetching medicines:", err);
       const msg = err.response?.data?.error || err.response?.data?.message || err.message;
