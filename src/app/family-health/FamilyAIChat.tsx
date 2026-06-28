@@ -6,7 +6,7 @@ import { sendFamilyChat } from "@/services/apis/familyChat.api";
 import { toast } from "react-toastify";
 import {
   Send, Brain, Loader2, User, Bot, Copy, ChevronRight,
-  FileText, Calendar, ShoppingBag, Heart, ArrowDown
+  FileText, Calendar, ShoppingBag, Heart, ArrowDown, Activity, Pill, Sparkles
 } from "lucide-react";
 
 interface Message {
@@ -33,12 +33,11 @@ const SOURCE_LABELS: Record<string, string> = {
   searchHistory: "Medicine Search",
 };
 
-const QUICK_PROMPTS = [
-  "What medicines is this person currently taking?",
-  "When is the next appointment?",
-  "Summarize the latest health report.",
-  "Are there any pending prescription refills?",
-  "What chronic conditions are recorded?",
+const CAPABILITY_CARDS = [
+  { icon: FileText, label: "Explain Health Report", prompt: "Can you summarize the most recent health report in simple terms?" },
+  { icon: Pill, label: "Medicine Interactions", prompt: "Are there any interactions between the current active medicines?" },
+  { icon: Calendar, label: "Upcoming Appointments", prompt: "When is the next appointment and what is it for?" },
+  { icon: Activity, label: "Health Risk Analysis", prompt: "Based on the records, what are the primary health risks I should watch for?" },
 ];
 
 interface Props {
@@ -134,57 +133,91 @@ export default function FamilyAIChat({ activeMember }: Props) {
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-slate-100 flex flex-col h-[550px]">
-      {/* Header */}
-      
-      <div className="p-4 border-b border-slate-100 flex items-center gap-3">
-        <div className="w-9 h-9 bg-gradient-to-br from-[#0a4d33] to-emerald-500 rounded-xl flex items-center justify-center">
-          <Brain className="w-4 h-4 text-white" />
+    <div className="bg-white rounded-3xl shadow-xl shadow-slate-200/40 border border-slate-100 flex flex-col h-[700px] overflow-hidden">
+      {/* Premium Header */}
+      <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-white/80 backdrop-blur-md z-10 sticky top-0">
+        <div className="flex items-center gap-4">
+          <div className="relative flex-shrink-0">
+            <div className="w-12 h-12 bg-gradient-to-br from-[#0a4d33] to-emerald-600 rounded-[18px] flex items-center justify-center shadow-lg shadow-emerald-900/10 border border-emerald-500/20">
+              <Brain className="w-6 h-6 text-white" />
+            </div>
+            <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 rounded-full border-2 border-white animate-pulse" />
+          </div>
+          <div className="min-w-0">
+            <h2 className="text-lg font-bold text-slate-900 leading-tight">MediFind AI Assistant</h2>
+            <div className="flex items-center gap-2 mt-0.5">
+              <span className="text-xs font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100">
+                Gemini 1.5 Pro
+              </span>
+              <span className="w-1 h-1 rounded-full bg-slate-300" />
+              <p className="text-xs font-medium text-slate-500">
+                {activeMember ? `Focusing on ${activeMember.name}` : "Select a family member"}
+              </p>
+            </div>
+          </div>
         </div>
-        <div>
-          <p className="text-sm font-bold text-slate-800">MediFind AI</p>
-          <p className="text-xs text-slate-400">
-            {activeMember ? `Asking about ${activeMember.name}` : "Select a family member to focus"}
-          </p>
+        
+        <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-slate-50 rounded-xl border border-slate-200">
+          <Sparkles className="w-4 h-4 text-emerald-500" />
+          <span className="text-xs font-bold text-slate-600">RAG Connected</span>
         </div>
-       
       </div>
-    
 
       {/* Messages */}
       <div 
         ref={scrollContainerRef}
         onScroll={handleScroll}
-        className="flex-1 overflow-y-auto p-5 space-y-5 relative scroll-smooth"
+        className="flex-1 overflow-y-auto p-6 space-y-8 relative scroll-smooth bg-slate-50/30"
       >
         {messages.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-full gap-6">
-            <div className="w-20 h-20 bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-3xl flex items-center justify-center">
-              <Brain className="w-10 h-10 text-emerald-600" />
-            </div>
-              <br/>
-         
-            <div className="text-center max-w-sm">
-              <h3 className="text-base font-bold text-slate-800 mb-2">
-                {activeMember ? `Ask about ${activeMember.name}'s health` : "Select a family member to start"}
+          <div className="flex flex-col items-center justify-center h-full gap-8 max-w-2xl mx-auto py-10">
+            <motion.div 
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ duration: 0.5, ease: "easeOut" }}
+              className="relative"
+            >
+              <div className="absolute inset-0 bg-emerald-200 blur-3xl opacity-20 rounded-full" />
+              <div className="w-24 h-24 bg-gradient-to-br from-emerald-50 to-teal-50 rounded-[32px] flex items-center justify-center shadow-inner border border-emerald-100/50 relative z-10">
+                <Brain className="w-12 h-12 text-emerald-600" />
+              </div>
+            </motion.div>
+            
+            <div className="text-center space-y-3">
+              <h3 className="text-2xl font-extrabold text-slate-900 tracking-tight">
+                {activeMember ? `How can I help with ${activeMember.name}'s health?` : "Select a family member to begin"}
               </h3>
-              <p className="text-sm text-slate-400">
-                I answer using only your actual MediFind records — prescriptions, appointments, orders, and health reports.
+              <p className="text-base text-slate-500 font-medium max-w-md mx-auto leading-relaxed">
+                I seamlessly analyze your family's verified medical records to provide accurate, personalized healthcare insights.
               </p>
             </div>
+            
             {activeMember && (
-              <div className="w-full grid grid-cols-1 gap-2">
-                {QUICK_PROMPTS.map((prompt, i) => (
-                  <button
-                    key={i}
-                    onClick={() => sendMessage(prompt)}
-                    className="text-left text-sm text-slate-600 bg-slate-50 hover:bg-emerald-50 hover:text-emerald-700 px-4 py-3 rounded-xl border border-slate-100 hover:border-emerald-200 transition-all flex items-center gap-2 group"
-                  >
-                    <ChevronRight className="w-3.5 h-3.5 text-slate-300 group-hover:text-emerald-500 flex-shrink-0" />
-                    {prompt}
-                  </button>
-                ))}
-              </div>
+              <motion.div 
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+                className="w-full grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4"
+              >
+                {CAPABILITY_CARDS.map((card, i) => {
+                  const Icon = card.icon;
+                  return (
+                    <button
+                      key={i}
+                      onClick={() => sendMessage(card.prompt)}
+                      className="text-left bg-white p-4 rounded-[20px] border border-slate-200 hover:border-emerald-300 hover:shadow-xl hover:shadow-emerald-900/5 transition-all group flex flex-col gap-3"
+                    >
+                      <div className="w-10 h-10 rounded-xl bg-slate-50 group-hover:bg-emerald-50 flex items-center justify-center transition-colors">
+                        <Icon className="w-5 h-5 text-slate-500 group-hover:text-emerald-600" />
+                      </div>
+                      <div>
+                        <h4 className="text-sm font-bold text-slate-800 mb-1">{card.label}</h4>
+                        <p className="text-xs text-slate-500 leading-relaxed line-clamp-2">{card.prompt}</p>
+                      </div>
+                    </button>
+                  );
+                })}
+              </motion.div>
             )}
           </div>
         ) : (
@@ -305,7 +338,7 @@ export default function FamilyAIChat({ activeMember }: Props) {
             className="absolute bottom-28 left-0 right-0 flex justify-center pointer-events-none z-10"
           >
             <button
-              onClick={scrollToBottom}
+              onClick={() => scrollToBottom()}
               className="pointer-events-auto flex items-center gap-2 bg-white/90 backdrop-blur-md border border-slate-200 shadow-lg px-4 py-2 rounded-full text-xs font-bold text-[#0a4d33] hover:bg-emerald-50 transition-all hover:-translate-y-0.5"
             >
               <ArrowDown className="w-3.5 h-3.5" />

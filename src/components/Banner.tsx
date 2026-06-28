@@ -7,6 +7,10 @@ export const PartnerBanner = () => {
   const router = useRouter();
 
   return (
+   <div>
+    
+    <br/>
+    <br/>
     <motion.div
       initial={{ opacity: 0, scale: 0.95 }}
       whileInView={{ opacity: 1, scale: 1 }}
@@ -15,7 +19,7 @@ export const PartnerBanner = () => {
       className="max-w-5xl mx-auto bg-[#0a4d33] py-12 px-6 md:py-16 md:px-10 rounded-[30px] md:rounded-[40px] text-center relative overflow-hidden shadow-2xl shadow-emerald-900/10"
     >
       <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 blur-[80px] rounded-full -mr-20 -mt-20" />
-      
+     
       <div className="max-w-3xl mx-auto relative z-10">
         <h2 className="text-3xl md:text-5xl font-bold text-white mb-6 tracking-tighter leading-tight">
           Join the MediFind <br className="hidden md:block" /> Healthcare Network
@@ -53,5 +57,6 @@ export const PartnerBanner = () => {
         </div>
       </div>
     </motion.div>
+   </div>
   );
 };

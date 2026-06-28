@@ -105,7 +105,7 @@ const NavbarPage = () => {
         <div className="flex items-center gap-4">
           {/* Notification Icon */}
           <Link href="/notifications" className="text-sm font-medium text-gray-600 hover:text-[#0a4d33] transition-colors relative">
-            Notifications
+            Medical Updates
             <span className="absolute -top-1 -right-2 w-1.5 h-1.5 bg-red-500 rounded-full"></span>
           </Link>
 
@@ -196,22 +196,22 @@ const NavbarPage = () => {
           </Link>
 
           {/* Navigation Links - Desktop */}
-          <div className="hidden lg:flex items-center gap-8 absolute left-1/2 -translate-x-1/2">
+          <div className="hidden lg:flex flex-1 items-center justify-center gap-7 px-4">
             <Link href="/medicines" className="text-sm font-medium text-gray-600 hover:text-[#0a4d33] transition-colors">
               Find Medicine
             </Link>
-            <Link href="/family-health" className="text-sm font-semibold text-emerald-600 hover:text-emerald-700 transition-colors flex items-center gap-1">
-              <span>Family Health</span>
+            <Link href="/family-health" className="text-sm font-semibold text-emerald-600 hover:text-emerald-700 transition-colors">
+              Family Health
             </Link>
             <Link href="/consultation" className="text-sm font-medium text-gray-600 hover:text-[#0a4d33] transition-colors">
               Consultation
             </Link>
              <Link href="/cart" className="text-sm font-medium text-gray-600 hover:text-[#0a4d33] transition-colors">
-              cart
+              Cart
             </Link>
             <Link 
               href={user?.role === "doctor" ? "/doctor/dashboard" : "/doctor/apply"}
-              className="text-sm font-semibold text-emerald-600 hover:text-emerald-700 transition-colors"
+              className="text-sm font-medium text-gray-600 hover:text-[#0a4d33] transition-colors"
             >
               {user?.role === "doctor" ? "Doctor Dashboard" : "Doctor Portal"}
             </Link>
@@ -221,8 +221,7 @@ const NavbarPage = () => {
           </div>
 
           {/* Right Side Actions - Desktop */}
-          <div className="hidden lg:flex items-center gap-5">
-           
+          <div className="hidden lg:flex items-center flex-shrink-0">
             {renderAuthUI()}
           </div>
 
@@ -286,7 +285,7 @@ const NavbarPage = () => {
                   { label: "About Us", href: "/about" },
                   { label: "Help & Support", href: "/help" },
                   { label: "Partners", href: "/partner" },
-                  { label: "Notifications", href: "/notifications" },
+                  { label: "Medical Updates", href: "/notifications" },
                   { label: "Cart", href: "/cart" }
                 ].map((link) => {
                   const isActive = pathname === link.href;

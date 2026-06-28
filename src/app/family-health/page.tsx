@@ -89,10 +89,6 @@ export default function FamilyHealthPage() {
                   AI-powered health assistant that understands your family's complete medical history. Ask anything — get answers grounded in your actual records.
                 </p>
               </div>
-              <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl px-4 py-3">
-                <Sparkles className="w-5 h-5 text-emerald-300" />
-                <span className="text-sm font-medium text-white">Powered by RAG AI</span>
-              </div>
             </motion.div>
           </div>
         </div>

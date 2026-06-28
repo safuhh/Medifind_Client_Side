@@ -1,23 +1,23 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Storefront, ChartLineUp, ShieldCheck, ArrowUpRight } from "@phosphor-icons/react";
+import { Brain, VideoCamera, MapPinLine, ArrowUpRight } from "@phosphor-icons/react";
 
 const features = [
   {
-    title: "Inventory Control",
-    desc: "Full medicine inventory table with add, edit, and delete functionality for seamless management.",
-    icon: Storefront
+    title: "AI Medicine Fulfillment",
+    desc: "RAG-powered engine that intelligently routes prescriptions across local pharmacies for maximum availability.",
+    icon: Brain
   },
   {
-    title: "Admin Dashboard",
-    desc: "Pharmacy approval workflow with detailed revenue and demand analytics at your fingertips.",
-    icon: ChartLineUp
+    title: "Virtual Consultations",
+    desc: "Secure video calls and real-time appointment booking with verified specialist doctors on the platform.",
+    icon: VideoCamera
   },
   {
-    title: "Verified Network",
-    desc: "Performance metrics and trend analysis for all partners within our trusted healthcare network.",
-    icon: ShieldCheck
+    title: "Live GPS Tracking",
+    desc: "Real-time delivery tracking with live coordinates to follow your medication straight to your door.",
+    icon: MapPinLine
   }
 ];
 
