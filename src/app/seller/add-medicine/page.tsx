@@ -285,7 +285,7 @@ export default function AddMedicinePage() {
                 </div>
                 <div className="space-y-1.5">
                   <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">Offer Label</label>
-                  <input name="offer" value={form.offer} onChange={handleChange} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 outline-none focus:bg-white focus:ring-2 focus:ring-emerald-500 transition-all placeholder:text-gray-300" placeholder="e.g. 20% OFF" />
+                  <input name="offer" value={form.offer} onChange={handleChange} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 outline-none focus:bg-white focus:ring-2 focus:ring-emerald-500 transition-all placeholder:text-gray-300 text-gray-900" placeholder="e.g. 20% OFF" />
                 </div>
                 <div className="space-y-1.5 md:col-span-2">
                   <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">Description</label>
