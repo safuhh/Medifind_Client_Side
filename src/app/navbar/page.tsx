@@ -67,7 +67,7 @@ const NavbarPage = () => {
 
   useEffect(() => {
     if (isMounted && user && user._id) {
-      const socket = io(process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api");
+      const socket = io(process.env.NEXT_PUBLIC_API_URL || "https://medifindapiii.duckdns.org/api");
       
       socket.emit("join_doctor_private_room", user._id);
       

@@ -91,7 +91,7 @@ export default function EditDeliveryProfile() {
         }));
 
         try {
-          const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+          const apiUrl = process.env.NEXT_PUBLIC_API_URL || "https://medifindapiii.duckdns.org/api";
           const controller = new AbortController();
           const timeoutId = setTimeout(() => controller.abort(), 8000);
           const res = await fetch(

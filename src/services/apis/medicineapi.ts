@@ -1,6 +1,6 @@
 import api from "./api";
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://medifindapiii.duckdns.org/api";
 
 // 📦 GET all medicines (Public)
 export const getAllMedicines = (

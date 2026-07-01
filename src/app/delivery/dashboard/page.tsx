@@ -61,7 +61,7 @@ export default function DeliveryDashboardPage() {
 
   useEffect(() => {
     // Socket initialization
-    const baseUrl = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api").replace('/api', '');
+    const baseUrl = (process.env.NEXT_PUBLIC_API_URL || "https://medifindapiii.duckdns.org/api").replace('/api', '');
     const socket = io(baseUrl, { withCredentials: true });
     
     if (data?.userId) {

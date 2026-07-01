@@ -6,7 +6,7 @@ import MedicineDetailClient from "./MedicineDetailClient";
 import { getImageUrl } from "@/utils/imageUrl";
 
 async function getMedicineData(id: string) {
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL || "https://medifindapiii.duckdns.org/api";
   try {
     const res = await fetch(`${baseUrl}/medicines/${id}`, {
       next: { revalidate: 3600 }, // Cache for 1 hour

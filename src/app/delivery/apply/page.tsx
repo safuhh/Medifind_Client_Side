@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import Navbar from "@/app/navbar/page";
 import { useState, useEffect } from "react";
@@ -94,7 +94,7 @@ export default function DeliveryApplyPage() {
 
         // Try to reverse-geocode the address (non-critical â€“ failure is OK)
         try {
-          const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+          const apiUrl = process.env.NEXT_PUBLIC_API_URL || "https://medifindapiii.duckdns.org/api";
           const controller = new AbortController();
           const timeoutId = setTimeout(() => controller.abort(), 8000);
           const res = await fetch(

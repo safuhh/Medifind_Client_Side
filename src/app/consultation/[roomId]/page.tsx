@@ -81,7 +81,7 @@ export default function ConsultationRoom() {
   useEffect(() => {
     if (!roomId) return;
 
-    const socketUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+    const socketUrl = process.env.NEXT_PUBLIC_API_URL || "https://medifindapiii.duckdns.org/api";
     const socket = io(socketUrl);
 
     socket.emit("join_consultation_room", roomId);

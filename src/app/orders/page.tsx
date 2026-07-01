@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import React, { useEffect, useState } from "react";
 import { useAppSelector } from "@/store/redux/hooks";
@@ -56,7 +56,7 @@ const OrdersPage = () => {
   useEffect(() => {
     if (!user?._id) return;
     
-    const baseUrl = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api").replace('/api', '');
+    const baseUrl = (process.env.NEXT_PUBLIC_API_URL || "https://medifindapiii.duckdns.org/api").replace('/api', '');
     const socket = io(baseUrl, { 
       withCredentials: true 
     });

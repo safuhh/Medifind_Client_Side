@@ -37,7 +37,7 @@ export default function LowStock() {
   useEffect(() => {
     if (!user?._id) return;
 
-    const socket = io(process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api", { withCredentials: true });
+    const socket = io(process.env.NEXT_PUBLIC_API_URL || "https://medifindapiii.duckdns.org/api", { withCredentials: true });
     
     socket.emit("join_seller_room", user._id);
 

@@ -97,7 +97,7 @@ export default function MedicineDetailClient({ initialData }: { initialData?: Me
 
   const reverseGeocode = async (lat: number, lng: number) => {
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "https://medifindapiii.duckdns.org/api";
       const res = await fetch(`${apiUrl}/locations/reverse?lat=${lat}&lng=${lng}`);
       const data = await res.json();
       if (data && data.shortName) {

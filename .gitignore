@@ -12,11 +12,11 @@
 
 # testing
 /coverage
-
+node_modules
 # next.js
 /.next/
 /out/
-
+.env
 # production
 /build
 

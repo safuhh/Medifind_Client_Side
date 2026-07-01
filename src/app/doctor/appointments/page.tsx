@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import React, { useState, useEffect } from "react";
 import Sidebar from "../navbar/page";
@@ -18,7 +18,7 @@ import { useRouter } from "next/navigation";
 import HealthReportModal from "@/components/HealthReportModal";
 import AppointmentDetailsModal from "@/components/AppointmentDetailsModal";
 
-const socket = io(process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api");
+const socket = io(process.env.NEXT_PUBLIC_API_URL || "https://medifindapiii.duckdns.org/api");
 
 const parseLocalSlot = (bookingDate: string | Date, timeSlot: string) => {
   let hours = 0;

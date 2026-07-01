@@ -9,7 +9,7 @@ import { toast } from "react-toastify";
 import { motion, AnimatePresence } from "framer-motion";
 import { FiCalendar, FiClock, FiCheckCircle, FiAlertCircle, FiUser } from "react-icons/fi";
 
-const socket = io(process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api");
+const socket = io(process.env.NEXT_PUBLIC_API_URL || "https://medifindapiii.duckdns.org/api");
 
 interface BookingSectionProps {
     doctorId: string;
