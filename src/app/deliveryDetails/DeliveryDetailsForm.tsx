@@ -243,7 +243,7 @@ const DeliveryDetailsForm = () => {
                                         onClick={() => handleSelectAddress(addr)}
                                     >
                                         <button 
-                                            className="absolute top-2 right-2 p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-200"
+                                            className="absolute top-2 right-2 p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-full opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-200"
                                             onClick={(e) => {
                                                 e.stopPropagation(); // Prevent selecting the address
                                                 setAddressIdToDelete(addr._id);

@@ -302,7 +302,7 @@ const NavbarPage = () => {
                       >
                         <span>{link.label}</span>
                         <svg 
-                          className={`w-4 h-4 text-emerald-600 transition-all duration-300 opacity-0 group-hover:opacity-100 ${
+                          className={`w-4 h-4 text-emerald-600 transition-all duration-300 opacity-100 md:opacity-0 md:group-hover:opacity-100 ${
                             isActive ? "opacity-100 translate-x-0.5" : "translate-x-0 group-hover:translate-x-0.5"
                           }`} 
                           fill="none" 
@@ -339,7 +339,7 @@ const NavbarPage = () => {
                       >
                         <span>{link.label}</span>
                         <svg 
-                          className={`w-3.5 h-3.5 text-emerald-600 transition-all duration-300 opacity-0 group-hover:opacity-100 ${
+                          className={`w-3.5 h-3.5 text-emerald-600 transition-all duration-300 opacity-100 md:opacity-0 md:group-hover:opacity-100 ${
                             isActive ? "opacity-100 translate-x-0.5" : "translate-x-0 group-hover:translate-x-0.5"
                           }`} 
                           fill="none" 

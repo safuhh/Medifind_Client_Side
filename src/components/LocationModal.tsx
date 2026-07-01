@@ -370,7 +370,7 @@ export default function LocationModal({
                     </div>
                     <button
                       onClick={(e) => deleteSavedLocation(loc.id, e)}
-                      className="text-ink-faint hover:text-danger opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity p-1"
+                      className="text-ink-faint hover:text-danger opacity-100 md:opacity-0 md:group-hover:opacity-100 focus:opacity-100 transition-opacity p-1"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>

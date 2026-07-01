@@ -259,7 +259,7 @@ export default function EditMedicinePage() {
                   {medicine.images?.map((img: string, i: number) => (
                     <div key={i} className="relative group rounded-xl overflow-hidden border border-gray-100 h-28 w-28">
                       <img src={getImageUrl(img)} className="h-full w-full object-cover" alt="existing" />
-                      <button type="button" onClick={() => removeExistingImage(i)} className="absolute top-1 right-1 bg-white/90 text-red-600 p-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity shadow-sm">
+                      <button type="button" onClick={() => removeExistingImage(i)} className="absolute top-1 right-1 bg-white/90 text-red-600 p-1.5 rounded-lg transition-opacity shadow-sm">
                         <FiX size={14} />
                       </button>
                     </div>
@@ -269,7 +269,7 @@ export default function EditMedicinePage() {
                   {editImages.map((img, i) => (
                     <div key={`new-${i}`} className="relative group rounded-xl overflow-hidden border border-emerald-100 h-28 w-28">
                       <img src={URL.createObjectURL(img)} className="h-full w-full object-cover" alt="preview" />
-                      <button type="button" onClick={() => removeNewImage(i)} className="absolute top-1 right-1 bg-white/90 text-red-600 p-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity shadow-sm">
+                      <button type="button" onClick={() => removeNewImage(i)} className="absolute top-1 right-1 bg-white/90 text-red-600 p-1.5 rounded-lg transition-opacity shadow-sm">
                         <FiX size={14} />
                       </button>
                       <div className="absolute bottom-0 inset-x-0 bg-emerald-600 text-[8px] text-center text-white py-0.5 font-bold uppercase">New</div>

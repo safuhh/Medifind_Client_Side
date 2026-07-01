@@ -121,7 +121,7 @@ export default function ManageMedicinesPage() {
                         </div>
                       )}
                       
-                      <div className="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-all">
+                      <div className="absolute top-3 right-3 flex gap-2 transition-all">
                         <Link 
                           href={`/seller/edit-medicine/${med._id}`}
                           className="bg-white text-emerald-600 p-2 rounded-lg shadow-sm hover:bg-emerald-50 transition-colors"

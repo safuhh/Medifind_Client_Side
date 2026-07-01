@@ -320,7 +320,7 @@ export default function AddMedicinePage() {
                           className="relative group rounded-xl overflow-hidden border border-emerald-100 h-28 w-28 shadow-sm"
                         >
                           <img src={img} className="h-full w-full object-cover" alt="external preview" />
-                          <button type="button" onClick={() => removeExternalImage(i)} className="absolute top-1 right-1 bg-white/90 text-red-600 p-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity shadow-sm">
+                          <button type="button" onClick={() => removeExternalImage(i)} className="absolute top-1 right-1 bg-white/90 text-red-600 p-1.5 rounded-lg transition-opacity shadow-sm">
                             <FiTrash2 size={14} />
                           </button>
                           <div className="absolute bottom-0 inset-x-0 bg-emerald-600 text-[8px] text-center text-white py-0.5 font-bold uppercase">Online</div>
@@ -337,7 +337,7 @@ export default function AddMedicinePage() {
                           className="relative group rounded-xl overflow-hidden border border-gray-100 h-28 w-28 shadow-sm"
                         >
                           <img src={URL.createObjectURL(img)} className="h-full w-full object-cover" alt="preview" />
-                          <button type="button" onClick={() => removeImage(i)} className="absolute top-1 right-1 bg-white/90 text-red-600 p-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity shadow-sm">
+                          <button type="button" onClick={() => removeImage(i)} className="absolute top-1 right-1 bg-white/90 text-red-600 p-1.5 rounded-lg transition-opacity shadow-sm">
                             <FiTrash2 size={14} />
                           </button>
                         </motion.div>

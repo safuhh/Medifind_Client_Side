@@ -145,7 +145,7 @@ export default function SellerEarnings({ isDashboard = false }: { isDashboard?: 
                     <Package className="w-4 h-4" />
                     <span>{item.count} Transactions</span>
                   </div>
-                  <span className="text-[10px] font-black text-emerald-600 uppercase tracking-tighter flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all">
+                  <span className="text-[10px] font-black text-emerald-600 uppercase tracking-tighter flex items-center gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all">
                     Ledger <ArrowUpRight className="w-3 h-3" />
                   </span>
                 </div>

@@ -60,7 +60,7 @@ export const FeatureGrid = () => {
               {/* Minimalist footer indicator */}
               <div className="relative z-10 mt-8 flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-slate-400 group-hover:text-[#0a4d33] transition-colors">
                 <span>View Insights</span>
-                <ArrowUpRight size={14} weight="bold" className="opacity-0 group-hover:opacity-100 group-hover:translate-x-1 group-hover:-translate-y-1 transition-all" />
+                <ArrowUpRight size={14} weight="bold" className="opacity-100 md:opacity-0 md:group-hover:opacity-100 group-hover:translate-x-1 group-hover:-translate-y-1 transition-all" />
               </div>
             </motion.div>
           ))}

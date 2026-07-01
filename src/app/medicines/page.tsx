@@ -495,7 +495,7 @@ return (
 
         {/* Product Grid Area */}
         <div className="lg:w-3/4">
-        {loading ? (
+        {loading && medicines.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 bg-white rounded-xl border border-slate-200">
             <div className="relative w-12 h-12 flex items-center justify-center mb-4">
               <div className="absolute inset-0 border-2 border-emerald-100 rounded-full" />
@@ -528,7 +528,7 @@ return (
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+          <div className={`grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 transition-opacity duration-300 ${loading ? 'opacity-50 pointer-events-none' : 'opacity-100'}`}>
             <AnimatePresence>
               {filteredMedicines.map((med, index) => (
                 <motion.div

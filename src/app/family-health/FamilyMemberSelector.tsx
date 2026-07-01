@@ -147,7 +147,7 @@ export default function FamilyMemberSelector({ members, activeMember, onSelect, 
             {!member.isDefault && member.verificationStatus !== "pending" && (
               <button
                 onClick={(e) => handleDeleteClick(e, member)}
-                className={`opacity-0 group-hover:opacity-100 p-1.5 rounded-lg transition-all ${
+                className={`opacity-100 md:opacity-0 md:group-hover:opacity-100 p-1.5 rounded-lg transition-all ${
                   isActive ? "hover:bg-white/20 text-white" : "hover:bg-red-50 text-red-400"
                 }`}
               >
