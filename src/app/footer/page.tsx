@@ -90,7 +90,7 @@ export const Footer = () => {
                 </div>
                 <div className="flex flex-col">
                   <span className="text-xs font-medium text-emerald-100/50 uppercase tracking-wider mb-0.5">Call us (9AM-6PM)</span>
-                  <a href="tel:+917600000000" className="text-sm font-medium text-emerald-50 hover:text-emerald-300 transition-colors">+91 7600000000</a>
+                  <a href="tel:+918590872362" className="text-sm font-medium text-emerald-50 hover:text-emerald-300 transition-colors">+91 8590872362</a>
                 </div>
               </li>
               <li className="flex items-start gap-4">
